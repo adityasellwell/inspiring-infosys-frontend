@@ -68,14 +68,14 @@ const SERVICES = [
   },
   {
     title: 'Development Services',
-    img: '/img/web-develop.png',
+    img: '/img/sdlc.png',
     items: ['Software Development', 'Website Development', 'App Development', 'IT Business Solutions', 'ERP & CRM'],
     link: '/development-services',
     label: 'Dev Solutions',
   },
   {
     title: 'More Services',
-    img: '/img/SEO Service.jpg',
+    img: '/img/more services.png',
     items: ['Payment Gateway', 'Bulk SMS', 'SEO Services', 'Voice Call', 'Shopify Store'],
     link: '/more-services',
     label: 'Growth Tools',
@@ -86,7 +86,7 @@ const PROJECTS = [
   { title: 'SellWell', category: 'E-Commerce Automation', img: '/img/tap2cash.png', link: 'https://sellwellone.com/' },
   { title: 'Lactra B2B', category: 'Website Development', img: '/img/Lactra.jpg', link: 'https://www.lactra.in/ ' },
   { title: 'Spartan Nutrition', category: 'Website Development', img: '/img/web-spartan.png', link: 'https://spartannutrition.com/' },
-  { title: 'Tap2Cash', category: 'Software Development', img: '/img/tap2cash.png', link: 'https://tap2cash.in/' },
+  { title: 'Tap2Cash', category: 'Software Development', img: '/img/taptocash.png', link: 'https://tap2cash.in/' },
   { title: 'Ayaan Toys', category: 'E-Commerce', img: '/img/Web-ayantoys.png', link: '/portfolio' },
   { title: 'Lycot Swimwear', category: 'Website Development', img: '/img/Web-lycot.png', link: '/portfolio' },
 ];
@@ -259,8 +259,8 @@ function Home() {
               Mumbai's Trusted IT Partner Since 2013
             </motion.span>
 
-            
-            
+
+
             <motion.h1
               variants={fadeUp}
               className="hero-heading"
@@ -381,7 +381,7 @@ function Home() {
                 <strong>E-Commerce</strong>
                 <span>Growth & Automation</span>
               </div>
-            </motion.div> */} 
+            </motion.div> */}
 
 
             {/* Floating Card - Growth */}

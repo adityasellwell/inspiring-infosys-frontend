@@ -27,26 +27,23 @@ function Footer() {
             }}
           >
             <div className="footer-logo-wrapper">
-              <img src="/img/logo4.png" alt="Inspiring Infosys Logo" className="footer-logo" />
-              <span className="footer-brand-name">
-                Inspiring <span className="text-highlight">Infosys</span>
-              </span>
+              <img src=" public/images/logo2.png" alt="Inspiring Infosys Logo" className="footer-logo" />
+
             </div>
           </Link>
           <p className="footer-desc">
             We solve your complex technical and e-commerce problems so that you can focus on marketing and scaling your business profitably.
           </p>
           <div className="social-links">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Facebook">
+            <a href="https://facebook.com/share/1DASqPGPm7/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Facebook">
               <FaFacebookF />
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Twitter">
-              <FaTwitter />
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Instagram">
+
+
+            <a href="https://instagram.com/learnsellwell" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Instagram">
               <FaInstagram />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="LinkedIn">
+            <a href="https://linkedin.com/company/inspiring-infosys" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="LinkedIn">
               <FaLinkedinIn />
             </a>
           </div>

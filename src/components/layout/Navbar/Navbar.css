@@ -10,7 +10,7 @@
   width: 100%;
   z-index: 1000;
 
-  padding: 1rem 0;
+  padding: 0.4rem 0;
 
   background: rgba(255, 255, 255, 0.96);
 
@@ -29,7 +29,7 @@
    ========================================================= */
 
 .navbar-scrolled {
-  padding: 0.7rem 0;
+  padding: 0.3rem 0;
 
   background: rgba(255, 255, 255, 0.82);
 
@@ -78,31 +78,21 @@
 
 
 .navbar-logo-wrapper {
-  position: relative;
-
   display: flex;
   align-items: center;
-
-  width: 200px;
-  height: 48px;
+  overflow: visible;
 }
 
 
 .navbar-logo {
-  position: absolute;
-
-  left: 0;
-  top: 50%;
-
-  height: 200px;
-  width: auto;
-
-  object-fit: contain;
-
+  /* logo2.png has large whitespace — clip-path trims it, width controls visible size */
+  width: 160px;
+  height: auto;
   display: block;
-
-  transform: translateY(-50%);
-
+  object-fit: contain;
+  clip-path: inset(18% 5% 18% 5%);
+  /* margin compensation to offset the clipped whitespace */
+  margin: -18% 0;
   z-index: 1001;
 }
 
@@ -747,13 +737,14 @@
    ========================================================= */
 
 .nav-megamenu {
-  position: absolute;
+  position: fixed;
 
-  top: calc(100% + 0.75rem);
+  top: 90px;
 
-  left: 50%;
+  left: 35%;
+  transform: translateX(-50%);
 
-  width: min(680px, calc(100vw - 40px));
+  width: min(720px, calc(100vw - 40px));
 
   padding: 1.5rem;
 
@@ -768,8 +759,6 @@
 
   box-shadow:
     0 20px 60px rgba(15, 23, 42, 0.12);
-
-  transform: translateX(-50%);
 
   z-index: 1010;
 }

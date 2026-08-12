@@ -2,24 +2,7 @@
   padding-top: 5rem;
 }
 
-/* ── Hero ── */
-.api-hero-section {
-  padding: 4.5rem 0 3.5rem;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
-  text-align: center;
-}
-
-.api-hero-section .page-hero-title {
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.api-hero-section .page-hero-sub {
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
+/* Hero styles are global — see index.css .inner-page-hero */
 
 /* ── Tabs Bar ── */
 .api-tabs-section {

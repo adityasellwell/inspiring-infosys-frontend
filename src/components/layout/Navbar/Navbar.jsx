@@ -98,9 +98,9 @@ function Navbar() {
           <div className="navbar-logo-wrapper">
 
             <img
-              src=" public/images/logo2.png"
+              src="/images/logo2.png"
               alt="Inspiring Infosys Logo"
-              className="navbar-logo navbar-logo-secondary"
+              className="navbar-logo"
             />
 
           </div>

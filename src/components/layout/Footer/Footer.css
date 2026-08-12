@@ -57,15 +57,23 @@
 }
 
 .footer-logo-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  width: 200px;
+  height: 48px;
 }
 
 .footer-logo {
-  height: 28px;
-  width: 28px;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 200px;
+  width: auto;
   object-fit: contain;
+  display: block;
+  transform: translateY(-50%);
+  z-index: 1;
 }
 
 .footer-brand-name {
