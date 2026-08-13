@@ -27,7 +27,7 @@ function Footer() {
             }}
           >
             <div className="footer-logo-wrapper">
-              <img src=" public/images/logo2.png" alt="Inspiring Infosys Logo" className="footer-logo" />
+              <img src="/images/logo2.png" alt="Inspiring Infosys Logo" className="footer-logo" />
 
             </div>
           </Link>
@@ -54,7 +54,7 @@ function Footer() {
           <h4 className="footer-heading">Company</h4>
           <ul className="footer-links">
             <li><Link to="/">Home</Link></li>
-            <li><Link to="/why-us">Why Us</Link></li>
+            <li><Link to="/why-us/it-company-in-mumbai">Why Us</Link></li>
             <li><Link to="/portfolio">Portfolio</Link></li>
             <li><Link to="/contact">Contact Us</Link></li>
           </ul>

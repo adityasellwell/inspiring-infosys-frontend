@@ -1,5 +1,5 @@
 .more-services-page {
-  padding-top: 5rem;
+  padding-top: 0rem;
 }
 
 /* ── Hero ── */
@@ -182,4 +182,36 @@
   font-size: 0.85rem;
   color: var(--text-secondary);
   line-height: 1.6;
+}
+
+/* ── Dark Mode Overrides ── */
+[data-theme='dark'] .more-tabs-section {
+  background: var(--bg-secondary);
+}
+
+[data-theme='dark'] .more-content-section {
+  background: var(--bg-secondary);
+}
+
+[data-theme='dark'] .more-details-section {
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .more-detail-card {
+  background: var(--bg-tertiary);
+}
+
+[data-theme='dark'] .more-tab-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .more-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .more-tab-btn.active {
+  background: var(--primary);
+  color: #ffffff;
 }

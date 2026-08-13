@@ -18,7 +18,7 @@ const DEV_DATA = {
   },
   'website-development': {
     name: 'Website Development',
-    image: '/img/web-develop.png',
+    image: '/img/web-develop-main.png',
     title: 'Fast, High-Converting Custom Responsive Websites',
     desc: 'Your brand website serves as the hub of your online outreach. We build beautiful, accessible websites optimized for lightning-fast page loading speeds, seamless desktop and mobile rendering, and optimal lead conversion.',
     details: [
@@ -64,17 +64,34 @@ const DEV_DATA = {
 
 const TABS = ['software-development', 'website-development', 'app-development', 'it-business-solution', 'erp-crm-solution'];
 
+const TAB_SLUGS = {
+  'software-development': 'software-development-service-in-mumbai',
+  'website-development': 'website-development-service-in-mumbai',
+  'app-development': 'mobile-app-development-service-in-mumbai',
+  'it-business-solution': 'it-business-solution-in-mumbai',
+  'erp-crm-solution': 'erp-crm-solution-in-mumbai',
+};
+
 function DevelopmentServices() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
 
-  const activeTab = serviceId && TABS.includes(serviceId.toLowerCase()) 
-    ? serviceId.toLowerCase() 
-    : 'software-development';
+  const getActiveTab = () => {
+    if (!serviceId) return 'software-development';
+    const lowercaseId = serviceId.toLowerCase();
+    if (lowercaseId.includes('software')) return 'software-development';
+    if (lowercaseId.includes('website')) return 'website-development';
+    if (lowercaseId.includes('app') || lowercaseId.includes('mobile')) return 'app-development';
+    if (lowercaseId.includes('business') || lowercaseId.includes('it-')) return 'it-business-solution';
+    if (lowercaseId.includes('erp') || lowercaseId.includes('crm')) return 'erp-crm-solution';
+    return 'software-development';
+  };
+
+  const activeTab = getActiveTab();
 
   useEffect(() => {
     if (!serviceId) {
-      navigate('/development-services/software-development', { replace: true });
+      navigate(`/development-services/${TAB_SLUGS['software-development']}`, { replace: true });
     }
   }, [serviceId, navigate]);
 
@@ -102,7 +119,7 @@ function DevelopmentServices() {
               <button
                 key={tab}
                 className={`dev-tab-btn ${activeTab === tab ? 'active' : ''}`}
-                onClick={() => navigate(`/development-services/${tab}`)}
+                onClick={() => navigate(`/development-services/${TAB_SLUGS[tab]}`, { state: { noScroll: true } })}
               >
                 {tab.replace(/-/g, ' ').toUpperCase()}
               </button>
@@ -135,7 +152,7 @@ function DevelopmentServices() {
               </div>
 
               <div className="dev-service-visual">
-                <div className="dev-image-card">
+                <div className={`dev-image-card ${activeTab === 'website-development' ? 'transparent-card' : ''}`}>
                   <img src={activeService.image} alt={activeService.name} className="dev-visual-img" />
                 </div>
               </div>

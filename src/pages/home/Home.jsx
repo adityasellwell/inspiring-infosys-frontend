@@ -4,9 +4,10 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import {
   FiArrowRight, FiCheck, FiChevronDown, FiChevronUp,
   FiShoppingCart, FiCode, FiSmartphone, FiTrendingUp,
-  FiUsers, FiPackage, FiZap, FiShield, FiAward
+  FiUsers, FiPackage, FiZap, FiShield, FiAward,
+  FiGlobe, FiMessageSquare, FiHome, FiChevronLeft, FiChevronRight
 } from 'react-icons/fi';
-import { FaAmazon, FaReact, FaNodeJs, FaPython, FaShopify } from 'react-icons/fa';
+import { FaAmazon, FaReact, FaNodeJs, FaPython, FaShopify, FaPalette } from 'react-icons/fa';
 import { SiFlutter, SiMongodb, SiMysql, SiPhp } from 'react-icons/si';
 import './Home.css';
 
@@ -14,40 +15,46 @@ import './Home.css';
 
 const EXPERTISE = [
   {
-    icon: <FiShoppingCart size={24} />,
-    title: 'E-Commerce Management',
-    desc: 'Full account management on Amazon, Flipkart, Myntra, Meesho & Jiomart — from listings to ad campaigns.',
-    link: '/api-services',
+    icon: <FiSmartphone size={24} />,
+    title: 'Mobile App Development',
+    desc: 'Native and cross-platform mobile applications that deliver exceptional user experiences.',
+    link: '/development-services/mobile-app-development-service-in-mumbai',
+    cardClass: 'card-blue',
   },
   {
     icon: <FiCode size={24} />,
-    title: 'Website Development',
-    desc: 'Performance-first websites built for conversion — custom-coded, SEO-optimized, and mobile-ready.',
-    link: '/development-services/website-development',
-  },
-  {
-    icon: <FiSmartphone size={24} />,
-    title: 'Mobile App Development',
-    desc: 'Cross-platform mobile apps that are scalable, intuitive, and built to engage your users.',
-    link: '/development-services/app-development',
-  },
-  {
-    icon: <FiTrendingUp size={24} />,
-    title: 'SEO & Digital Marketing',
-    desc: 'Drive organic traffic, grow brand visibility, and generate quality leads with our proven SEO strategies.',
-    link: '/more-services/seo-services',
-  },
-  {
-    icon: <FiPackage size={24} />,
     title: 'Software Development',
-    desc: 'Custom software solutions — from POS systems to ERP/CRM platforms tailored for your business.',
-    link: '/development-services/software-development',
+    desc: 'Custom software solutions built with cutting-edge technologies and best practices.',
+    link: '/development-services/software-development-service-in-mumbai',
+    cardClass: 'card-purple',
   },
   {
-    icon: <FiZap size={24} />,
-    title: 'Payment & Automation',
-    desc: 'Integrate secure payment gateways, automate workflows, and streamline operations seamlessly.',
-    link: '/more-services/payment-gateway-solution',
+    icon: <FiGlobe size={24} />,
+    title: 'Web Development',
+    desc: 'Modern, responsive web applications that engage users and drive business growth.',
+    link: '/development-services/website-development-service-in-mumbai',
+    cardClass: 'card-green',
+  },
+  {
+    icon: <FiMessageSquare size={24} />,
+    title: 'Chatbot',
+    desc: 'AI-powered conversational interfaces that enhance customer engagement and support.',
+    link: '/development-services',
+    cardClass: 'card-orange',
+  },
+  {
+    icon: <FiHome size={24} />,
+    title: 'Smart House',
+    desc: 'IoT solutions and home automation systems for intelligent living experiences.',
+    link: '/development-services',
+    cardClass: 'card-cyan',
+  },
+  {
+    icon: <FaPalette size={24} />,
+    title: 'UI/UX Design',
+    desc: 'User-centered design that creates intuitive and beautiful digital experiences.',
+    link: '/development-services',
+    cardClass: 'card-pink',
   },
 ];
 
@@ -92,15 +99,15 @@ const PROJECTS = [
 ];
 
 const TECH = [
-  { icon: <FaAmazon size={32} />, name: 'Amazon SP-API' },
-  { icon: <FaReact size={32} />, name: 'React' },
-  { icon: <FaNodeJs size={32} />, name: 'Node.js' },
-  { icon: <FaPython size={32} />, name: 'Python' },
-  { icon: <FaShopify size={32} />, name: 'Shopify' },
-  { icon: <SiFlutter size={32} />, name: 'Flutter' },
-  { icon: <SiMongodb size={32} />, name: 'MongoDB' },
-  { icon: <SiMysql size={32} />, name: 'MySQL' },
-  { icon: <SiPhp size={32} />, name: 'PHP' },
+  { icon: <FaAmazon size={32} />, name: 'Amazon SP-API', color: '#ff9900' },
+  { icon: <FaReact size={32} />, name: 'React', color: '#61dafb' },
+  { icon: <FaNodeJs size={32} />, name: 'Node.js', color: '#339933' },
+  { icon: <FaPython size={32} />, name: 'Python', color: '#3776ab' },
+  { icon: <FaShopify size={32} />, name: 'Shopify', color: '#7ab55c' },
+  { icon: <SiFlutter size={32} />, name: 'Flutter', color: '#02569b' },
+  { icon: <SiMongodb size={32} />, name: 'MongoDB', color: '#47a248' },
+  { icon: <SiMysql size={32} />, name: 'MySQL', color: '#00758f' },
+  { icon: <SiPhp size={32} />, name: 'PHP', color: '#777bb4' },
 ];
 
 const PROCESS = [
@@ -113,22 +120,44 @@ const PROCESS = [
 
 const TESTIMONIALS = [
   {
-    name: 'Namrata S.',
-    role: 'Amazon Seller',
-    avatar: '/img/namrata.png',
-    text: 'Inspiring Infosys completely transformed our Amazon store. Sales doubled within 3 months of working with them. Their knowledge of the platform is exceptional.',
+    initials: 'MK',
+    name: 'Mehek Khan',
+    time: '2 months ago',
+    rating: 5,
+    text: 'The software is user-friendly and has good features. Very informative and excellent customer support.',
+    colorClass: 'badge-purple',
   },
   {
-    name: 'Rahul M.',
-    role: 'E-Commerce Entrepreneur',
-    avatar: '/img/team-1.jpg',
-    text: 'The website they built for us is fast, beautiful and ranks well on Google. Their team was communicative and delivered exactly what we needed, on time.',
+    initials: 'RS',
+    name: 'Rahul Sharma',
+    time: '1 month ago',
+    rating: 5,
+    text: 'Outstanding work on our website! The team is extremely responsive, and the Shopify website loading speed improved by 60%. Highly recommend their custom solutions.',
+    colorClass: 'badge-blue',
   },
   {
-    name: 'Priya D.',
-    role: 'Retail Brand Owner',
-    avatar: '/img/team-2.jpg',
-    text: 'We were managing 4 marketplaces manually. Now with their support and SellWell, everything is automated. Absolutely worth it.',
+    initials: 'NS',
+    name: 'Namrata Singh',
+    time: '3 months ago',
+    rating: 5,
+    text: 'Inspiring Infosys automated our Amazon & Flipkart catalog listings using SP-API integration. It saved our team hundreds of hours of manual entry. Exceptionally knowledgeable team.',
+    colorClass: 'badge-pink',
+  },
+  {
+    initials: 'SS',
+    name: 'Shahana Shaikh',
+    time: '2 months ago',
+    rating: 5,
+    text: 'The app works wonders and the staff explained the features of the app very nicely and patiently.',
+    colorClass: 'badge-cyan',
+  },
+  {
+    initials: 'AP',
+    name: 'Amit Patel',
+    time: '1 month ago',
+    rating: 5,
+    text: 'Excellent payment gateway integration services. They solved our multi-currency checkout issues quickly and efficiently.',
+    colorClass: 'badge-orange',
   },
 ];
 
@@ -184,6 +213,26 @@ const stagger = {
 function Home() {
   const [openFaq, setOpenFaq] = useState(null);
   const [faqSearch, setFaqSearch] = useState('');
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  React.useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isMobile = windowWidth < 640;
+  const isTablet = windowWidth >= 640 && windowWidth < 1024;
+  const visibleCards = isMobile ? 1 : isTablet ? 2 : 3;
+
+  const nextSlide = () => {
+    setActiveIndex((prev) => (prev + 1) % TESTIMONIALS.length);
+  };
+
+  const prevSlide = () => {
+    setActiveIndex((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+  };
 
   const toggleFaq = (question) => setOpenFaq(openFaq === question ? null : question);
 
@@ -466,18 +515,18 @@ function Home() {
       <section className="section-padded">
         <div className="container">
           <motion.div
-            className="section-header"
+            className="section-header text-center"
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: '-80px' }}
             variants={stagger}
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", marginBottom: "3rem" }}
           >
-            <motion.span variants={fadeUp} className="section-badge">Our Expertise</motion.span>
-            <motion.h2 variants={fadeUp} className="section-title">
-              Everything Your Business Needs, Under One Roof
+            <motion.h2 variants={fadeUp} className="section-title text-center">
+              Our Expert <span className="text-gradient-blue-purple">Software Solutions</span>
             </motion.h2>
-            <motion.p variants={fadeUp} className="section-desc">
-              From e-commerce automation to custom software, we deliver end-to-end digital solutions that drive real results.
+            <motion.p variants={fadeUp} className="section-desc text-center" style={{ maxWidth: "800px" }}>
+              We provide comprehensive technology solutions designed to transform your business and drive sustainable growth in the digital age.
             </motion.p>
           </motion.div>
 
@@ -492,22 +541,19 @@ function Home() {
               <motion.div
                 key={idx}
                 variants={fadeUp}
-                className="expertise-card"
                 whileHover={{
                   y: -5,
                   scale: 1.01,
                   rotateY: 4,
                   rotateX: -2,
-                  boxShadow: "0 20px 40px rgba(15, 23, 42, 0.08)"
                 }}
                 style={{ transformStyle: "preserve-3d" }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
-                <div className="expertise-icon">{item.icon}</div>
-                <h3 className="expertise-title">{item.title}</h3>
-                <p className="expertise-desc">{item.desc}</p>
-                <Link to={item.link} className="expertise-link">
-                  Learn more <FiArrowRight size={14} />
+                <Link to={item.link} className={`expertise-card ${item.cardClass}`}>
+                  <div className="expertise-icon">{item.icon}</div>
+                  <h3 className="expertise-title">{item.title}</h3>
+                  <p className="expertise-desc">{item.desc}</p>
                 </Link>
               </motion.div>
             ))}
@@ -633,7 +679,7 @@ function Home() {
       </section>
 
       {/* ── Services ──────────────────────────────────────────────── */}
-      <section className="section-padded">
+      <section className="section-padded services-section">
         <div className="container">
           <motion.div
             className="section-header"
@@ -780,7 +826,12 @@ function Home() {
             variants={stagger}
           >
             {TECH.map((tech, idx) => (
-              <motion.div key={idx} variants={fadeUp} className="tech-chip">
+              <motion.div 
+                key={idx} 
+                variants={fadeUp} 
+                className="tech-chip"
+                style={{ '--brand-color': tech.color }}
+              >
                 <span className="tech-icon">{tech.icon}</span>
                 <span className="tech-name">{tech.name}</span>
               </motion.div>
@@ -813,20 +864,24 @@ function Home() {
             viewport={{ once: true, margin: '-60px' }}
             variants={stagger}
           >
-            {PROCESS.map((step, idx) => (
-              <motion.div
-                key={idx}
-                variants={fadeUp}
-                className="process-step"
-                whileHover={{ y: -6, scale: 1.01 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <div className="process-step-number">{step.step}</div>
-                <h4 className="process-step-title">{step.title}</h4>
-                <p className="process-step-desc">{step.desc}</p>
-                {idx < PROCESS.length - 1 && <div className="process-connector" aria-hidden="true" />}
-              </motion.div>
-            ))}
+            {PROCESS.map((step, idx) => {
+              const stepClasses = ['step-blue', 'step-purple', 'step-pink', 'step-green', 'step-orange'];
+              const stepClass = stepClasses[idx % stepClasses.length];
+              return (
+                <motion.div
+                  key={idx}
+                  variants={fadeUp}
+                  className={`process-step ${stepClass}`}
+                  whileHover={{ y: -6, scale: 1.01 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <div className="process-step-number">{step.step}</div>
+                  <h4 className="process-step-title">{step.title}</h4>
+                  <p className="process-step-desc">{step.desc}</p>
+                  {idx < PROCESS.length - 1 && <div className="process-connector" aria-hidden="true" />}
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </section>
@@ -835,43 +890,92 @@ function Home() {
       <section className="section-padded testimonials-section">
         <div className="container">
           <motion.div
-            className="section-header"
+            className="section-header text-center"
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: '-80px' }}
             variants={stagger}
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", marginBottom: "3rem" }}
           >
-            <motion.span variants={fadeUp} className="section-badge">Testimonials</motion.span>
-            <motion.h2 variants={fadeUp} className="section-title">What Our Clients Say</motion.h2>
+            <motion.span variants={fadeUp} className="section-badge mx-auto text-center">Client Testimonials</motion.span>
+            <motion.h2 variants={fadeUp} className="section-title text-center">
+              Genuine <span className="text-gradient-blue-purple">Reviews</span>
+            </motion.h2>
+            <motion.p variants={fadeUp} className="section-desc text-center" style={{ maxWidth: "800px" }}>
+              Don't just take our word for it. Here's what our clients say about working with Inspiring Infosys and the results we've delivered together.
+            </motion.p>
           </motion.div>
 
-          <motion.div
-            className="testimonials-grid"
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: '-60px' }}
-            variants={stagger}
-          >
-            {TESTIMONIALS.map((t, idx) => (
-              <motion.div
-                key={idx}
-                variants={fadeUp}
-                className="testimonial-card"
-                whileHover={{ y: -6, scale: 1.01, boxShadow: "0 20px 40px rgba(15, 23, 42, 0.06)" }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          <div className="testimonials-slider-container">
+            <button onClick={prevSlide} className="slider-arrow arrow-left" aria-label="Previous review">
+              <FiChevronLeft />
+            </button>
+            
+            <div className="testimonials-slider-window">
+              <div 
+                className="testimonials-slider-track"
+                style={{ 
+                  transform: `translateX(-${activeIndex * (100 / visibleCards)}%)` 
+                }}
               >
-                <div className="testimonial-stars" aria-label="5 star rating">★★★★★</div>
-                <p className="testimonial-text">"{t.text}"</p>
-                <div className="testimonial-author">
-                  <img src={t.avatar} alt={t.name} className="testimonial-avatar" />
-                  <div>
-                    <strong className="testimonial-name">{t.name}</strong>
-                    <span className="testimonial-role">{t.role}</span>
-                  </div>
-                </div>
-              </motion.div>
+                {TESTIMONIALS.map((t, idx) => {
+                  const isHighlighted = idx === (activeIndex + (isMobile ? 0 : isTablet ? 0 : 1)) % TESTIMONIALS.length;
+                  return (
+                    <div key={idx} className="testimonial-card-wrap">
+                      <div className={`testimonial-card ${isHighlighted ? 'card-highlighted' : ''} ${t.colorClass}`}>
+                        {/* Top Initials Circle Badge */}
+                        <div className="testimonial-initials-badge">
+                          {t.initials}
+                        </div>
+                        
+                        <div className="testimonial-header">
+                          <h4 className="testimonial-name">{t.name}</h4>
+                          <span className="testimonial-time">{t.time}</span>
+                        </div>
+                        
+                        <div className="testimonial-stars" aria-label="5 star rating">
+                          {"★".repeat(t.rating)}
+                        </div>
+
+                        <div className="testimonial-body">
+                          <span className="testimonial-quote-icon">“</span>
+                          <p className="testimonial-text">{t.text}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <button onClick={nextSlide} className="slider-arrow arrow-right" aria-label="Next review">
+              <FiChevronRight />
+            </button>
+          </div>
+
+          {/* Dots Pagination */}
+          <div className="testimonials-dots">
+            {TESTIMONIALS.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveIndex(idx)}
+                className={`testimonial-dot ${idx === activeIndex ? 'active' : ''}`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
             ))}
-          </motion.div>
+          </div>
+
+          {/* Button at the bottom */}
+          <div className="testimonials-cta">
+            <a 
+              href="https://www.google.com/maps/place/Inspiring+Infosys/@19.2194328,72.6696689,11z/data=!4m10!1m2!2m1!1sInspiring+Infosys!3m6!1s0x3be7a96a69ddc61b:0x69e39fa0d1f5dd03!8m2!3d19.3820173!4d72.8303777!15sChFJbnNwaXJpbmcgSW5mb3N5cyIDiAEBWhMiEWluc3BpcmluZyBpbmZvc3lzkgERZV9jb21tZXJjZV9hZ2VuY3maASRDaGREU1VoTk1HOW5TMFZKUTBGblNVUnlNell0UVhGUlJSQULgAQD6AQQIcxAn!16s%2Fg%2F11y6p568fq?entry=ttu&g_ep=EgoyMDI2MDgxMC4wIKXMDSoASAFQAw%3D%3D" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="google-reviews-btn"
+            >
+              More Reviews on Google
+            </a>
+          </div>
         </div>
       </section>
 

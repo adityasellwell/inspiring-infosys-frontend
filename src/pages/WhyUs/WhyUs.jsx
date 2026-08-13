@@ -17,35 +17,21 @@ function WhyUs() {
   return (
     <div className="why-us-page">
       {/* ── Page Hero ────────────────────────────────────────────── */}
-      <section className="why-hero-section">
-        <div className="container why-hero-content">
-          <motion.div 
-            initial="hidden"
-            animate="show"
-            variants={stagger}
-            className="why-hero-text"
-          >
-            <motion.span variants={fadeUp} className="section-badge">About Our Agency</motion.span>
-            <motion.h1 variants={fadeUp} className="page-hero-title">Why Inspiring Infosys?</motion.h1>
-            <motion.p variants={fadeUp} className="page-hero-sub">
-              More than just a service provider — we are a reliable growth partner for businesses looking to enter or expand in the digital marketplace.
-            </motion.p>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="why-hero-img-wrap"
-          >
-            <img src="/img/bg-hero.png" alt="Why us banner" className="why-hero-img" />
-          </motion.div>
+      <section className="inner-page-hero">
+        <div className="inner-page-hero-overlay"></div>
+        <div className="container inner-page-hero-content">
+          <span className="section-badge">About Our Agency</span>
+          <h1 className="page-hero-title">Why Inspiring Infosys?</h1>
+          <p className="page-hero-sub">
+            More than just a service provider — we are a reliable growth partner for businesses looking to enter or expand in the digital marketplace.
+          </p>
         </div>
       </section>
 
       {/* ── Core Value Section ───────────────────────────────────── */}
       <section className="section-padded">
         <div className="container value-grid">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -54,8 +40,8 @@ function WhyUs() {
           >
             <img src="/img/about-img.jpg" alt="Growth partner illustration" className="value-img" />
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: '-80px' }}
@@ -110,7 +96,7 @@ function WhyUs() {
       {/* ── Complete Digital Solutions Block ─────────────────────── */}
       <section className="section-padded why-solutions-block">
         <div className="container solutions-grid">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: '-80px' }}
@@ -149,7 +135,7 @@ function WhyUs() {
             </motion.ul>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}

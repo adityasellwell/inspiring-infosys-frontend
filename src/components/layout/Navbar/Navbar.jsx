@@ -54,28 +54,28 @@ function Navbar() {
   };
 
   const apiServices = [
-    { name: 'Amazon ', path: '/api-services/amazon' },
-    { name: 'Flipkart ', path: '/api-services/flipkart' },
-    { name: 'Jiomart ', path: '/api-services/jiomart' },
-    { name: 'Myntra ', path: '/api-services/myntra' },
-    { name: 'Meesho', path: '/api-services/meesho' },
+    { name: 'Amazon ', path: '/api-services/amazon-api-service-provider-in-mumbai' },
+    { name: 'Flipkart ', path: '/api-services/flipkart-api-service-provider-in-mumbai' },
+    { name: 'Jiomart ', path: '/api-services/jiomart-api-service-provider-in-mumbai' },
+    { name: 'Myntra ', path: '/api-services/myntra-api-service-provider-in-mumbai' },
+    { name: 'Meesho', path: '/api-services/meesho-api-service-provider-in-mumbai' },
   ];
 
   const developmentServices = [
-    { name: 'Software Development', path: '/development-services/software-development' },
-    { name: 'Website Development', path: '/development-services/website-development' },
-    { name: 'App Development', path: '/development-services/app-development' },
-    { name: 'Outsourcing & Consulting', path: '/development-services/outsourcing-consulting' },
-    { name: 'IT Business Solutions', path: '/development-services/it-business-solution' },
-    { name: 'ERP & CRM Solutions', path: '/development-services/erp-crm-solution' },
+    { name: 'Software Development', path: '/development-services/software-development-service-in-mumbai' },
+    { name: 'Website Development', path: '/development-services/website-development-service-in-mumbai' },
+    { name: 'App Development', path: '/development-services/mobile-app-development-service-in-mumbai' },
+    { name: 'Outsourcing & Consulting', path: '/development-services/outsource-consulting-service-in-mumbai' },
+    { name: 'IT Business Solutions', path: '/development-services/it-business-solution-in-mumbai' },
+    { name: 'ERP & CRM Solutions', path: '/development-services/erp-crm-solution-in-mumbai' },
   ];
 
   const moreServices = [
-    { name: 'Payment Gateway', path: '/more-services/payment-gateway-solution' },
-    { name: 'Bulk SMS Services', path: '/more-services/bulk-sms-services' },
-    { name: 'SEO Services', path: '/more-services/seo-services' },
-    { name: 'Voice Call Provider', path: '/more-services/voice-call-provider' },
-    { name: 'Shopify Website', path: '/more-services/build-shopify-website' },
+    { name: 'Payment Gateway', path: '/more-services/payment-gateway-solution-in-mumbai' },
+    { name: 'Bulk SMS Services', path: '/more-services/bulk-sms-service-in-mumbai' },
+    { name: 'SEO Services', path: '/more-services/voice-call-service-provider-in-mumbai' },
+    { name: 'Voice Call Provider', path: '/more-services/voice-call-service-provider-in-mumbai' },
+    { name: 'Shopify Website', path: '/more-services/shopify-website-build-in-mumbai' },
   ];
 
   return (
@@ -172,7 +172,7 @@ function Navbar() {
             </AnimatePresence>
           </div>
 
-          <NavLink to="/why-us" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/why-us/it-company-in-mumbai" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`}>
             Why Us
           </NavLink>
 
@@ -226,7 +226,7 @@ function Navbar() {
           >
             <div className="mobile-menu-container container">
               <NavLink to="/" className="mobile-nav-link">Home</NavLink>
-              <NavLink to="/why-us" className="mobile-nav-link">Why Us</NavLink>
+              <NavLink to="/why-us/it-company-in-mumbai" className="mobile-nav-link">Why Us</NavLink>
               <NavLink to="/portfolio" className="mobile-nav-link">Portfolio</NavLink>
 
               {/* Unified Mobile Services Accordion */}

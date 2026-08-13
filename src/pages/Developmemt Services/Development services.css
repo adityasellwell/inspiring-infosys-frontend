@@ -1,5 +1,5 @@
 .dev-services-page {
-  padding-top: 5rem;
+  padding-top: 0rem;
 }
 
 /* ── Hero ── */
@@ -114,14 +114,21 @@
   max-width: 440px;
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid var(--border-color);
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.dev-image-card.transparent-card {
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  max-width: 520px;
 }
 
 .dev-visual-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* ── Details Grid ── */
@@ -182,4 +189,36 @@
   font-size: 0.85rem;
   color: var(--text-secondary);
   line-height: 1.6;
+}
+
+/* ── Dark Mode Overrides ── */
+[data-theme='dark'] .dev-tabs-section {
+  background: var(--bg-secondary);
+}
+
+[data-theme='dark'] .dev-content-section {
+  background: var(--bg-secondary);
+}
+
+[data-theme='dark'] .dev-details-section {
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .dev-detail-card {
+  background: var(--bg-tertiary);
+}
+
+[data-theme='dark'] .dev-tab-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .dev-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .dev-tab-btn.active {
+  background: var(--primary);
+  color: #ffffff;
 }

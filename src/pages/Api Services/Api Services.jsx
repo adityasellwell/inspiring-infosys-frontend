@@ -7,7 +7,7 @@ import './Api Services.css';
 const SERVICES_DATA = {
   amazon: {
     name: 'Amazon SP-API',
-    logo: '/img/Amazon-up.png',
+    logo: '/img/amazon1.png',
     title: 'Accelerate Your Amazon Business with Selling Partner APIs',
     desc: 'Power your Amazon marketplace business with custom-built apps and Selling Partner API integrations. We help brands, aggregators, and sellers automate complex operations, reduce manual errors, and scale faster.',
     features: [
@@ -19,7 +19,7 @@ const SERVICES_DATA = {
   },
   flipkart: {
     name: 'Flipkart API',
-    logo: '/img/Flipkart.png',
+    logo: '/img/flipkart1.png',
     title: 'Automate Flipkart Operations and Order Cycles',
     desc: 'The Flipkart Marketplace Seller APIs allow your software applications to programmatically access and exchange data with the Flipkart seller dashboard. Streamline order processing, shipping labels, and invoices at scale.',
     features: [
@@ -31,7 +31,7 @@ const SERVICES_DATA = {
   },
   jiomart: {
     name: 'JioMart API',
-    logo: '/img/Amazon-up.png', // Fallback marketplace graphic
+    logo: '/img/jiomart.png', // Fallback marketplace graphic
     title: 'JioMart Integration & Centralized Account Sync',
     desc: 'Scale your reach on India\'s fastest-growing grocery and electronics marketplace. Our JioMart API connectors help you centralize price catalog management and sync order feeds into your local ERP or POS system.',
     features: [
@@ -43,7 +43,7 @@ const SERVICES_DATA = {
   },
   myntra: {
     name: 'Myntra API',
-    logo: '/img/Amazon-up.png',
+    logo: '/img/myntra.png',
     title: 'Automated Fashion E-Commerce Operations for Myntra',
     desc: 'Manage fashion listings, catalog sheets, order dispatches, and returns programmatically. Our Myntra API integrations help fashion brands maintain high marketplace rating scores by keeping fulfillment times minimal.',
     features: [
@@ -55,7 +55,7 @@ const SERVICES_DATA = {
   },
   meesho: {
     name: 'Meesho API',
-    logo: '/img/Amazon-up.png',
+    logo: '/img/meesho.png',
     title: 'Meesho Automation for Social E-Commerce Sellers',
     desc: 'Scale your social e-commerce sales on Meesho with smart API automation tools. Programmatically handle high order volumes, auto-sync pricing adjustments, and retrieve Meesho payout settlement reports instantly.',
     features: [
@@ -69,19 +69,35 @@ const SERVICES_DATA = {
 
 const TABS = ['amazon', 'flipkart', 'jiomart', 'myntra', 'meesho'];
 
+const TAB_SLUGS = {
+  amazon: 'amazon-api-service-provider-in-mumbai',
+  flipkart: 'flipkart-api-service-provider-in-mumbai',
+  jiomart: 'jiomart-api-service-provider-in-mumbai',
+  myntra: 'myntra-api-service-provider-in-mumbai',
+  meesho: 'meesho-api-service-provider-in-mumbai',
+};
+
 function ApiServices() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
 
-  // If serviceId is empty or invalid, default to 'amazon'
-  const activeTab = serviceId && TABS.includes(serviceId.toLowerCase()) 
-    ? serviceId.toLowerCase() 
-    : 'amazon';
+  const getActiveTab = () => {
+    if (!serviceId) return 'amazon';
+    const lowercaseId = serviceId.toLowerCase();
+    if (lowercaseId.includes('amazon')) return 'amazon';
+    if (lowercaseId.includes('flipkart')) return 'flipkart';
+    if (lowercaseId.includes('jiomart')) return 'jiomart';
+    if (lowercaseId.includes('myntra')) return 'myntra';
+    if (lowercaseId.includes('meesho')) return 'meesho';
+    return 'amazon';
+  };
+
+  const activeTab = getActiveTab();
 
   useEffect(() => {
-    // If user lands on naked /api-services, replace path to default 'amazon'
+    // If user lands on naked /api-services, replace path to default 'amazon' SEO slug
     if (!serviceId) {
-      navigate('/api-services/amazon', { replace: true });
+      navigate(`/api-services/${TAB_SLUGS['amazon']}`, { replace: true });
     }
   }, [serviceId, navigate]);
 
@@ -109,7 +125,7 @@ function ApiServices() {
               <button
                 key={tab}
                 className={`api-tab-btn ${activeTab === tab ? 'active' : ''}`}
-                onClick={() => navigate(`/api-services/${tab}`)}
+                onClick={() => navigate(`/api-services/${TAB_SLUGS[tab]}`, { state: { noScroll: true } })}
               >
                 {tab.toUpperCase()}
               </button>

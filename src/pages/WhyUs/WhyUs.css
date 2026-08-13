@@ -1,63 +1,8 @@
 .why-us-page {
-  padding-top: 5rem;
+  padding-top: 0rem;
 }
 
-.why-hero-section {
-  position: relative;
-  padding: 5rem 0 4rem;
-  background: url('/img/home-bg.jpg') center center no-repeat;
-  background-size: cover;
-  border-bottom: 1px solid var(--border-color);
-  overflow: hidden;
-}
 
-.why-hero-section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.5) 100%);
-  z-index: 1;
-}
-
-.why-hero-content {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: 1fr;
-  align-items: center;
-  gap: 2rem;
-}
-
-@media (min-width: 768px) {
-  .why-hero-content {
-    grid-template-columns: 1.2fr 0.8fr;
-  }
-}
-
-.page-hero-title {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.page-hero-sub {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  line-height: 1.7;
-  max-width: 580px;
-}
-
-.why-hero-img-wrap {
-  display: flex;
-  justify-content: center;
-}
-
-.why-hero-img {
-  max-height: 240px;
-  object-fit: contain;
-}
 
 /* ── Value Section ── */
 .value-grid {
@@ -206,4 +151,14 @@
   max-width: 100%;
   border-radius: 12px;
   filter: drop-shadow(0 15px 35px rgba(15, 23, 42, 0.08));
+}
+
+
+
+[data-theme='dark'] .value-bullet-card {
+  background: var(--bg-tertiary);
+}
+
+[data-theme='dark'] .why-solutions-block {
+  background: var(--bg-primary);
 }

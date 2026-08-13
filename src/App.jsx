@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import Navbar from './components/layout/Navbar/Navbar';
 import Footer from './components/layout/Footer/Footer';
@@ -13,7 +13,7 @@ import DevelopmentServices from './pages/Developmemt Services/Development servic
 import MoreServices from './pages/More Services/More Services';
 
 function App() {
-  const { pathname } = useLocation();
+  const location = useLocation();
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -21,10 +21,13 @@ function App() {
     restDelta: 0.001
   });
 
-  // Reset scroll position to top instantly on route change
+  // Reset scroll position to top instantly on route change unless noScroll state is passed
   useEffect(() => {
+    if (location.state?.noScroll) {
+      return;
+    }
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [location.pathname]);
 
   return (
     <div className="app-layout">
@@ -35,7 +38,8 @@ function App() {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/why-us" element={<WhyUs />} />
+          <Route path="/why-us" element={<Navigate to="/why-us/it-company-in-mumbai" replace />} />
+          <Route path="/why-us/it-company-in-mumbai" element={<WhyUs />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/api-services" element={<ApiServices />} />

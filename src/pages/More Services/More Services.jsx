@@ -64,17 +64,36 @@ const MORE_DATA = {
 
 const TABS = ['payment-gateway-solution', 'bulk-sms-services', 'seo-services', 'voice-call-provider', 'build-shopify-website'];
 
+const TAB_SLUGS = {
+  'payment-gateway-solution': 'payment-gateway-solution-in-mumbai',
+  'bulk-sms-services': 'bulk-sms-service-in-mumbai',
+  'seo-services': 'voice-call-service-provider-in-mumbai',
+  'voice-call-provider': 'voice-call-service-provider-in-mumbai',
+  'build-shopify-website': 'shopify-website-build-in-mumbai',
+};
+
 function MoreServices() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
 
-  const activeTab = serviceId && TABS.includes(serviceId.toLowerCase()) 
-    ? serviceId.toLowerCase() 
-    : 'payment-gateway-solution';
+  const getActiveTab = () => {
+    if (!serviceId) return 'payment-gateway-solution';
+    const lowercaseId = serviceId.toLowerCase();
+    
+    if (lowercaseId.includes('payment')) return 'payment-gateway-solution';
+    if (lowercaseId.includes('sms')) return 'bulk-sms-services';
+    if (lowercaseId.includes('seo')) return 'seo-services';
+    if (lowercaseId.includes('voice')) return 'voice-call-provider';
+    if (lowercaseId.includes('shopify')) return 'build-shopify-website';
+    
+    return 'payment-gateway-solution';
+  };
+
+  const activeTab = getActiveTab();
 
   useEffect(() => {
     if (!serviceId) {
-      navigate('/more-services/payment-gateway-solution', { replace: true });
+      navigate(`/more-services/${TAB_SLUGS['payment-gateway-solution']}`, { replace: true });
     }
   }, [serviceId, navigate]);
 
@@ -102,7 +121,7 @@ function MoreServices() {
               <button
                 key={tab}
                 className={`more-tab-btn ${activeTab === tab ? 'active' : ''}`}
-                onClick={() => navigate(`/more-services/${tab}`)}
+                onClick={() => navigate(`/more-services/${TAB_SLUGS[tab]}`, { state: { noScroll: true } })}
               >
                 {tab.replace(/-/g, ' ').toUpperCase()}
               </button>

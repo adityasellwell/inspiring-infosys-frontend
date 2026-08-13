@@ -1,5 +1,5 @@
 .portfolio-page {
-  padding-top: 5rem;
+  padding-top: 0rem;
 }
 
 
@@ -313,6 +313,58 @@
   color: var(--text-secondary);
 }
 
-.portfolio-hero {
-  background: red !important;
+/* ── Dark Mode Overrides ── */
+[data-theme='dark'] .portfolio-hero::before {
+  background: linear-gradient(90deg,
+      rgba(7, 10, 19, 0.90),
+      rgba(7, 10, 19, 0.72),
+      rgba(7, 10, 19, 0.82));
+}
+
+[data-theme='dark'] .portfolio-hero .page-hero-title {
+  background: linear-gradient(90deg,
+      #ffffff,
+      #60a5fa,
+      #a78bfa);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+[data-theme='dark'] .portfolio-hero .page-hero-sub {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .portfolio-controls-section {
+  background: var(--bg-secondary);
+}
+
+[data-theme='dark'] .portfolio-grid-section {
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .portfolio-item-card {
+  background: var(--bg-tertiary);
+}
+
+[data-theme='dark'] .filter-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .filter-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .filter-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+[data-theme='dark'] .search-bar input {
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .search-bar input:focus {
+  background: var(--bg-tertiary);
 }
