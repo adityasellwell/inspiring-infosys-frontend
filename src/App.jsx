@@ -40,8 +40,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/why-us" element={<Navigate to="/why-us/it-company-in-mumbai" replace />} />
           <Route path="/why-us/it-company-in-mumbai" element={<WhyUs />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/contact" element={<Contact />} />
+          <Route path="/portfolio" element={<Navigate to="/portfolio/ecommerce-development-company-in-mumbai" replace />} />
+          <Route path="/portfolio/ecommerce-development-company-in-mumbai" element={<Portfolio />} />
+          <Route path="/contact" element={<Navigate to="/contact/ecommerce-management-company-in-mumbai" replace />} />
+          <Route path="/contact/ecommerce-management-company-in-mumbai" element={<Contact />} />
           <Route path="/api-services" element={<ApiServices />} />
           <Route path="/api-services/:serviceId" element={<ApiServices />} />
           <Route path="/development-services" element={<DevelopmentServices />} />

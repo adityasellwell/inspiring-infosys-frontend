@@ -4,6 +4,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiArrowRight, FiCheckCircle, FiCpu, FiRefreshCw, FiTruck, FiLayers, FiList } from 'react-icons/fi';
 import './Api Services.css';
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+
 const SERVICES_DATA = {
   amazon: {
     name: 'Amazon SP-API',
@@ -109,11 +119,29 @@ function ApiServices() {
       <section className="inner-page-hero">
         <div className="inner-page-hero-overlay"></div>
         <div className="container inner-page-hero-content">
-          <span className="section-badge">Platform Integrations</span>
-          <h1 className="page-hero-title">API Integration Services</h1>
-          <p className="page-hero-sub">
+          <motion.span 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="section-badge"
+          >
+            Platform Integrations
+          </motion.span>
+          <motion.h1 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="page-hero-title"
+          >
+            API Integration Services
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="page-hero-sub"
+          >
             Programmatic connections to major e-commerce platforms to automate listings, sync inventory, and streamline orders.
-          </p>
+          </motion.p>
         </div>
       </section>
 
@@ -151,7 +179,7 @@ function ApiServices() {
                 <h2 className="api-service-title">{activeService.title}</h2>
                 <p className="api-service-desc">{activeService.desc}</p>
                 <div className="api-cta-box">
-                  <Link to="/contact" className="btn-primary">
+                  <Link to="/contact/ecommerce-management-company-in-mumbai" className="btn-primary">
                     Request API Integration <FiArrowRight />
                   </Link>
                 </div>
@@ -178,15 +206,35 @@ function ApiServices() {
             What our custom e-commerce API applications handle for your business:
           </p>
 
-          <div className="api-features-grid">
-            {activeService.features.map((feature, idx) => (
-              <div key={idx} className="api-feature-card">
-                <div className="api-feature-icon">{feature.icon}</div>
-                <h3 className="api-feature-title">{feature.title}</h3>
-                <p className="api-feature-desc">{feature.desc}</p>
-              </div>
-            ))}
-          </div>
+          <motion.div 
+            className="api-features-grid"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={stagger}
+          >
+            {activeService.features.map((feature, idx) => {
+              const colors = ['card-blue', 'card-purple', 'card-green', 'card-orange', 'card-cyan', 'card-pink'];
+              const cardColorClass = colors[idx % colors.length];
+              return (
+                <motion.div
+                  key={idx}
+                  className={`api-feature-card ${cardColorClass}`}
+                  variants={fadeUp}
+                  whileHover={{
+                    y: -6,
+                    scale: 1.01,
+                    boxShadow: "0 12px 30px rgba(15, 23, 42, 0.08)",
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <div className="api-feature-icon">{feature.icon}</div>
+                  <h3 className="api-feature-title">{feature.title}</h3>
+                  <p className="api-feature-desc">{feature.desc}</p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </div>
       </section>
     </div>

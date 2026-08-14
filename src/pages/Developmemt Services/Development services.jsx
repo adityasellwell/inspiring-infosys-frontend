@@ -4,6 +4,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiArrowRight, FiCode, FiDatabase, FiLayers, FiSmartphone, FiTerminal } from 'react-icons/fi';
 import './Development services.css';
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+
 const DEV_DATA = {
   'software-development': {
     name: 'Software Development',
@@ -18,7 +28,7 @@ const DEV_DATA = {
   },
   'website-development': {
     name: 'Website Development',
-    image: '/img/web-develop-main.png',
+    image: '/img/web-develop.png',
     title: 'Fast, High-Converting Custom Responsive Websites',
     desc: 'Your brand website serves as the hub of your online outreach. We build beautiful, accessible websites optimized for lightning-fast page loading speeds, seamless desktop and mobile rendering, and optimal lead conversion.',
     details: [
@@ -103,11 +113,29 @@ function DevelopmentServices() {
       <section className="inner-page-hero">
         <div className="inner-page-hero-overlay"></div>
         <div className="container inner-page-hero-content">
-          <span className="section-badge">Engineering Solutions</span>
-          <h1 className="page-hero-title">Development Services</h1>
-          <p className="page-hero-sub">
+          <motion.span 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="section-badge"
+          >
+            Engineering Solutions
+          </motion.span>
+          <motion.h1 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="page-hero-title"
+          >
+            Development Services
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="page-hero-sub"
+          >
             From custom business software and mobile apps to lightning-fast websites and secure ERP dashboards.
-          </p>
+          </motion.p>
         </div>
       </section>
 
@@ -145,7 +173,7 @@ function DevelopmentServices() {
                 <h2 className="dev-service-title">{activeService.title}</h2>
                 <p className="dev-service-desc">{activeService.desc}</p>
                 <div className="dev-cta-box">
-                  <Link to="/contact" className="btn-primary">
+                  <Link to="/contact/ecommerce-management-company-in-mumbai" className="btn-primary">
                     Consult Our Engineers <FiArrowRight />
                   </Link>
                 </div>
@@ -169,19 +197,39 @@ function DevelopmentServices() {
             Innovative features built to match your operational requirements:
           </p>
 
-          <div className="dev-details-grid">
-            {activeService.details.map((detail, idx) => (
-              <div key={idx} className="dev-detail-card">
-                <div className="dev-detail-icon">
-                  {idx === 0 && <FiCode />}
-                  {idx === 1 && <FiDatabase />}
-                  {idx === 2 && <FiLayers />}
-                </div>
-                <h3 className="dev-detail-title">{detail.title}</h3>
-                <p className="dev-detail-desc">{detail.desc}</p>
-              </div>
-            ))}
-          </div>
+          <motion.div 
+            className="dev-details-grid"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={stagger}
+          >
+            {activeService.details.map((detail, idx) => {
+              const colors = ['card-blue', 'card-purple', 'card-green', 'card-orange', 'card-cyan', 'card-pink'];
+              const cardColorClass = colors[idx % colors.length];
+              return (
+                <motion.div
+                  key={idx}
+                  className={`dev-detail-card ${cardColorClass}`}
+                  variants={fadeUp}
+                  whileHover={{
+                    y: -6,
+                    scale: 1.01,
+                    boxShadow: "0 12px 30px rgba(15, 23, 42, 0.08)",
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <div className="dev-detail-icon">
+                    {idx === 0 && <FiCode />}
+                    {idx === 1 && <FiDatabase />}
+                    {idx === 2 && <FiLayers />}
+                  </div>
+                  <h3 className="dev-detail-title">{detail.title}</h3>
+                  <p className="dev-detail-desc">{detail.desc}</p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </div>
       </section>
     </div>

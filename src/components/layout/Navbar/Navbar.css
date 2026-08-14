@@ -42,6 +42,11 @@
     0 8px 30px rgba(15, 23, 42, 0.07);
 }
 
+.navbar-scrolled .navbar-logo-wrapper,
+.navbar-scrolled .navbar-logo {
+  height: 46px;
+}
+
 
 /* =========================================================
    CONTAINER
@@ -80,20 +85,16 @@
 .navbar-logo-wrapper {
   display: flex;
   align-items: center;
-  overflow: visible;
+  height: 54px;
 }
 
-
 .navbar-logo {
-  /* logo2.png has large whitespace — clip-path trims it, width controls visible size */
-  width: 160px;
-  height: auto;
+  height: 54px;
+  width: auto;
   display: block;
   object-fit: contain;
-  clip-path: inset(18% 5% 18% 5%);
-  /* margin compensation to offset the clipped whitespace */
-  margin: -18% 0;
   z-index: 1001;
+  transition: height 0.3s ease;
 }
 
 /* If you are displaying text beside the logo */
@@ -557,6 +558,12 @@
 
   width: 100%;
 
+  max-height: calc(100dvh - 100%);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
   background: rgba(255, 255, 255, 0.98);
 
   backdrop-filter: blur(18px);
@@ -566,8 +573,6 @@
 
   box-shadow:
     0 15px 35px rgba(15, 23, 42, 0.08);
-
-  overflow: hidden;
 }
 
 
@@ -896,8 +901,9 @@
     padding: 0 1rem;
   }
 
+  .navbar-logo-wrapper,
   .navbar-logo {
-    height: 40px;
+    height: 42px;
   }
 
   .navbar-brand-name {

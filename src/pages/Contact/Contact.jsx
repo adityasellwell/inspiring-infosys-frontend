@@ -39,11 +39,29 @@ function Contact() {
       <section className="inner-page-hero">
         <div className="inner-page-hero-overlay"></div>
         <div className="container inner-page-hero-content">
-          <span className="section-badge">Get In Touch</span>
-          <h1 className="page-hero-title">Contact Our Team</h1>
-          <p className="page-hero-sub">
+          <motion.span 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="section-badge"
+          >
+            Get In Touch
+          </motion.span>
+          <motion.h1 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="page-hero-title"
+          >
+            Contact Our Team
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="page-hero-sub"
+          >
             Have a project in mind or need assistance with integrations? We are ready to help you scale.
-          </p>
+          </motion.p>
         </div>
       </section>
 

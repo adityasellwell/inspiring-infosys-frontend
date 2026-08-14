@@ -20,11 +20,29 @@ function WhyUs() {
       <section className="inner-page-hero">
         <div className="inner-page-hero-overlay"></div>
         <div className="container inner-page-hero-content">
-          <span className="section-badge">About Our Agency</span>
-          <h1 className="page-hero-title">Why Inspiring Infosys?</h1>
-          <p className="page-hero-sub">
+          <motion.span 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="section-badge"
+          >
+            About Our Agency
+          </motion.span>
+          <motion.h1 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="page-hero-title"
+          >
+            Why Inspiring Infosys?
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="page-hero-sub"
+          >
             More than just a service provider — we are a reliable growth partner for businesses looking to enter or expand in the digital marketplace.
-          </p>
+          </motion.p>
         </div>
       </section>
 
@@ -38,7 +56,7 @@ function WhyUs() {
             transition={{ duration: 0.6 }}
             className="value-img-wrap"
           >
-            <img src="/img/about-img.jpg" alt="Growth partner illustration" className="value-img" />
+            <img src="/images/whyus_growth.png" alt="Growth partner illustration" className="value-img" />
           </motion.div>
 
           <motion.div
@@ -57,7 +75,16 @@ function WhyUs() {
             </motion.p>
 
             <motion.div variants={stagger} className="value-bullets">
-              <motion.div variants={fadeUp} className="value-bullet-card">
+              <motion.div 
+                variants={fadeUp} 
+                className="value-bullet-card card-blue"
+                whileHover={{
+                  y: -5,
+                  scale: 1.01,
+                  boxShadow: "0 12px 30px rgba(0, 124, 255, 0.1)"
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
                 <div className="value-bullet-icon"><FiAward /></div>
                 <div>
                   <h4>Award Winning Solutions</h4>
@@ -65,7 +92,16 @@ function WhyUs() {
                 </div>
               </motion.div>
 
-              <motion.div variants={fadeUp} className="value-bullet-card">
+              <motion.div 
+                variants={fadeUp} 
+                className="value-bullet-card card-purple"
+                whileHover={{
+                  y: -5,
+                  scale: 1.01,
+                  boxShadow: "0 12px 30px rgba(168, 85, 247, 0.1)"
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
                 <div className="value-bullet-icon"><FiUsers /></div>
                 <div>
                   <h4>Professional Staff</h4>
@@ -73,7 +109,16 @@ function WhyUs() {
                 </div>
               </motion.div>
 
-              <motion.div variants={fadeUp} className="value-bullet-card">
+              <motion.div 
+                variants={fadeUp} 
+                className="value-bullet-card card-green"
+                whileHover={{
+                  y: -5,
+                  scale: 1.01,
+                  boxShadow: "0 12px 30px rgba(16, 185, 129, 0.1)"
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
                 <div className="value-bullet-icon"><FiBriefcase /></div>
                 <div>
                   <h4>Fair Prices</h4>
@@ -81,7 +126,16 @@ function WhyUs() {
                 </div>
               </motion.div>
 
-              <motion.div variants={fadeUp} className="value-bullet-card">
+              <motion.div 
+                variants={fadeUp} 
+                className="value-bullet-card card-orange"
+                whileHover={{
+                  y: -5,
+                  scale: 1.01,
+                  boxShadow: "0 12px 30px rgba(249, 115, 22, 0.1)"
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
                 <div className="value-bullet-icon"><FiPhoneCall /></div>
                 <div>
                   <h4>24/7 Support</h4>
@@ -142,7 +196,7 @@ function WhyUs() {
             transition={{ duration: 0.6 }}
             className="solutions-img-wrap"
           >
-            <img src="/img/adv-network.png" alt="Complete digital features" className="solutions-img" />
+            <img src="/images/whyus_solutions.png" alt="Complete digital features" className="solutions-img" />
           </motion.div>
         </div>
       </section>

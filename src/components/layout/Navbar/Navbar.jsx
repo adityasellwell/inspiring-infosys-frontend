@@ -30,6 +30,18 @@ function Navbar() {
     setActiveDropdown(null);
   }, [location]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   // Handle scroll detection for glassmorphism styling
   useEffect(() => {
     const handleScroll = () => {
@@ -73,7 +85,7 @@ function Navbar() {
   const moreServices = [
     { name: 'Payment Gateway', path: '/more-services/payment-gateway-solution-in-mumbai' },
     { name: 'Bulk SMS Services', path: '/more-services/bulk-sms-service-in-mumbai' },
-    { name: 'SEO Services', path: '/more-services/voice-call-service-provider-in-mumbai' },
+    { name: 'SEO Services', path: '/more-services/seo-service-provider-in-mumbai' },
     { name: 'Voice Call Provider', path: '/more-services/voice-call-service-provider-in-mumbai' },
     { name: 'Shopify Website', path: '/more-services/shopify-website-build-in-mumbai' },
   ];
@@ -176,11 +188,11 @@ function Navbar() {
             Why Us
           </NavLink>
 
-          <NavLink to="/portfolio" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/portfolio/ecommerce-development-company-in-mumbai" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`}>
             Portfolio
           </NavLink>
 
-          <NavLink to="/contact" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/contact/ecommerce-management-company-in-mumbai" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`}>
             Contact
           </NavLink>
         </div>
@@ -194,7 +206,7 @@ function Navbar() {
           >
             {theme === 'light' ? <FiMoon size={20} /> : <FiSun size={20} />}
           </button>
-          <Link to="/contact" className="btn-primary-small">
+          <Link to="/contact/ecommerce-management-company-in-mumbai" className="btn-primary-small">
             Reach Us
           </Link>
         </div>
@@ -227,7 +239,7 @@ function Navbar() {
             <div className="mobile-menu-container container">
               <NavLink to="/" className="mobile-nav-link">Home</NavLink>
               <NavLink to="/why-us/it-company-in-mumbai" className="mobile-nav-link">Why Us</NavLink>
-              <NavLink to="/portfolio" className="mobile-nav-link">Portfolio</NavLink>
+              <NavLink to="/portfolio/ecommerce-development-company-in-mumbai" className="mobile-nav-link">Portfolio</NavLink>
 
               {/* Unified Mobile Services Accordion */}
               <div className="mobile-accordion">
@@ -269,10 +281,10 @@ function Navbar() {
                 </div>
               </div>
 
-              <NavLink to="/contact" className="mobile-nav-link">Contact</NavLink>
+              <NavLink to="/contact/ecommerce-management-company-in-mumbai" className="mobile-nav-link">Contact</NavLink>
 
               <div className="mobile-menu-cta">
-                <Link to="/contact" className="btn-primary" style={{ width: '100%' }}>
+                <Link to="/contact/ecommerce-management-company-in-mumbai" className="btn-primary" style={{ width: '100%' }}>
                   Reach Us
                 </Link>
               </div>

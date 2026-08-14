@@ -57,23 +57,16 @@
 }
 
 .footer-logo-wrapper {
-  position: relative;
   display: flex;
   align-items: center;
-  width: 200px;
-  height: 48px;
+  height: 52px;
 }
 
 .footer-logo {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  height: 200px;
+  height: 52px;
   width: auto;
   object-fit: contain;
   display: block;
-  transform: translateY(-50%);
-  z-index: 1;
 }
 
 .footer-brand-name {
@@ -106,18 +99,58 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.03);
   border: 1px solid var(--border-color);
-  color: var(--text-secondary);
   font-size: 0.95rem;
   transition: all var(--transition-fast);
 }
 
 .social-icon-btn:hover {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: white;
+  color: white !important;
   transform: translateY(-2px);
+}
+
+/* Facebook Specific Colors */
+.social-icon-btn.facebook {
+  background: #e8f2ff;
+  border-color: rgba(24, 119, 242, 0.15);
+  color: #1877f2;
+}
+.social-icon-btn.facebook:hover {
+  background: #1877f2 !important;
+  border-color: #1877f2 !important;
+}
+
+/* Instagram Specific Colors */
+.social-icon-btn.instagram {
+  background: #fdf0f6;
+  border-color: rgba(225, 48, 108, 0.15);
+  color: #e1306c;
+}
+.social-icon-btn.instagram:hover {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%) !important;
+  border-color: #d12a64 !important;
+}
+
+/* LinkedIn Specific Colors */
+.social-icon-btn.linkedin {
+  background: #e4f2fe;
+  border-color: rgba(0, 119, 181, 0.15);
+  color: #0077b5;
+}
+.social-icon-btn.linkedin:hover {
+  background: #0077b5 !important;
+  border-color: #0077b5 !important;
+}
+
+/* Dark Mode Overrides */
+[data-theme='dark'] .social-icon-btn.facebook {
+  background: rgba(24, 119, 242, 0.08);
+}
+[data-theme='dark'] .social-icon-btn.instagram {
+  background: rgba(225, 48, 108, 0.08);
+}
+[data-theme='dark'] .social-icon-btn.linkedin {
+  background: rgba(0, 119, 181, 0.08);
 }
 
 /* Links Columns */
@@ -208,4 +241,33 @@
 
 .footer-bottom-links a:hover {
   color: var(--text-secondary);
+}
+
+/* Visitor Count Badge styling */
+.visitor-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, var(--primary) 0%, #04080f 100%);
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: 50px;
+  margin-top: 1.75rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(13, 98, 169, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.visitor-icon {
+  font-size: 1.15rem;
+}
+
+.visitor-text {
+  font-weight: 700;
+}
+
+.visitor-number {
+  font-weight: 800;
+  letter-spacing: 0.05em;
 }

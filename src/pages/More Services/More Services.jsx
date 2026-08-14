@@ -4,6 +4,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiArrowRight, FiCreditCard, FiMail, FiSearch, FiPhoneCall, FiShoppingBag } from 'react-icons/fi';
 import './More Services.css';
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+
 const MORE_DATA = {
   'payment-gateway-solution': {
     name: 'Payment Gateway',
@@ -67,7 +77,7 @@ const TABS = ['payment-gateway-solution', 'bulk-sms-services', 'seo-services', '
 const TAB_SLUGS = {
   'payment-gateway-solution': 'payment-gateway-solution-in-mumbai',
   'bulk-sms-services': 'bulk-sms-service-in-mumbai',
-  'seo-services': 'voice-call-service-provider-in-mumbai',
+  'seo-services': 'seo-service-provider-in-mumbai',
   'voice-call-provider': 'voice-call-service-provider-in-mumbai',
   'build-shopify-website': 'shopify-website-build-in-mumbai',
 };
@@ -105,11 +115,29 @@ function MoreServices() {
       <section className="inner-page-hero">
         <div className="inner-page-hero-overlay"></div>
         <div className="container inner-page-hero-content">
-          <span className="section-badge">Growth & Marketing Tools</span>
-          <h1 className="page-hero-title">More Digital Services</h1>
-          <p className="page-hero-sub">
+          <motion.span 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="section-badge"
+          >
+            Growth & Marketing Tools
+          </motion.span>
+          <motion.h1 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="page-hero-title"
+          >
+            More Digital Services
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="page-hero-sub"
+          >
             Payment processing setup, SMS alerts, search optimization, voice broadcasting, and custom Shopify e-commerce setups.
-          </p>
+          </motion.p>
         </div>
       </section>
 
@@ -147,7 +175,7 @@ function MoreServices() {
                 <h2 className="more-service-title">{activeService.title}</h2>
                 <p className="more-service-desc">{activeService.desc}</p>
                 <div className="more-cta-box">
-                  <Link to="/contact" className="btn-primary">
+                  <Link to="/contact/ecommerce-management-company-in-mumbai" className="btn-primary">
                     Get Started Now <FiArrowRight />
                   </Link>
                 </div>
@@ -171,19 +199,39 @@ function MoreServices() {
             Everything integrated seamlessly for your digital platform:
           </p>
 
-          <div className="more-details-grid">
-            {activeService.details.map((detail, idx) => (
-              <div key={idx} className="more-detail-card">
-                <div className="more-detail-icon">
-                  {idx === 0 && <FiCreditCard />}
-                  {idx === 1 && <FiMail />}
-                  {idx === 2 && <FiSearch />}
-                </div>
-                <h3 className="more-detail-title">{detail.title}</h3>
-                <p className="more-detail-desc">{detail.desc}</p>
-              </div>
-            ))}
-          </div>
+          <motion.div 
+            className="more-details-grid"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={stagger}
+          >
+            {activeService.details.map((detail, idx) => {
+              const colors = ['card-blue', 'card-purple', 'card-green', 'card-orange', 'card-cyan', 'card-pink'];
+              const cardColorClass = colors[idx % colors.length];
+              return (
+                <motion.div
+                  key={idx}
+                  className={`more-detail-card ${cardColorClass}`}
+                  variants={fadeUp}
+                  whileHover={{
+                    y: -6,
+                    scale: 1.01,
+                    boxShadow: "0 12px 30px rgba(15, 23, 42, 0.08)",
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <div className="more-detail-icon">
+                    {idx === 0 && <FiCreditCard />}
+                    {idx === 1 && <FiMail />}
+                    {idx === 2 && <FiSearch />}
+                  </div>
+                  <h3 className="more-detail-title">{detail.title}</h3>
+                  <p className="more-detail-desc">{detail.desc}</p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </div>
       </section>
     </div>

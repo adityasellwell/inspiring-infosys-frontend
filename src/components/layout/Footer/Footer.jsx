@@ -1,11 +1,56 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+import { FiUsers } from 'react-icons/fi';
 import './Footer.css';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
   const location = useLocation();
+
+  const [visitorCount, setVisitorCount] = React.useState(0);
+  const fetchedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    const hasVisited = localStorage.getItem('inspiring_infosys_visited');
+    const key = 'inspiring-infosys-unique-visitors-v1';
+
+    if (!hasVisited) {
+      // New unique visitor -> Increment the count
+      fetch(`https://countapi.mileshilliard.com/api/v1/hit/${key}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && typeof data.value === 'number') {
+            setVisitorCount(data.value + 99); // Start count at 100 for the first hit (1 + 99 = 100)
+            localStorage.setItem('inspiring_infosys_visited', 'true');
+          } else {
+            setVisitorCount(100);
+          }
+        })
+        .catch((err) => {
+          console.error('Error incrementing visitor count:', err);
+          setVisitorCount(100);
+        });
+    } else {
+      // Returning visitor -> Just get the current count without incrementing
+      fetch(`https://countapi.mileshilliard.com/api/v1/get/${key}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && typeof data.value === 'number') {
+            setVisitorCount(data.value + 99);
+          } else {
+            setVisitorCount(100);
+          }
+        })
+        .catch((err) => {
+          console.error('Error fetching visitor count:', err);
+          setVisitorCount(100);
+        });
+    }
+  }, []);
 
   return (
     <footer className="footer">
@@ -35,17 +80,22 @@ function Footer() {
             We solve your complex technical and e-commerce problems so that you can focus on marketing and scaling your business profitably.
           </p>
           <div className="social-links">
-            <a href="https://facebook.com/share/1DASqPGPm7/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Facebook">
+            <a href="https://facebook.com/share/1DASqPGPm7/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="social-icon-btn facebook" aria-label="Facebook">
               <FaFacebookF />
             </a>
-
-
-            <a href="https://instagram.com/learnsellwell" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Instagram">
+            <a href="https://instagram.com/learnsellwell" target="_blank" rel="noopener noreferrer" className="social-icon-btn instagram" aria-label="Instagram">
               <FaInstagram />
             </a>
-            <a href="https://linkedin.com/company/inspiring-infosys" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="LinkedIn">
+            <a href="https://linkedin.com/company/inspiring-infosys" target="_blank" rel="noopener noreferrer" className="social-icon-btn linkedin" aria-label="LinkedIn">
               <FaLinkedinIn />
             </a>
+          </div>
+
+          {/* Visitor Count Badge */}
+          <div className="visitor-count-badge">
+            <FiUsers className="visitor-icon" />
+            <span className="visitor-text">Visitor Count:</span>
+            <span className="visitor-number">{visitorCount}</span>
           </div>
         </div>
 
@@ -55,8 +105,8 @@ function Footer() {
           <ul className="footer-links">
             <li><Link to="/">Home</Link></li>
             <li><Link to="/why-us/it-company-in-mumbai">Why Us</Link></li>
-            <li><Link to="/portfolio">Portfolio</Link></li>
-            <li><Link to="/contact">Contact Us</Link></li>
+            <li><Link to="/portfolio/ecommerce-development-company-in-mumbai">Portfolio</Link></li>
+            <li><Link to="/contact/ecommerce-management-company-in-mumbai">Contact Us</Link></li>
           </ul>
         </div>
 

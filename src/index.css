@@ -375,3 +375,148 @@ button:focus-visible {
   line-height: 1.65;
   margin: 0 auto;
 }
+
+/* ====================================================
+   GLOBAL CARD BACKGROUND AND ICON BOX UTILITIES
+   ==================================================== */
+.card-blue {
+  background: #f0f7ff !important;
+  border-color: rgba(0, 124, 255, 0.08) !important;
+}
+.card-blue .icon-box,
+.card-blue .dev-detail-icon,
+.card-blue .api-feature-icon,
+.card-blue .more-detail-icon,
+.card-blue .value-bullet-icon,
+.card-blue .expertise-icon {
+  background: #007cff !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.card-purple {
+  background: #faf0fc !important;
+  border-color: rgba(168, 85, 247, 0.08) !important;
+}
+.card-purple .icon-box,
+.card-purple .dev-detail-icon,
+.card-purple .api-feature-icon,
+.card-purple .more-detail-icon,
+.card-purple .value-bullet-icon,
+.card-purple .expertise-icon {
+  background: #a855f7 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.card-green {
+  background: #f0fbf4 !important;
+  border-color: rgba(16, 185, 129, 0.08) !important;
+}
+.card-green .icon-box,
+.card-green .dev-detail-icon,
+.card-green .api-feature-icon,
+.card-green .more-detail-icon,
+.card-green .value-bullet-icon,
+.card-green .expertise-icon {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.card-orange {
+  background: #fff6f0 !important;
+  border-color: rgba(249, 115, 22, 0.08) !important;
+}
+.card-orange .icon-box,
+.card-orange .dev-detail-icon,
+.card-orange .api-feature-icon,
+.card-orange .more-detail-icon,
+.card-orange .value-bullet-icon,
+.card-orange .expertise-icon {
+  background: #f97316 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.card-cyan {
+  background: #f0fafc !important;
+  border-color: rgba(6, 182, 212, 0.08) !important;
+}
+.card-cyan .icon-box,
+.card-cyan .dev-detail-icon,
+.card-cyan .api-feature-icon,
+.card-cyan .more-detail-icon,
+.card-cyan .value-bullet-icon,
+.card-cyan .expertise-icon {
+  background: #06b6d4 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.card-pink {
+  background: #fff0f5 !important;
+  border-color: rgba(236, 72, 153, 0.08) !important;
+}
+.card-pink .icon-box,
+.card-pink .dev-detail-icon,
+.card-pink .api-feature-icon,
+.card-pink .more-detail-icon,
+.card-pink .value-bullet-icon,
+.card-pink .expertise-icon {
+  background: #ec4899 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+/* Dark Mode Overrides */
+[data-theme='dark'] .card-blue {
+  background: rgba(0, 124, 255, 0.08) !important;
+  border-color: rgba(0, 124, 255, 0.18) !important;
+}
+[data-theme='dark'] .card-purple {
+  background: rgba(168, 85, 247, 0.08) !important;
+  border-color: rgba(168, 85, 247, 0.18) !important;
+}
+[data-theme='dark'] .card-green {
+  background: rgba(16, 185, 129, 0.08) !important;
+  border-color: rgba(16, 185, 129, 0.18) !important;
+}
+[data-theme='dark'] .card-orange {
+  background: rgba(249, 115, 22, 0.08) !important;
+  border-color: rgba(249, 115, 22, 0.18) !important;
+}
+[data-theme='dark'] .card-cyan {
+  background: rgba(6, 182, 212, 0.08) !important;
+  border-color: rgba(6, 182, 212, 0.18) !important;
+}
+[data-theme='dark'] .card-pink {
+  background: rgba(236, 72, 153, 0.08) !important;
+  border-color: rgba(236, 72, 153, 0.18) !important;
+}
+
+/* Hover effects */
+.card-blue:hover {
+  border-color: rgba(0, 124, 255, 0.35) !important;
+  box-shadow: 0 12px 30px rgba(0, 124, 255, 0.12) !important;
+}
+.card-purple:hover {
+  border-color: rgba(168, 85, 247, 0.35) !important;
+  box-shadow: 0 12px 30px rgba(168, 85, 247, 0.12) !important;
+}
+.card-green:hover {
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.12) !important;
+}
+.card-orange:hover {
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  box-shadow: 0 12px 30px rgba(249, 115, 22, 0.12) !important;
+}
+.card-cyan:hover {
+  border-color: rgba(6, 182, 212, 0.35) !important;
+  box-shadow: 0 12px 30px rgba(6, 182, 212, 0.12) !important;
+}
+.card-pink:hover {
+  border-color: rgba(236, 72, 153, 0.35) !important;
+  box-shadow: 0 12px 30px rgba(236, 72, 153, 0.12) !important;
+}

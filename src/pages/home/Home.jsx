@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import {
@@ -10,6 +10,61 @@ import {
 import { FaAmazon, FaReact, FaNodeJs, FaPython, FaShopify, FaPalette } from 'react-icons/fa';
 import { SiFlutter, SiMongodb, SiMysql, SiPhp } from 'react-icons/si';
 import './Home.css';
+
+function Counter({ target, duration = 1800, suffix = '+' }) {
+  const [count, setCount] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && !hasStarted) {
+          setHasStarted(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
+    }
+
+    return () => {
+      if (elementRef.current) {
+        observer.unobserve(elementRef.current);
+      }
+    };
+  }, [hasStarted]);
+
+  useEffect(() => {
+    if (!hasStarted) return;
+
+    let start = 0;
+    const end = parseInt(target, 10);
+    if (start === end) return;
+
+    const totalMiliseconds = duration;
+    const steps = Math.min(40, end);
+    const increment = Math.ceil(end / steps);
+    const stepTime = duration / steps;
+    
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        clearInterval(timer);
+        setCount(end);
+      } else {
+        setCount(start);
+      }
+    }, stepTime);
+
+    return () => clearInterval(timer);
+  }, [hasStarted, target, duration]);
+
+  return <span ref={elementRef}>{count}{suffix}</span>;
+}
 
 /* ─── Static Data ─────────────────────────────────────────────────── */
 
@@ -333,13 +388,13 @@ function Home() {
               variants={fadeUp}
               className="hero-actions"
             >
-              <Link to="/contact" className="btn-primary hero-primary-btn">
+              <Link to="/contact/ecommerce-management-company-in-mumbai" className="btn-primary hero-primary-btn">
                 Reach Us
                 <FiArrowRight />
               </Link>
 
               <Link
-                to="/portfolio"
+                to="/portfolio/ecommerce-development-company-in-mumbai"
                 className="btn-secondary hero-secondary-btn"
               >
                 View Our Work
@@ -353,21 +408,27 @@ function Home() {
               className="hero-stats"
             >
               <div className="hero-stat">
-                <span className="stat-number">300+</span>
+                <span className="stat-number">
+                  <Counter target="300" suffix="+" />
+                </span>
                 <span className="stat-label">Happy Clients</span>
               </div>
 
               <div className="hero-stat-divider" />
 
               <div className="hero-stat">
-                <span className="stat-number">800+</span>
+                <span className="stat-number">
+                  <Counter target="800" suffix="+" />
+                </span>
                 <span className="stat-label">Projects Done</span>
               </div>
 
               <div className="hero-stat-divider" />
 
               <div className="hero-stat">
-                <span className="stat-number">10+</span>
+                <span className="stat-number">
+                  <Counter target="10" suffix="+" />
+                </span>
                 <span className="stat-label">Years Experience</span>
               </div>
             </motion.div>
@@ -797,7 +858,7 @@ function Home() {
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
           >
-            <Link to="/portfolio" className="btn-secondary">
+            <Link to="/portfolio/ecommerce-development-company-in-mumbai" className="btn-secondary">
               View All Projects <FiArrowRight size={14} />
             </Link>
           </motion.div>
@@ -1066,7 +1127,7 @@ function Home() {
               Let's talk about your goals. We'll build the right solution — on time and within budget.
             </motion.p>
             <motion.div variants={fadeUp}>
-              <Link to="/contact" className="btn-primary">
+              <Link to="/contact/ecommerce-management-company-in-mumbai" className="btn-primary">
                 Get in Touch <FiArrowRight />
               </Link>
             </motion.div>

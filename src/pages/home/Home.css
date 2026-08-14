@@ -129,7 +129,7 @@
   width: 500px;
   height: 500px;
 
-  background: rgba(119, 78, 255, 0.13);
+  background: rgba(var(--primary-rgb), 0.12);
 
   top: -20%;
   left: -10%;
@@ -229,6 +229,7 @@
   display: inline-flex;
 
   align-items: center;
+  flex-wrap: wrap;
 
   padding: 0.55rem 1rem;
 
@@ -256,6 +257,18 @@
   text-transform: uppercase;
 
   backdrop-filter: blur(10px);
+
+  white-space: normal;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .hero-badge {
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    padding: 0.45rem 0.85rem;
+  }
 }
 
 
@@ -334,9 +347,9 @@
 
   background:
     linear-gradient(90deg,
-      #2563eb 0%,
-      #4f46e5 45%,
-      #a855f7 100%);
+      var(--primary) 0%,
+      #0284c7 40%,
+      var(--accent) 100%);
 
   -webkit-background-clip: text;
   background-clip: text;
@@ -680,12 +693,11 @@ s .hero-floating-card span {
   }
 
   .hero-content {
-    padding-top: 4rem;
+    padding-top: 7rem;
 
     padding-bottom: 5rem;
 
     gap: 2rem;
-    transform: translateY(-60px);
   }
 
   .hero-heading {
@@ -980,7 +992,7 @@ s .hero-floating-card span {
 
 /* Custom text gradient */
 .text-gradient-blue-purple {
-  background: linear-gradient(90deg, #2563eb 0%, #4f46e5 45%, #a855f7 100%);
+  background: linear-gradient(90deg, var(--primary) 0%, #0284c7 50%, var(--accent) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
