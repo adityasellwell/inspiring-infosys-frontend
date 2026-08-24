@@ -166,6 +166,10 @@ svg {
   padding-right: 1.5rem;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
@@ -228,18 +232,18 @@ button:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, var(--primary) 0%, #632dbe 100%);
+  background: linear-gradient(135deg, #0d62a9 0%, #06b6d4 100%);
   color: white;
   font-weight: 600;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   transition: all var(--transition-fast);
-  box-shadow: 0 4px 12px rgba(134, 59, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(13, 98, 169, 0.25);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(134, 59, 255, 0.4);
+  box-shadow: 0 6px 18px rgba(13, 98, 169, 0.4);
 }
 
 .btn-secondary {
@@ -259,6 +263,51 @@ button:focus-visible {
 .btn-secondary:hover {
   background: rgba(15, 23, 42, 0.06);
   border-color: var(--border-hover);
+}
+
+/* Shared Form Controls (used by Contact form, review modal, etc.) */
+.form-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-input-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.form-control-input,
+.form-control-textarea {
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.form-control-input:focus,
+.form-control-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+}
+
+[data-theme='dark'] .form-control-input,
+[data-theme='dark'] .form-control-textarea {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.form-submit-btn {
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  justify-content: center;
+  font-size: 1rem;
 }
 
 /* Scroll Progress Indicator styling */
@@ -388,7 +437,9 @@ button:focus-visible {
 .card-blue .api-feature-icon,
 .card-blue .more-detail-icon,
 .card-blue .value-bullet-icon,
-.card-blue .expertise-icon {
+.card-blue .expertise-icon,
+.card-blue .whatsapp-detail-icon,
+.card-blue .business-detail-icon {
   background: #007cff !important;
   color: #ffffff !important;
   border: none !important;
@@ -403,7 +454,9 @@ button:focus-visible {
 .card-purple .api-feature-icon,
 .card-purple .more-detail-icon,
 .card-purple .value-bullet-icon,
-.card-purple .expertise-icon {
+.card-purple .expertise-icon,
+.card-purple .whatsapp-detail-icon,
+.card-purple .business-detail-icon {
   background: #a855f7 !important;
   color: #ffffff !important;
   border: none !important;
@@ -418,7 +471,9 @@ button:focus-visible {
 .card-green .api-feature-icon,
 .card-green .more-detail-icon,
 .card-green .value-bullet-icon,
-.card-green .expertise-icon {
+.card-green .expertise-icon,
+.card-green .whatsapp-detail-icon,
+.card-green .business-detail-icon {
   background: #10b981 !important;
   color: #ffffff !important;
   border: none !important;
@@ -433,7 +488,9 @@ button:focus-visible {
 .card-orange .api-feature-icon,
 .card-orange .more-detail-icon,
 .card-orange .value-bullet-icon,
-.card-orange .expertise-icon {
+.card-orange .expertise-icon,
+.card-orange .whatsapp-detail-icon,
+.card-orange .business-detail-icon {
   background: #f97316 !important;
   color: #ffffff !important;
   border: none !important;
@@ -448,7 +505,9 @@ button:focus-visible {
 .card-cyan .api-feature-icon,
 .card-cyan .more-detail-icon,
 .card-cyan .value-bullet-icon,
-.card-cyan .expertise-icon {
+.card-cyan .expertise-icon,
+.card-cyan .whatsapp-detail-icon,
+.card-cyan .business-detail-icon {
   background: #06b6d4 !important;
   color: #ffffff !important;
   border: none !important;
@@ -463,7 +522,9 @@ button:focus-visible {
 .card-pink .api-feature-icon,
 .card-pink .more-detail-icon,
 .card-pink .value-bullet-icon,
-.card-pink .expertise-icon {
+.card-pink .expertise-icon,
+.card-pink .whatsapp-detail-icon,
+.card-pink .business-detail-icon {
   background: #ec4899 !important;
   color: #ffffff !important;
   border: none !important;

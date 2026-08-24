@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { statsApi, testimonialsApi } from '../../api/api';
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import {
   FiArrowRight, FiCheck, FiChevronDown, FiChevronUp,
   FiShoppingCart, FiCode, FiSmartphone, FiTrendingUp,
   FiUsers, FiPackage, FiZap, FiShield, FiAward,
-  FiGlobe, FiMessageSquare, FiHome, FiChevronLeft, FiChevronRight
+  FiGlobe, FiMessageSquare, FiHome, FiChevronLeft, FiChevronRight,
+  FiDatabase, FiClock, FiCpu
 } from 'react-icons/fi';
-import { FaAmazon, FaReact, FaNodeJs, FaPython, FaShopify, FaPalette } from 'react-icons/fa';
+import { FaAmazon, FaReact, FaNodeJs, FaPython, FaShopify, FaPalette, FaStore, FaWhatsapp, FaIdCard } from 'react-icons/fa';
 import { SiFlutter, SiMongodb, SiMysql, SiPhp } from 'react-icons/si';
 import './Home.css';
 
@@ -49,7 +51,7 @@ function Counter({ target, duration = 1800, suffix = '+' }) {
     const steps = Math.min(40, end);
     const increment = Math.ceil(end / steps);
     const stepTime = duration / steps;
-    
+
     const timer = setInterval(() => {
       start += increment;
       if (start >= end) {
@@ -111,6 +113,27 @@ const EXPERTISE = [
     link: '/development-services',
     cardClass: 'card-pink',
   },
+  {
+    icon: <FaStore size={24} />,
+    title: 'E-Commerce Automation',
+    desc: 'User-centered design that creates intuitive and beautiful digital experiences.',
+    link: 'https://sellwell.co.in/ecommerce-services-in-mumbai.php',
+    cardClass: 'card-purple',
+  },
+  {
+    icon: <FaWhatsapp size={24} />,
+    title: 'WhatsApp Feature',
+    desc: 'Connect WhatsApp, manage chats, organize contacts, create templates and run campaigns — all from your SellWellOne seller dashboard.',
+    link: 'https://sellwellone.com/whatsapp-features',
+    cardClass: 'card-green',
+  },
+  {
+    icon: <FaIdCard size={24} />,
+    title: 'Business Card Scanner',
+    desc: 'Send a business card image on WhatsApp and instantly capture contact information, organize it automatically, export to sheets and sync with your CRM.',
+    link: 'https://sellwellone.com/business-card-scanner',
+    cardClass: 'card-blue',
+  },
 ];
 
 const WHY_US = [
@@ -121,6 +144,20 @@ const WHY_US = [
 ];
 
 const SERVICES = [
+  {
+    title: 'E-Commerce Automation',
+    img: '/img/sellwell2.png',
+    items: ['Account Management', 'Advertising & Marketing', 'Product Listing & Content', 'Inventory & Order Sync', 'Automated Pricing'],
+    link: '/business-automation',
+    label: 'Automation Tools',
+  },
+  {
+    title: 'WhatsApp API',
+    img: '/img/order.png',
+    items: ['Connect WhatsApp', 'Shared Live Chat', 'Broadcast Campaigns', 'Message Templates', 'Automated Order Alerts'],
+    link: '/whatsapp-api',
+    label: 'WhatsApp API',
+  },
   {
     title: 'API Services',
     img: '/img/imageApi.png',
@@ -136,21 +173,21 @@ const SERVICES = [
     label: 'Dev Solutions',
   },
   {
-    title: 'More Services',
-    img: '/img/more services.png',
-    items: ['Payment Gateway', 'Bulk SMS', 'SEO Services', 'Voice Call', 'Shopify Store'],
-    link: '/more-services',
-    label: 'Growth Tools',
+    title: 'Business Card Scanner',
+    img: '/img/card.png',
+    items: ['AI Card Recognition', 'WhatsApp Based', 'Google Sheets Export', 'CRM Integration', 'Bulk Processing'],
+    link: '/business-automation/business-card-scanner',
+    label: 'Agent Tap2Read',
   },
 ];
 
 const PROJECTS = [
-  { title: 'SellWell', category: 'E-Commerce Automation', img: '/img/tap2cash.png', link: 'https://sellwellone.com/' },
+  { title: 'SellWell', category: 'E-Commerce Automation', img: '/img/portsellwellimage.png', link: 'https://sellwellone.com/' },
   { title: 'Lactra B2B', category: 'Website Development', img: '/img/Lactra.jpg', link: 'https://www.lactra.in/ ' },
   { title: 'Spartan Nutrition', category: 'Website Development', img: '/img/web-spartan.png', link: 'https://spartannutrition.com/' },
   { title: 'Tap2Cash', category: 'Software Development', img: '/img/taptocash.png', link: 'https://tap2cash.in/' },
-  { title: 'Ayaan Toys', category: 'E-Commerce', img: '/img/Web-ayantoys.png', link: '/portfolio' },
-  { title: 'Lycot Swimwear', category: 'Website Development', img: '/img/Web-lycot.png', link: '/portfolio' },
+  { title: 'Ayaan Toys', category: 'E-Commerce', img: '/img/Web-ayantoys.png', link: 'https://ayaantoys.in' },
+  { title: 'Lycot Swimwear', category: 'Website Development', img: '/img/Web-lycot.png', link: 'https://www.lycot.com/password' },
 ];
 
 const TECH = [
@@ -175,43 +212,43 @@ const PROCESS = [
 
 const TESTIMONIALS = [
   {
-    initials: 'MK',
-    name: 'Mehek Khan',
-    time: '2 months ago',
+    initials: 'SG',
+    name: 'Shambhu Gupta',
+    time: '4 weeks ago',
     rating: 5,
-    text: 'The software is user-friendly and has good features. Very informative and excellent customer support.',
+    text: 'Best learning places for e-commerce services in Mumbai ... Amazon onboarding Myntra onboarding',
     colorClass: 'badge-purple',
   },
   {
-    initials: 'RS',
-    name: 'Rahul Sharma',
-    time: '1 month ago',
+    initials: 'IM',
+    name: 'Intact Media',
+    time: '8 months ago',
     rating: 5,
-    text: 'Outstanding work on our website! The team is extremely responsive, and the Shopify website loading speed improved by 60%. Highly recommend their custom solutions.',
+    text: 'Great places for E-commerce solutions and websites designed and developing also helping selling on Myntra and quick commerce',
     colorClass: 'badge-blue',
   },
   {
-    initials: 'NS',
-    name: 'Namrata Singh',
-    time: '3 months ago',
+    initials: 'MA',
+    name: 'manzoor ansari',
+    time: '2 years ago',
     rating: 5,
-    text: 'Inspiring Infosys automated our Amazon & Flipkart catalog listings using SP-API integration. It saved our team hundreds of hours of manual entry. Exceptionally knowledgeable team.',
+    text: 'Great place to learn and start ecommerce own business from zero. The best part is I can learn all technical skills about amazon seller,flipkart seller Centre...Highly recommended sell well services',
     colorClass: 'badge-pink',
   },
   {
-    initials: 'SS',
-    name: 'Shahana Shaikh',
+    initials: 'NK',
+    name: 'Neha Kapoor',
     time: '2 months ago',
     rating: 5,
-    text: 'The app works wonders and the staff explained the features of the app very nicely and patiently.',
+    text: 'Our marketing campaigns are very easy to run now. The WhatsApp API templates and broadcasts save our marketing team a significant amount of time.',
     colorClass: 'badge-cyan',
   },
   {
-    initials: 'AP',
-    name: 'Amit Patel',
+    initials: 'RS',
+    name: 'Ravi Sharma',
     time: '1 month ago',
     rating: 5,
-    text: 'Excellent payment gateway integration services. They solved our multi-currency checkout issues quickly and efficiently.',
+    text: 'The automated WhatsApp business API solution has helped us automate purchase notifications and increase customer engagement significantly.',
     colorClass: 'badge-orange',
   },
 ];
@@ -263,6 +300,312 @@ const stagger = {
   show: { transition: { staggerChildren: 0.1 } },
 };
 
+const SERVICES_SLIDES = [
+  {
+    badge: "✨ E-Commerce & Retail Management",
+    title: "E-Commerce Business Automation",
+    subheading: "Centralize your seller accounts, automate inventory sync across multiple channels, manage dynamic pricing, and protect your brand registrations.",
+    primaryCta: { label: "Explore Automation", path: "https://sellwellone.com/", isExternal: true },
+    secondaryCta: { label: "Contact Us", path: "/contact/ecommerce-management-company-in-mumbai" },
+    bgImage: "/img/ecoms.png",
+    gradient: "linear-gradient(135deg, #0d62a9 0%, #0a8fd4 40%, #06b6d4 70%, #8bc53f 100%)"
+  },
+  {
+    badge: "💬 Official Meta API Solutions",
+    title: "WhatsApp API & Marketing",
+    subheading: "Connect your official WhatsApp Business line to route support chats to a shared inbox, run broadcasting campaigns, and trigger automated purchase notifications.",
+    primaryCta: { label: "Discover WhatsApp API", path: "https://sellwellone.com/", isExternal: true },
+    secondaryCta: { label: "Contact Us", path: "/contact/ecommerce-management-company-in-mumbai" },
+    bgImage: "/img/shared_chat_inbox.jpg",
+    gradient: "linear-gradient(135deg, #0d62a9 0%, #059669 40%, #10b981 70%, #8bc53f 100%)"
+  },
+  {
+    badge: "🔄 Marketplace Integrations",
+    title: "API & Marketplace Connections",
+    subheading: "Integrate official APIs to sync inventory, catalog listings, order handovers, and tracking bills directly from your seller dashboard.",
+    primaryCta: { label: "Learn API Services", path: "https://sellwellone.com/", isExternal: true },
+    secondaryCta: { label: "Contact Us", path: "/contact/ecommerce-management-company-in-mumbai" },
+    bgImage: "/img/imageApi.png",
+    gradient: "linear-gradient(135deg, #0f172a 0%, #0d62a9 40%, #0284c7 70%, #06b6d4 100%)"
+  },
+  {
+    badge: "💻 Custom IT Engineering",
+    title: "Custom Software & Web Development",
+    subheading: "Design and build native mobile apps, custom ERP/CRM tools, Shopify stores, and enterprise portals to streamline operations.",
+    primaryCta: { label: "See Development Services", path: "/development-services", isExternal: false },
+    secondaryCta: { label: "Contact Us", path: "/contact/ecommerce-management-company-in-mumbai" },
+    bgImage: "/img/Soft-develop.png",
+    gradient: "linear-gradient(135deg, #0d62a9 0%, #4f46e5 40%, #06b6d4 70%, #8bc53f 100%)"
+  },
+  {
+    badge: "🔍 AI Card Scanner Integration",
+    title: "Business Card Scanner",
+    subheading: "Send a business card image on WhatsApp and instantly capture contact details, organize them automatically, export to sheets and sync with your CRM.",
+    primaryCta: { label: "Learn Scanner Features", path: "https://sellwellone.com/", isExternal: true },
+    secondaryCta: { label: "Contact Us", path: "/contact/ecommerce-management-company-in-mumbai" },
+    bgImage: "/img/card.png",
+    gradient: "linear-gradient(135deg, #0d62a9 0%, #0d9488 40%, #0f766e 70%, #8bc53f 100%)"
+  }
+];
+
+/* ─── Service Visual Mockups ───────────────────────────────────────── */
+
+function EcommerceMockup() {
+  return (
+    <div className="mockup-container ecommerce-mockup">
+      <div className="mockup-header">
+        <h4>E-Commerce Channel Sync</h4>
+        <span className="sync-status"><FiZap className="sync-pulse" /> Live Syncing</span>
+      </div>
+
+      <div className="channel-list">
+        <div className="channel-row">
+          <div className="channel-name">
+            <FaAmazon className="channel-icon amazon-color" />
+            <span>Amazon India</span>
+          </div>
+          <span className="channel-stock">Stock: <strong>412</strong></span>
+          <span className="status-badge check"><FiCheck /> Synced</span>
+        </div>
+
+        <div className="channel-row">
+          <div className="channel-name">
+            <FaShopify className="channel-icon shopify-color" />
+            <span>Shopify Store</span>
+          </div>
+          <span className="channel-stock">Stock: <strong>412</strong></span>
+          <span className="status-badge check"><FiCheck /> Synced</span>
+        </div>
+
+        <div className="channel-row">
+          <div className="channel-name">
+            <FaStore className="channel-icon flipkart-color" />
+            <span>Flipkart Seller</span>
+          </div>
+          <span className="channel-stock">Stock: <strong>412</strong></span>
+          <span className="status-badge check"><FiCheck /> Synced</span>
+        </div>
+      </div>
+
+      <div className="sync-activity">
+        <div className="activity-dot"></div>
+        <p>Order #AMZ-8274 received. Synced stocks across Shopify & Flipkart in 1.8s</p>
+      </div>
+    </div>
+  );
+}
+
+function WhatsAppMockup() {
+  return (
+    <div className="mockup-container whatsapp-mockup">
+      <div className="mock-chat-header">
+        <div className="mock-chat-avatar">
+          <FaWhatsapp className="whatsapp-logo-icon" />
+          <div className="active-dot"></div>
+        </div>
+        <div className="mock-chat-info">
+          <h4>Meta WhatsApp API</h4>
+          <span>Active • Official Channel</span>
+        </div>
+      </div>
+
+      <div className="mock-chat-messages">
+        <div className="msg msg-system">
+          <span>Campaign "Festival Launch" sent to 15,200 recipients</span>
+        </div>
+        <div className="msg msg-received">
+          <p>Hi, can I check if you have the pricing list for automation?</p>
+          <span className="msg-time">12:30 PM</span>
+        </div>
+        <div className="msg msg-sent">
+          <p>Hello! Sure, here is our digital automation catalogue. Let us know if you want to schedule a quick call!</p>
+          <span className="msg-time">12:31 PM ✓✓</span>
+        </div>
+        <div className="msg msg-received">
+          <p>Yes, please! Let's connect tomorrow at 3 PM.</p>
+          <span className="msg-time">12:31 PM</span>
+        </div>
+      </div>
+
+      <div className="mock-floating-panel">
+        <div className="metric-item">
+          <span className="metric-label">Delivered Rate</span>
+          <span className="metric-val">99.8%</span>
+        </div>
+        <div className="metric-divider"></div>
+        <div className="metric-item">
+          <span className="metric-label">Avg Response</span>
+          <span className="metric-val">1.4m</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ApiConnectionsMockup() {
+  return (
+    <div className="mockup-container api-mockup">
+      <div className="mockup-header">
+        <h4>API Orchestrator</h4>
+        <span className="api-badge">GraphQL / REST</span>
+      </div>
+
+      <div className="api-visual-flow">
+        <div className="flow-node node-left">
+          <div className="node-icon"><FiGlobe /></div>
+          <span>External Marketplaces</span>
+        </div>
+
+        <div className="flow-pipeline">
+          <div className="pipeline-dots">
+            <span className="dot dot-1"></span>
+            <span className="dot dot-2"></span>
+            <span className="dot dot-3"></span>
+          </div>
+        </div>
+
+        <div className="flow-node node-right">
+          <div className="node-icon"><FiDatabase /></div>
+          <span>Internal ERP Database</span>
+        </div>
+      </div>
+
+      <div className="api-endpoint-list">
+        <div className="endpoint-row">
+          <span className="method get">GET</span>
+          <span className="endpoint">/v1/orders/handover</span>
+          <span className="response-time">112ms</span>
+        </div>
+        <div className="endpoint-row">
+          <span className="method post">POST</span>
+          <span className="endpoint">/v1/inventory/bulk-update</span>
+          <span className="response-time">184ms</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CustomSoftwareMockup() {
+  return (
+    <div className="mockup-container software-mockup">
+      <div className="mockup-header">
+        <h4>Custom ERP Dashboard</h4>
+        <span className="software-badge">Production v2.4</span>
+      </div>
+
+      <div className="software-dashboard-stats">
+        <div className="stat-card">
+          <span className="stat-lbl">Active Users</span>
+          <span className="stat-value">12.8k</span>
+          <span className="stat-change positive">+14%</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-lbl">API Latency</span>
+          <span className="stat-value">42ms</span>
+          <span className="stat-change positive">Optimized</span>
+        </div>
+      </div>
+
+      <div className="software-graph">
+        <svg viewBox="0 0 300 80" className="mock-svg-graph">
+          <defs>
+            <linearGradient id="graph-gradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M0 60 Q 50 30, 100 50 T 200 15 T 300 10 L 300 80 L 0 80 Z"
+            fill="url(#graph-gradient)"
+          />
+          <path
+            d="M0 60 Q 50 30, 100 50 T 200 15 T 300 10"
+            fill="none"
+            stroke="var(--primary)"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function CardScannerMockup() {
+  return (
+    <div className="mockup-container scanner-mockup">
+      <div className="mockup-header">
+        <h4>WhatsApp Business Card Scanner</h4>
+        <span className="scanner-badge"><FiCpu /> AI Parser</span>
+      </div>
+
+      <div className="scanner-layout">
+        <div className="mock-business-card">
+          <div className="card-logo-placeholder">Inspiring Infosys</div>
+          <div className="card-details">
+            <span className="card-name">Pankaj Shah</span>
+            <span className="card-role">Managing Director</span>
+            <span className="card-phone">+91 99307 23412</span>
+            <span className="card-email">pankaj@inspiringinfosys.com</span>
+          </div>
+          <div className="laser-scanner-line"></div>
+        </div>
+
+        <div className="parsed-crm-fields">
+          <div className="field-group">
+            <span className="field-label">Name</span>
+            <span className="field-val">Pankaj Shah</span>
+          </div>
+          <div className="field-group">
+            <span className="field-label">Email</span>
+            <span className="field-val">pankaj@inspiringinfosys.com</span>
+          </div>
+          <div className="field-group">
+            <span className="field-label">Phone</span>
+            <span className="field-val">+91 99307 23412</span>
+          </div>
+          <div className="field-status">
+            <FiCheck className="check-icon" /> Synced to CRM & Google Sheets
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ServiceVisualMockup({ index }) {
+  switch (index) {
+    case 0:
+      return <EcommerceMockup />;
+    case 1:
+      return <WhatsAppMockup />;
+    case 2:
+      return <ApiConnectionsMockup />;
+    case 3:
+      return <CustomSoftwareMockup />;
+    case 4:
+      return <CardScannerMockup />;
+    default:
+      return null;
+  }
+}
+
+const getServiceIcon = (idx) => {
+  switch (idx) {
+    case 0: return <FiShoppingCart size={20} />;
+    case 1: return <FaWhatsapp size={20} />;
+    case 2: return <FiZap size={20} />;
+    case 3: return <FiCode size={20} />;
+    case 4: return <FaIdCard size={20} />;
+    default: return <FiPackage size={20} />;
+  }
+};
+
+const getSlideGradient = (idx) => {
+  return SERVICES_SLIDES[idx]?.gradient || 'linear-gradient(135deg, #0d62a9 0%, #0a8fd4 40%, #06b6d4 70%, #5db52c 100%)';
+};
+
 /* ─── Component ───────────────────────────────────────────────────── */
 
 function Home() {
@@ -270,6 +613,62 @@ function Home() {
   const [faqSearch, setFaqSearch] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [dbStats, setDbStats] = useState([]);
+  const [dbTestimonials, setDbTestimonials] = useState([]);
+
+  // Fetch stats and testimonials from backend database
+  useEffect(() => {
+    statsApi.getAll()
+      .then(res => {
+        if (res.success && res.data && res.data.length > 0) {
+          setDbStats(res.data);
+        }
+      })
+      .catch(err => console.warn('Could not fetch stats, using hardcoded fallbacks:', err));
+
+    testimonialsApi.getGoogleReviews()
+      .then(res => {
+        if (res.success && res.data && res.data.length > 0) {
+          setDbTestimonials(res.data);
+        }
+      })
+      .catch(err => console.warn('Could not fetch Google reviews, using hardcoded fallbacks:', err));
+  }, []);
+
+  const fallbackStats = [
+    { value: "300", label: "Happy Clients", suffix: "+" },
+    { value: "800", label: "Projects Completed", suffix: "+" },
+    { value: "10", label: "Years Experience", suffix: "+" }
+  ];
+
+  const activeStats = dbStats.length > 0 ? dbStats : fallbackStats;
+  const activeTestimonials = dbTestimonials.length > 0 ? dbTestimonials : TESTIMONIALS;
+
+  // Auto sliding every 5 seconds (unconditional)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentServiceIndex((prev) => (prev + 1) % SERVICES_SLIDES.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Auto sliding testimonials every 3 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % activeTestimonials.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [activeIndex, activeTestimonials.length]);
+
+  const nextServiceSlide = () => {
+    setCurrentServiceIndex((prev) => (prev + 1) % SERVICES_SLIDES.length);
+  };
+
+  const prevServiceSlide = () => {
+    setCurrentServiceIndex((prev) => (prev - 1 + SERVICES_SLIDES.length) % SERVICES_SLIDES.length);
+  };
 
   React.useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -282,11 +681,11 @@ function Home() {
   const visibleCards = isMobile ? 1 : isTablet ? 2 : 3;
 
   const nextSlide = () => {
-    setActiveIndex((prev) => (prev + 1) % TESTIMONIALS.length);
+    setActiveIndex((prev) => (prev + 1) % activeTestimonials.length);
   };
 
   const prevSlide = () => {
-    setActiveIndex((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+    setActiveIndex((prev) => (prev - 1 + activeTestimonials.length) % activeTestimonials.length);
   };
 
   const toggleFaq = (question) => setOpenFaq(openFaq === question ? null : question);
@@ -308,8 +707,10 @@ function Home() {
 
   const handleHeroMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    heroMouseX.set((e.clientX - rect.left) / rect.width - 0.5);
-    heroMouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    heroMouseX.set(x);
+    heroMouseY.set(y);
   };
 
   const handleHeroMouseLeave = () => {
@@ -320,12 +721,98 @@ function Home() {
   return (
     <div className="home-page">
 
-      {/* ── Hero ──────────────────────────────────────────────────── */}
-      {/* ── Hero ──────────────────────────────────────────────────── */}
+      {/* ── Services Slider ── */}
+      <section className="services-slider-section">
+        <div
+          className="services-classic-slider"
+          style={{
+            background: getSlideGradient(currentServiceIndex),
+            transition: 'background 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
+          }}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentServiceIndex}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.45, ease: 'easeInOut' }}
+              className="services-classic-slide"
+            >
+              {/* Contextual Low-Opacity Background Image Layer */}
+              <div className="classic-slide-bg-wrapper">
+                <img
+                  src={SERVICES_SLIDES[currentServiceIndex].bgImage}
+                  alt=""
+                  className="classic-slide-bg-image"
+                />
+                <div className="classic-slide-bg-overlay"></div>
+              </div>
+
+              {/* Badge */}
+              <span className="classic-slide-badge">
+                {SERVICES_SLIDES[currentServiceIndex].badge}
+              </span>
+
+              {/* Title */}
+              <h2 className="classic-slide-title">
+                {SERVICES_SLIDES[currentServiceIndex].title}
+              </h2>
+
+              {/* Description */}
+              <p className="classic-slide-desc">
+                {SERVICES_SLIDES[currentServiceIndex].subheading}
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="classic-slide-actions">
+                {SERVICES_SLIDES[currentServiceIndex].primaryCta.isExternal ? (
+                  <a
+                    href={SERVICES_SLIDES[currentServiceIndex].primaryCta.path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="classic-slide-btn"
+                  >
+                    {SERVICES_SLIDES[currentServiceIndex].primaryCta.label} <FiArrowRight />
+                  </a>
+                ) : (
+                  <Link
+                    to={SERVICES_SLIDES[currentServiceIndex].primaryCta.path}
+                    className="classic-slide-btn"
+                  >
+                    {SERVICES_SLIDES[currentServiceIndex].primaryCta.label} <FiArrowRight />
+                  </Link>
+                )}
+                <Link
+                  to={SERVICES_SLIDES[currentServiceIndex].secondaryCta.path}
+                  className="classic-slide-sec-btn"
+                >
+                  Contact Us <FiArrowRight />
+                </Link>
+              </div>
+
+              {/* Dot Navigation */}
+              <div className="classic-slide-dots">
+                {SERVICES_SLIDES.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`slide-dot ${i === currentServiceIndex ? 'active' : ''}`}
+                    onClick={() => setCurrentServiceIndex(i)}
+                    aria-label={`Go to slide ${i + 1}`}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </section>
+
+      {/* ── Hero (Moved Below) ────────────────────────────────────── */}
       <section
         className="hero-section"
         onMouseMove={handleHeroMouseMove}
         onMouseLeave={handleHeroMouseLeave}
+        style={{ minHeight: 'auto', paddingTop: '2rem', paddingBottom: '1rem' }}
       >
         {/* Background */}
         <motion.div
@@ -346,7 +833,7 @@ function Home() {
         <div className="hero-glow-blob blob-blue" aria-hidden="true" />
         <div className="hero-glow-blob blob-green" aria-hidden="true" />
 
-        <div className="container hero-content">
+        <div className="container hero-content" style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
 
           {/* ───────────────── LEFT CONTENT ───────────────── */}
           <motion.div
@@ -407,30 +894,17 @@ function Home() {
               variants={fadeUp}
               className="hero-stats"
             >
-              <div className="hero-stat">
-                <span className="stat-number">
-                  <Counter target="300" suffix="+" />
-                </span>
-                <span className="stat-label">Happy Clients</span>
-              </div>
-
-              <div className="hero-stat-divider" />
-
-              <div className="hero-stat">
-                <span className="stat-number">
-                  <Counter target="800" suffix="+" />
-                </span>
-                <span className="stat-label">Projects Done</span>
-              </div>
-
-              <div className="hero-stat-divider" />
-
-              <div className="hero-stat">
-                <span className="stat-number">
-                  <Counter target="10" suffix="+" />
-                </span>
-                <span className="stat-label">Years Experience</span>
-              </div>
+              {activeStats.map((stat, idx) => (
+                <React.Fragment key={stat.id || idx}>
+                  <div className="hero-stat">
+                    <span className="stat-number">
+                      <Counter target={stat.value} suffix={stat.suffix || '+'} />
+                    </span>
+                    <span className="stat-label">{stat.label}</span>
+                  </div>
+                  {idx < activeStats.length - 1 && <div className="hero-stat-divider" />}
+                </React.Fragment>
+              ))}
             </motion.div>
 
           </motion.div>
@@ -447,75 +921,7 @@ function Home() {
             }}
           >
 
-            {/* Floating Card - Web Development */}
-            {/* <motion.div
-              className="hero-floating-card hero-floating-card-one"
-              animate={{
-                y: [0, -12, 0]
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 4,
-                ease: "easeInOut"
-              }}
-            >
-              <div className="floating-card-icon">
-                <FiCode />
-              </div>
 
-              <div>
-                <strong>Web Development</strong>
-                <span>Modern & Scalable</span>
-              </div>
-            </motion.div>
-
-
-            {/* Floating Card - E-Commerce */}
-            {/* <motion.div
-              className="hero-floating-card hero-floating-card-two"
-              animate={{
-                y: [0, 10, 0]
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 4.5,
-                ease: "easeInOut",
-                delay: 0.5
-              }}
-            >
-              <div className="floating-card-icon">
-                <FiShoppingCart />
-              </div>
-
-              <div>
-                <strong>E-Commerce</strong>
-                <span>Growth & Automation</span>
-              </div>
-            </motion.div> */}
-
-
-            {/* Floating Card - Growth */}
-            {/* <motion.div
-              className="hero-floating-card hero-floating-card-three"
-              animate={{
-                y: [0, -8, 0]
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 5,
-                ease: "easeInOut",
-                delay: 1
-              }}
-            >
-              <div className="floating-card-icon">
-                <FiTrendingUp />
-              </div>
-
-              <div>
-                <strong>Digital Growth</strong>
-                <span>Built for Results</span>
-              </div>
-            </motion.div> */}
 
 
             {/* Main Hero Image */}
@@ -572,6 +978,7 @@ function Home() {
 
         </div>
       </section>
+
       {/* ── Our Expertise ─────────────────────────────────────────── */}
       <section className="section-padded">
         <div className="container">
@@ -581,7 +988,7 @@ function Home() {
             whileInView="show"
             viewport={{ once: true, margin: '-80px' }}
             variants={stagger}
-            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", marginBottom: "3rem" }}
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}
           >
             <motion.h2 variants={fadeUp} className="section-title text-center">
               Our Expert <span className="text-gradient-blue-purple">Software Solutions</span>
@@ -615,6 +1022,9 @@ function Home() {
                   <div className="expertise-icon">{item.icon}</div>
                   <h3 className="expertise-title">{item.title}</h3>
                   <p className="expertise-desc">{item.desc}</p>
+                  <span className="expertise-cta">
+                    Explore <FiArrowRight size={15} />
+                  </span>
                 </Link>
               </motion.div>
             ))}
@@ -668,7 +1078,7 @@ function Home() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <img src="img/images.png" alt="Why choose Inspiring Infosys" className="why-image" />
+            <img src="/img/images.png" alt="Why choose Inspiring Infosys" className="why-image" />
           </motion.div>
         </div>
       </section>
@@ -683,7 +1093,7 @@ function Home() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <img src="public/img/imagess.png" alt="We exceed expectations" className="why-image" />
+            <img src="/img/imagess.png" alt="We exceed expectations" className="why-image" />
           </motion.div>
 
           <motion.div
@@ -734,7 +1144,7 @@ function Home() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <img src="public/images/image.png" alt="SellWell Digital Strategy" className="why-image" />
+            <img src="/img/ecoms.png" alt="SellWell Digital Strategy" className="why-image" />
           </motion.div>
         </div>
       </section>
@@ -887,9 +1297,9 @@ function Home() {
             variants={stagger}
           >
             {TECH.map((tech, idx) => (
-              <motion.div 
-                key={idx} 
-                variants={fadeUp} 
+              <motion.div
+                key={idx}
+                variants={fadeUp}
                 className="tech-chip"
                 style={{ '--brand-color': tech.color }}
               >
@@ -971,29 +1381,30 @@ function Home() {
             <button onClick={prevSlide} className="slider-arrow arrow-left" aria-label="Previous review">
               <FiChevronLeft />
             </button>
-            
+
             <div className="testimonials-slider-window">
-              <div 
+              <div
                 className="testimonials-slider-track"
-                style={{ 
-                  transform: `translateX(-${activeIndex * (100 / visibleCards)}%)` 
+                style={{
+                  transform: `translateX(-${activeIndex * (100 / visibleCards)}%)`
                 }}
               >
-                {TESTIMONIALS.map((t, idx) => {
-                  const isHighlighted = idx === (activeIndex + (isMobile ? 0 : isTablet ? 0 : 1)) % TESTIMONIALS.length;
+                {activeTestimonials.map((t, idx) => {
+                  const isHighlighted = idx === (activeIndex + (isMobile ? 0 : isTablet ? 0 : 1)) % activeTestimonials.length;
+                  const timeValue = t.timeAgo || t.time || 'Just now';
                   return (
                     <div key={idx} className="testimonial-card-wrap">
-                      <div className={`testimonial-card ${isHighlighted ? 'card-highlighted' : ''} ${t.colorClass}`}>
+                      <div className={`testimonial-card ${isHighlighted ? 'card-highlighted' : ''} ${t.colorClass || 'badge-blue'}`}>
                         {/* Top Initials Circle Badge */}
                         <div className="testimonial-initials-badge">
                           {t.initials}
                         </div>
-                        
+
                         <div className="testimonial-header">
                           <h4 className="testimonial-name">{t.name}</h4>
-                          <span className="testimonial-time">{t.time}</span>
+                          <span className="testimonial-time">{timeValue}</span>
                         </div>
-                        
+
                         <div className="testimonial-stars" aria-label="5 star rating">
                           {"★".repeat(t.rating)}
                         </div>
@@ -1016,7 +1427,7 @@ function Home() {
 
           {/* Dots Pagination */}
           <div className="testimonials-dots">
-            {TESTIMONIALS.map((_, idx) => (
+            {activeTestimonials.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setActiveIndex(idx)}
@@ -1028,10 +1439,10 @@ function Home() {
 
           {/* Button at the bottom */}
           <div className="testimonials-cta">
-            <a 
-              href="https://www.google.com/maps/place/Inspiring+Infosys/@19.2194328,72.6696689,11z/data=!4m10!1m2!2m1!1sInspiring+Infosys!3m6!1s0x3be7a96a69ddc61b:0x69e39fa0d1f5dd03!8m2!3d19.3820173!4d72.8303777!15sChFJbnNwaXJpbmcgSW5mb3N5cyIDiAEBWhMiEWluc3BpcmluZyBpbmZvc3lzkgERZV9jb21tZXJjZV9hZ2VuY3maASRDaGREU1VoTk1HOW5TMFZKUTBGblNVUnlNell0UVhGUlJSQULgAQD6AQQIcxAn!16s%2Fg%2F11y6p568fq?entry=ttu&g_ep=EgoyMDI2MDgxMC4wIKXMDSoASAFQAw%3D%3D" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://www.google.com/maps/place/Inspiring+Infosys/@19.2194328,72.6696689,11z/data=!4m10!1m2!2m1!1sInspiring+Infosys!3m6!1s0x3be7a96a69ddc61b:0x69e39fa0d1f5dd03!8m2!3d19.3820173!4d72.8303777!15sChFJbnNwaXJpbmcgSW5mb3N5cyIDiAEBWhMiEWluc3BpcmluZyBpbmZvc3lzkgERZV9jb21tZXJjZV9hZ2VuY3maASRDaGREU1VoTk1HOW5TMFZKUTBGblNVUnlNell0UVhGUlJSQULgAQD6AQQIcxAn!16s%2Fg%2F11y6p568fq?entry=ttu&g_ep=EgoyMDI2MDgxMC4wIKXMDSoASAFQAw%3D%3D"
+              target="_blank"
+              rel="noopener noreferrer"
               className="google-reviews-btn"
             >
               More Reviews on Google

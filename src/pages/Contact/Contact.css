@@ -39,18 +39,20 @@
 /* ── Main Content Grid ── */
 .contact-content-section {
   background: #ffffff;
+  padding: 1.25rem 0 2rem 0 !important; /* Reduced vertical padding */
 }
 
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 4rem;
+  gap: 2.5rem; /* Reduced gap from 4rem */
   align-items: start;
 }
 
 @media (min-width: 900px) {
   .contact-grid {
     grid-template-columns: 0.9fr 1.1fr;
+    gap: 3rem;
   }
 }
 
@@ -120,13 +122,13 @@
   background: #ffffff;
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1.5rem; /* Reduced padding from 2rem */
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
 }
 
 @media (min-width: 640px) {
   .contact-form-panel {
-    padding: 2.5rem;
+    padding: 2rem; /* Reduced padding from 2.5rem */
   }
 }
 
@@ -154,44 +156,6 @@
   .form-group-row {
     grid-template-columns: 1fr 1fr;
   }
-}
-
-.form-input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-input-label {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-}
-
-.form-control-input,
-.form-control-textarea {
-  font-family: inherit;
-  font-size: 0.95rem;
-  color: var(--text-primary);
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  outline: none;
-  transition: all var(--transition-fast);
-}
-
-.form-control-input:focus,
-.form-control-textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
-}
-
-.form-submit-btn {
-  width: 100%;
-  padding: 0.85rem 1.5rem;
-  justify-content: center;
-  font-size: 1rem;
 }
 
 /* Success Feedback */
@@ -230,50 +194,207 @@
   line-height: 1.6;
 }
 
-/* Maps Grid */
+/* ─── Office Branch Cards (Split Layout style) ─── */
 .contact-maps-section {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
 }
 
-.maps-grid {
-  display: grid;
-  grid-template-columns: 1fr;
+.branch-list {
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-@media (min-width: 768px) {
-  .maps-grid {
-    grid-template-columns: 1fr 1fr;
+.office-branch-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--border-color);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.office-branch-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+@media (min-width: 992px) {
+  .office-branch-card {
+    grid-template-columns: 1.1fr 1.3fr;
   }
 }
 
-.map-card-wrapper {
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.01);
+/* Branch specific left-accent border */
+.branch-bandra {
+  border-left: 5px solid var(--primary);
 }
 
-.map-branch-title {
-  font-size: 1.1rem;
-  font-weight: 800;
+.branch-vasai {
+  border-left: 5px solid var(--accent);
+}
+
+.branch-info {
+  padding: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+@media (min-width: 640px) {
+  .branch-info {
+    padding: 3rem;
+  }
+}
+
+.branch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.branch-title {
+  font-size: 1.5rem;
+  font-weight: 850;
   color: var(--text-primary);
-  margin-bottom: 0.75rem;
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
-.map-iframe-container {
-  border-radius: 8px;
-  overflow: hidden;
+.branch-status-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #10b981;
+  background: #ecfdf5;
+  padding: 0.35rem 0.85rem;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid #a7f3d0;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.branch-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+
+.branch-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2.25rem;
+}
+
+.branch-detail-item {
+  display: flex;
+  gap: 1.1rem;
+  align-items: flex-start;
+}
+
+.branch-detail-icon {
+  font-size: 1.15rem;
+  color: var(--primary);
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+.branch-vasai .branch-detail-icon {
+  color: var(--accent);
+}
+
+.branch-detail-text {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+.branch-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-branch-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.5rem;
+  background: #25d366;
+  color: #ffffff !important;
+  font-weight: 700;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  transition: all var(--transition-fast);
+  border: 1px solid #25d366;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.15);
+}
+
+.btn-branch-whatsapp:hover {
+  background: #20ba5a;
+  border-color: #20ba5a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.3);
+}
+
+.btn-branch-directions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.5rem;
+  background: #ffffff;
+  color: var(--text-primary) !important;
   border: 1px solid var(--border-color);
-  height: 320px;
+  font-weight: 700;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-branch-directions:hover {
+  background: var(--text-primary);
+  color: #ffffff !important;
+  border-color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+}
+
+/* Map Column (Decreased size as requested) */
+.branch-map {
+  width: 100%;
+  height: 260px;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 992px) {
+  .branch-map {
+    height: 100%;
+    min-height: 320px;
+  }
 }
 
 .map-iframe {
   width: 100%;
   height: 100%;
   border: none;
+  display: block;
+  transition: filter var(--transition-normal);
 }
 
 /* ── Dark Mode Overrides ── */
@@ -289,16 +410,28 @@
   background: var(--bg-tertiary);
 }
 
-[data-theme='dark'] .form-control-input,
-[data-theme='dark'] .form-control-textarea {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-}
-
-[data-theme='dark'] .map-card-wrapper {
+[data-theme='dark'] .office-branch-card {
   background: var(--bg-tertiary);
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: none;
 }
 
 [data-theme='dark'] .contact-maps-section {
   background: var(--bg-primary);
+}
+
+[data-theme='dark'] .btn-branch-directions {
+  background: rgba(255, 255, 255, 0.03);
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='dark'] .btn-branch-directions:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Sleek Dark Mode map filter to match midnight-dark background themes */
+[data-theme='dark'] .map-iframe {
+  filter: invert(90%) hue-rotate(180deg) contrast(1.15) brightness(0.85);
 }

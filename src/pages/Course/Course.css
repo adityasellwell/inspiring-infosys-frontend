@@ -1,0 +1,298 @@
+/* ── Course Page Layout ── */
+.course-page {
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+/* ── Hero Section ── */
+.course-hero-section {
+  position: relative;
+  overflow: hidden;
+  padding: 6rem 0 2rem 0;
+  background:
+    radial-gradient(circle at 5% 15%, rgba(91, 145, 255, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 95% 85%, rgba(193, 91, 255, 0.04) 0%, transparent 40%),
+    linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.course-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (min-width: 992px) {
+  .course-hero-section {
+    padding: 7rem 0 3rem 0;
+  }
+
+  .course-hero-grid {
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: start;
+    gap: 3rem;
+  }
+
+  .course-hero-content {
+    padding-bottom: 0;
+  }
+}
+
+.course-hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.course-hero-title {
+  font-size: clamp(1.8rem, 3.8vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+  color: #0f172a;
+}
+
+.course-hero-title .text-highlight {
+  color: #c21a1a;
+  background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.course-features-box {
+  width: 100%;
+  max-width: 580px;
+  background: rgba(13, 98, 169, 0.03);
+  border: 1px solid rgba(13, 98, 169, 0.08);
+  border-radius: 16px;
+  padding: 1.25rem 1.75rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(13, 98, 169, 0.01);
+}
+
+.features-box-intro {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.features-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: #475569;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.list-bullet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(13, 98, 169, 0.1);
+  color: var(--primary);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.course-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.course-explore-btn {
+  background: #ffffff !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.course-explore-btn:hover {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #ffffff !important;
+}
+
+.course-hero-image-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+@media (min-width: 992px) {
+  .course-hero-image-wrapper {
+    align-items: start;
+  }
+}
+
+.course-hero-img {
+  width: 100%;
+  max-width: 480px;
+  max-height: 480px;
+  height: auto;
+  border-radius: 12px;
+  object-fit: contain;
+  display: block;
+}
+
+/* ── Instructor Section ── */
+.course-instructor-section {
+  padding: 4.5rem 0;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.course-instructor-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (min-width: 992px) {
+  .course-instructor-grid {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 4rem;
+  }
+}
+
+.instructor-content-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 1rem;
+}
+
+.instructor-title {
+  font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+  font-weight: 850;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.instructor-bio {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: #475569;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.instructor-bio strong {
+  color: #0f172a;
+}
+
+.instructor-cta-box {
+  margin-top: 0.75rem;
+}
+
+.instructor-image-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.instructor-photo-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+}
+
+.instructor-img {
+  width: 100%;
+  max-height: 420px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* ── Dark Mode Support ── */
+[data-theme='dark'] .course-hero-section {
+  background:
+    radial-gradient(circle at 5% 15%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 95% 85%, rgba(139, 92, 246, 0.03) 0%, transparent 40%),
+    linear-gradient(135deg, #070c17 0%, #030712 100%) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .course-hero-title {
+  color: #ffffff;
+}
+
+[data-theme='dark'] .course-features-box {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='dark'] .features-box-intro {
+  color: #f1f5f9;
+}
+
+[data-theme='dark'] .features-list li {
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .list-bullet {
+  background: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+}
+
+[data-theme='dark'] .course-explore-btn {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .course-explore-btn:hover {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+[data-theme='dark'] .course-instructor-section {
+  background: #030712;
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .instructor-title {
+  color: #ffffff;
+}
+
+[data-theme='dark'] .instructor-bio {
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .instructor-bio strong {
+  color: #ffffff;
+}
+
+[data-theme='dark'] .instructor-photo-wrapper {
+  box-shadow: none;
+}

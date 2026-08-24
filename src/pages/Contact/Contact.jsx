@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FiPhoneCall, FiMail, FiMapPin, FiClock, FiSend, FiCheckCircle } from 'react-icons/fi';
+import { FaWhatsapp } from 'react-icons/fa';
+import { consultationsApi } from '../../api/api';
+import TextCaptcha from '../../components/common/TextCaptcha/TextCaptcha';
 import './Contact.css';
 
 function Contact() {
@@ -12,25 +15,68 @@ function Contact() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [captchaInput, setCaptchaInput] = useState('');
+  const captchaRef = useRef(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleDirections = (address) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          window.open(`https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${encodeURIComponent(address)}&travelmode=driving`, '_blank');
+        },
+        () => {
+          window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+        }
+      );
+    } else {
+      window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       alert('Please fill out all required fields.');
       return;
     }
+    if (!captchaInput) {
+      alert('Please enter the verification code shown below.');
+      return;
+    }
     setLoading(true);
-    // Simulate API Form Submission
-    setTimeout(() => {
+
+    try {
+      const res = await consultationsApi.submit({
+        name: formData.name,
+        email: formData.email,
+        phone: '',
+        company: formData.subject || 'Contact Page Inquiry',
+        message: formData.message,
+        captchaToken: captchaRef.current?.token,
+        captchaAnswer: captchaInput
+      });
+
+      if (res.success) {
+        setLoading(false);
+        setSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        captchaRef.current?.refresh();
+      } else {
+        alert(res.message || 'Submission failed. Please try again.');
+        setLoading(false);
+        captchaRef.current?.refresh();
+      }
+    } catch (error) {
+      alert('An error occurred. Please check your connection and try again.');
       setLoading(false);
-      setSubmitted(true);
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    }, 1200);
+      captchaRef.current?.refresh();
+    }
   };
 
   return (
@@ -39,14 +85,14 @@ function Contact() {
       <section className="inner-page-hero">
         <div className="inner-page-hero-overlay"></div>
         <div className="container inner-page-hero-content">
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             className="section-badge"
           >
             Get In Touch
           </motion.span>
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -54,7 +100,7 @@ function Contact() {
           >
             Contact Our Team
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -68,7 +114,7 @@ function Contact() {
       {/* ── Main Contact Content Section ─────────────────────────── */}
       <section className="contact-content-section section-padded">
         <div className="container contact-grid">
-          
+
           {/* Column 1: Contact coordinates info */}
           <div className="contact-info-panel">
             <h2 className="panel-title">Let's Discuss Your Project</h2>
@@ -97,7 +143,7 @@ function Contact() {
                 <div className="info-icon-box"><FiMapPin /></div>
                 <div>
                   <h4 className="info-card-label">Mumbai Headquarters</h4>
-                  <p className="info-card-text">Bandra West & Vasai, Mumbai, India</p>
+                  <p className="info-card-text">Vasai west, Mumbai, India</p>
                 </div>
               </div>
 
@@ -114,7 +160,7 @@ function Contact() {
           {/* Column 2: Form input container */}
           <div className="contact-form-panel">
             {submitted ? (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="success-feedback"
@@ -129,16 +175,16 @@ function Contact() {
             ) : (
               <form onSubmit={handleSubmit} className="contact-actual-form">
                 <h3 className="form-panel-title">Send Us A Message</h3>
-                
+
                 <div className="form-group-row">
                   <div className="form-input-group">
                     <label className="form-input-label">Full Name *</label>
-                    <input 
-                      type="text" 
-                      name="name" 
-                      value={formData.name} 
-                      onChange={handleInputChange} 
-                      placeholder="John Doe" 
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="John Doe"
                       className="form-control-input"
                       required
                     />
@@ -146,12 +192,12 @@ function Contact() {
 
                   <div className="form-input-group">
                     <label className="form-input-label">Email Address *</label>
-                    <input 
-                      type="email" 
-                      name="email" 
-                      value={formData.email} 
-                      onChange={handleInputChange} 
-                      placeholder="john@example.com" 
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="john@example.com"
                       className="form-control-input"
                       required
                     />
@@ -160,32 +206,42 @@ function Contact() {
 
                 <div className="form-input-group">
                   <label className="form-input-label">Subject</label>
-                  <input 
-                    type="text" 
-                    name="subject" 
-                    value={formData.subject} 
-                    onChange={handleInputChange} 
-                    placeholder="E-Commerce API Integration query" 
+                  <input
+                    type="text"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleInputChange}
+                    placeholder="E-Commerce API Integration query"
                     className="form-control-input"
                   />
                 </div>
 
                 <div className="form-input-group">
                   <label className="form-input-label">Message / Details *</label>
-                  <textarea 
-                    name="message" 
-                    value={formData.message} 
-                    onChange={handleInputChange} 
-                    placeholder="Tell us about your requirements..." 
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    placeholder="Tell us about your requirements..."
                     className="form-control-textarea"
                     rows="5"
                     required
                   ></textarea>
                 </div>
 
-                <button 
-                  type="submit" 
-                  disabled={loading} 
+                <div className="form-input-group">
+                  <label className="form-input-label">Verification Code *</label>
+                  <TextCaptcha
+                    ref={captchaRef}
+                    fetchChallenge={consultationsApi.getCaptcha}
+                    answer={captchaInput}
+                    onAnswerChange={setCaptchaInput}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading || !captchaInput}
                   className="btn-primary form-submit-btn"
                 >
                   {loading ? 'Sending...' : 'Send Message'} <FiSend />
@@ -201,36 +257,132 @@ function Contact() {
       <section className="contact-maps-section section-padded">
         <div className="container">
           <h2 className="section-title text-center">Our Office Locations</h2>
-          <p className="section-desc text-center mb-5">
-            Visit us at our main branches in Bandra and Vasai:
+          <p className="section-desc text-center" style={{ maxWidth: "600px", margin: "0 auto 1.5rem" }}>
+            Visit us at our main branches in Vasai and Bandra:
           </p>
 
-          <div className="maps-grid">
-            <div className="map-card-wrapper">
-              <h3 className="map-branch-title">Bandra Office</h3>
-              <div className="map-iframe-container">
-                <iframe 
-                  title="Bandra Office Map"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.1680590228666!2d72.83602007497691!3d19.05634718214415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c93d3c6b43d7%3A0xe1f6259363826fa6!2sINSPIRING%20INFO&#39;S!5e0!3m2!1sen!2sin!4v1727355232811!5m2!1sen!2sin" 
-                  loading="lazy" 
+          <div className="branch-list">
+
+            {/* Vasai Branch (Now First) */}
+            <div className="office-branch-card branch-vasai">
+              <div className="branch-info">
+                <div className="branch-header">
+                  <h3 className="branch-title">Vasai Office</h3>
+                  <span className="branch-status-badge">Open Now</span>
+                </div>
+                <p className="branch-subtitle">Inspiring Infosys Operations & Development Hub</p>
+                
+                <div className="branch-details">
+                  <div className="branch-detail-item">
+                    <FiMapPin className="branch-detail-icon" />
+                    <span className="branch-detail-text">
+                      DJ Arcade, 203 Second Floor, Behind Dhuri Arcade, Near Navghar Bus Depot, Next to Rishikesh Hotel, Vasai West, Mumbai, Maharashtra 401202
+                    </span>
+                  </div>
+                  <div className="branch-detail-item">
+                    <FiClock className="branch-detail-icon" />
+                    <span className="branch-detail-text">
+                      Monday – Saturday: 10:00 AM – 7:00 PM
+                    </span>
+                  </div>
+                  <div className="branch-detail-item">
+                    <FiPhoneCall className="branch-detail-icon" />
+                    <span className="branch-detail-text">
+                      +91 8444040514
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="branch-actions">
+                  <a 
+                    href="https://wa.me/918444040514" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="btn-branch-whatsapp"
+                  >
+                    <FaWhatsapp /> WhatsApp
+                  </a>
+                  <button 
+                    onClick={() => handleDirections("DJ Arcade, 203 Second Floor, Behind Dhuri Arcade, Near Navghar Bus Depot, Next to Rishikesh Hotel, Vasai West, Mumbai, Maharashtra 401202")}
+                    className="btn-branch-directions"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <FiSend /> Directions
+                  </button>
+                </div>
+              </div>
+              
+              <div className="branch-map">
+                <iframe
+                  title="Vasai Office Map"
+                  src="https://maps.google.com/maps?q=Dhuri%20Arcade,%20Vasai%20West,%20Mumbai,%20Maharashtra%20401202&t=&z=15&ie=UTF8&iwloc=near&output=embed"
+                  loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   className="map-iframe"
                 ></iframe>
               </div>
             </div>
 
-            <div className="map-card-wrapper">
-              <h3 className="map-branch-title">Vasai Office</h3>
-              <div className="map-iframe-container">
-                <iframe 
-                  title="Vasai Office Map"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.1680590228666!2d72.83602007497691!3d19.05634718214415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c93d3c6b43d7%3A0xe1f6259363826fa6!2sINSPIRING%20INFO&#39;S!5e0!3m2!1sen!2sin!4v1727355232811!5m2!1sen!2sin" 
-                  loading="lazy" 
+            {/* Bandra Branch (Now Second) */}
+            <div className="office-branch-card branch-bandra">
+              <div className="branch-info">
+                <div className="branch-header">
+                  <h3 className="branch-title">Bandra Office</h3>
+                  <span className="branch-status-badge">Open Now</span>
+                </div>
+                <p className="branch-subtitle">Inspiring Infosys Corporate Office</p>
+                
+                <div className="branch-details">
+                  <div className="branch-detail-item">
+                    <FiMapPin className="branch-detail-icon" />
+                    <span className="branch-detail-text">
+                      B2, Nutan Nagar Society, Bandra West, Mumbai, Maharashtra 400050
+                    </span>
+                  </div>
+                  <div className="branch-detail-item">
+                    <FiClock className="branch-detail-icon" />
+                    <span className="branch-detail-text">
+                      Monday – Saturday: 10:00 AM – 7:00 PM
+                    </span>
+                  </div>
+                  <div className="branch-detail-item">
+                    <FiPhoneCall className="branch-detail-icon" />
+                    <span className="branch-detail-text">
+                      +91 8444040514
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="branch-actions">
+                  <a 
+                    href="https://wa.me/918444040514" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="btn-branch-whatsapp"
+                  >
+                    <FaWhatsapp /> WhatsApp
+                  </a>
+                  <button 
+                    onClick={() => handleDirections("B2, Nutan Nagar Society, Bandra West, Mumbai, Maharashtra 400050")}
+                    className="btn-branch-directions"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <FiSend /> Directions
+                  </button>
+                </div>
+              </div>
+              
+              <div className="branch-map">
+                <iframe
+                  title="Bandra Office Map"
+                  src="https://maps.google.com/maps?q=INSPIRING%20INFO'S,%20B2,%20Nutan%20Nagar%20Society,%20Bandra%20West,%20Mumbai,%20Maharashtra%20400050&t=&z=15&ie=UTF8&iwloc=near&output=embed"
+                  loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   className="map-iframe"
                 ></iframe>
               </div>
             </div>
+
           </div>
         </div>
       </section>

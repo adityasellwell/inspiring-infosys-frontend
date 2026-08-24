@@ -20,14 +20,14 @@ function WhyUs() {
       <section className="inner-page-hero">
         <div className="inner-page-hero-overlay"></div>
         <div className="container inner-page-hero-content">
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             className="section-badge"
           >
             About Our Agency
           </motion.span>
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -35,7 +35,7 @@ function WhyUs() {
           >
             Why Inspiring Infosys?
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -56,7 +56,7 @@ function WhyUs() {
             transition={{ duration: 0.6 }}
             className="value-img-wrap"
           >
-            <img src="/images/whyus_growth.png" alt="Growth partner illustration" className="value-img" />
+            <img src="/img/growth.png" alt="Growth partner illustration" className="value-img" />
           </motion.div>
 
           <motion.div
@@ -75,8 +75,8 @@ function WhyUs() {
             </motion.p>
 
             <motion.div variants={stagger} className="value-bullets">
-              <motion.div 
-                variants={fadeUp} 
+              <motion.div
+                variants={fadeUp}
                 className="value-bullet-card card-blue"
                 whileHover={{
                   y: -5,
@@ -92,8 +92,8 @@ function WhyUs() {
                 </div>
               </motion.div>
 
-              <motion.div 
-                variants={fadeUp} 
+              <motion.div
+                variants={fadeUp}
                 className="value-bullet-card card-purple"
                 whileHover={{
                   y: -5,
@@ -109,8 +109,8 @@ function WhyUs() {
                 </div>
               </motion.div>
 
-              <motion.div 
-                variants={fadeUp} 
+              <motion.div
+                variants={fadeUp}
                 className="value-bullet-card card-green"
                 whileHover={{
                   y: -5,
@@ -126,8 +126,8 @@ function WhyUs() {
                 </div>
               </motion.div>
 
-              <motion.div 
-                variants={fadeUp} 
+              <motion.div
+                variants={fadeUp}
                 className="value-bullet-card card-orange"
                 whileHover={{
                   y: -5,
@@ -196,7 +196,7 @@ function WhyUs() {
             transition={{ duration: 0.6 }}
             className="solutions-img-wrap"
           >
-            <img src="/images/whyus_solutions.png" alt="Complete digital features" className="solutions-img" />
+            <img src="/img/offering.png" alt="Complete digital features" className="solutions-img" />
           </motion.div>
         </div>
       </section>

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiMenu, FiX, FiChevronDown, FiSun, FiMoon } from 'react-icons/fi';
+import { FiMenu, FiX, FiChevronDown, FiSun, FiMoon, FiArrowRight } from 'react-icons/fi';
 import './Navbar.css';
 
 function Navbar() {
@@ -13,6 +13,29 @@ function Navbar() {
     return localStorage.getItem('theme') || 'light';
   });
   const location = useLocation();
+  const closeTimeoutRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setActiveDropdown('services');
+  };
+
+  const handleMouseLeave = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 120); // 120ms delay - fast exit but holds for quick slips
+  };
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Dark Mode toggling effect
   useEffect(() => {
@@ -90,6 +113,24 @@ function Navbar() {
     { name: 'Shopify Website', path: '/more-services/shopify-website-build-in-mumbai' },
   ];
 
+  const businessCardFeatures = [
+    { name: 'AI Card Recognition', path: '/business-tools/business-card-scanner-in-mumbai' },
+    { name: 'WhatsApp Based', path: '/business-tools/business-card-scanner-in-mumbai' },
+    { name: 'Google Sheets Export', path: '/business-tools/business-card-scanner-in-mumbai' },
+    { name: 'CRM Integration', path: '/business-tools/business-card-scanner-in-mumbai' },
+    { name: 'Bulk Processing', path: '/business-tools/business-card-scanner-in-mumbai' },
+  ];
+
+  const whatsappApi = [
+    { name: 'Connect WhatsApp', path: '/whatsapp-api/whatsapp-business-api-provider-in-mumbai' },
+    { name: 'Shared Live Chat', path: '/whatsapp-api/whatsapp-shared-inbox-in-mumbai' },
+    { name: 'Contact Organizer', path: '/whatsapp-api/whatsapp-contact-management-in-mumbai' },
+    { name: 'Message Templates', path: '/whatsapp-api/whatsapp-message-template-service-in-mumbai' },
+    { name: 'Broadcast Campaigns', path: '/whatsapp-api/whatsapp-broadcast-service-in-mumbai' },
+    { name: 'Automated Order Alerts', path: '/whatsapp-api/whatsapp-order-notification-service-in-mumbai' },
+  ];
+
+
   return (
     <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
       <div className="navbar-container container">
@@ -127,8 +168,8 @@ function Navbar() {
           {/* Combined Services Mega Menu Dropdown */}
           <div
             className="nav-dropdown-wrapper"
-            onMouseEnter={() => setActiveDropdown('services')}
-            onMouseLeave={() => setActiveDropdown(null)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <button className="nav-dropdown-btn">
               Services <FiChevronDown className={`chevron-icon ${activeDropdown === 'services' ? 'rotate' : ''}`} />
@@ -136,14 +177,38 @@ function Navbar() {
             <AnimatePresence>
               {activeDropdown === 'services' && (
                 <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 15, x: '-50%' }}
+                  animate={{ opacity: 1, y: 0, x: '-50%' }}
+                  exit={{ opacity: 0, y: 15, x: '-50%' }}
                   transition={{ duration: 0.2 }}
                   className="nav-megamenu"
                 >
                   <div className="megamenu-grid">
-                    {/* Column 1: API Services */}
+                    {/* Column 1: Business Card Scanner */}
+                    <div className="megamenu-col">
+                      <h4 className="megamenu-heading">Business Card Scanner</h4>
+                      <div className="megamenu-links">
+                        {businessCardFeatures.map((service, idx) => (
+                          <Link key={idx} to={service.path} className="megamenu-link-item">
+                            {service.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Column 2: WhatsApp API */}
+                    <div className="megamenu-col">
+                      <h4 className="megamenu-heading">WhatsApp API</h4>
+                      <div className="megamenu-links">
+                        {whatsappApi.map((service, idx) => (
+                          <Link key={idx} to={service.path} className="megamenu-link-item">
+                            {service.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Column 3: API Services */}
                     <div className="megamenu-col">
                       <h4 className="megamenu-heading">API Services</h4>
                       <div className="megamenu-links">
@@ -155,7 +220,7 @@ function Navbar() {
                       </div>
                     </div>
 
-                    {/* Column 2: Development Services */}
+                    {/* Column 4: Development Services */}
                     <div className="megamenu-col">
                       <h4 className="megamenu-heading">Development</h4>
                       <div className="megamenu-links">
@@ -167,7 +232,7 @@ function Navbar() {
                       </div>
                     </div>
 
-                    {/* Column 3: Additional Services */}
+                    {/* Column 5: More Offerings */}
                     <div className="megamenu-col">
                       <h4 className="megamenu-heading">More Offerings</h4>
                       <div className="megamenu-links">
@@ -184,12 +249,20 @@ function Navbar() {
             </AnimatePresence>
           </div>
 
+          <NavLink to="/ecommerce-services" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`}>
+            E-Com Automation
+          </NavLink>
+
           <NavLink to="/why-us/it-company-in-mumbai" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`}>
             Why Us
           </NavLink>
 
           <NavLink to="/portfolio/ecommerce-development-company-in-mumbai" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`}>
             Portfolio
+          </NavLink>
+
+          <NavLink to="/course/ecommerce-courses-in-mumbai" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`}>
+            Course
           </NavLink>
 
           <NavLink to="/contact/ecommerce-management-company-in-mumbai" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`}>
@@ -206,8 +279,8 @@ function Navbar() {
           >
             {theme === 'light' ? <FiMoon size={20} /> : <FiSun size={20} />}
           </button>
-          <Link to="/contact/ecommerce-management-company-in-mumbai" className="btn-primary-small">
-            Reach Us
+          <Link to="/get-quote" className="btn-primary-small" style={{ background: 'linear-gradient(135deg, #0d62a9 0%, #0a8fd4 40%, #06b6d4 70%)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            Get a Quote <FiArrowRight />
           </Link>
         </div>
 
@@ -238,8 +311,7 @@ function Navbar() {
           >
             <div className="mobile-menu-container container">
               <NavLink to="/" className="mobile-nav-link">Home</NavLink>
-              <NavLink to="/why-us/it-company-in-mumbai" className="mobile-nav-link">Why Us</NavLink>
-              <NavLink to="/portfolio/ecommerce-development-company-in-mumbai" className="mobile-nav-link">Portfolio</NavLink>
+              <NavLink to="/ecommerce-services" className="mobile-nav-link">E-Com Automation</NavLink>
 
               {/* Unified Mobile Services Accordion */}
               <div className="mobile-accordion">
@@ -247,6 +319,26 @@ function Navbar() {
                   Services <FiChevronDown className={`chevron-icon ${activeDropdown === 'services-m' ? 'rotate' : ''}`} />
                 </button>
                 <div className={`mobile-accordion-content ${activeDropdown === 'services-m' ? 'open' : ''}`}>
+
+                  {/* Business Card Scanner Section */}
+                  <div className="mobile-submenu-group">
+                    <h5 className="mobile-submenu-title">Business Card Scanner</h5>
+                    {businessCardFeatures.map((service, idx) => (
+                      <Link key={idx} to={service.path} className="mobile-dropdown-link">
+                        {service.name}
+                      </Link>
+                    ))}
+                  </div>
+
+                  {/* WhatsApp API Section */}
+                  <div className="mobile-submenu-group">
+                    <h5 className="mobile-submenu-title">WhatsApp API</h5>
+                    {whatsappApi.map((service, idx) => (
+                      <Link key={idx} to={service.path} className="mobile-dropdown-link">
+                        {service.name}
+                      </Link>
+                    ))}
+                  </div>
 
                   {/* API Services Section */}
                   <div className="mobile-submenu-group">
@@ -268,7 +360,7 @@ function Navbar() {
                     ))}
                   </div>
 
-                  {/* More Services Section */}
+                  {/* More Offerings Section */}
                   <div className="mobile-submenu-group">
                     <h5 className="mobile-submenu-title">More Offerings</h5>
                     {moreServices.map((service, idx) => (
@@ -281,11 +373,19 @@ function Navbar() {
                 </div>
               </div>
 
+              <NavLink to="/why-us/it-company-in-mumbai" className="mobile-nav-link">Why Us</NavLink>
+              <NavLink to="/portfolio/ecommerce-development-company-in-mumbai" className="mobile-nav-link">Portfolio</NavLink>
+              <NavLink to="/course/ecommerce-courses-in-mumbai" className="mobile-nav-link">Course</NavLink>
               <NavLink to="/contact/ecommerce-management-company-in-mumbai" className="mobile-nav-link">Contact</NavLink>
 
               <div className="mobile-menu-cta">
-                <Link to="/contact/ecommerce-management-company-in-mumbai" className="btn-primary" style={{ width: '100%' }}>
-                  Reach Us
+                <Link 
+                  to="/get-quote" 
+                  className="btn-primary" 
+                  style={{ background: 'linear-gradient(135deg, #0d62a9 0%, #0a8fd4 40%, #06b6d4 70%)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  onClick={() => setIsOpen(false)}
+                >
+                  Get a Quote <FiArrowRight />
                 </Link>
               </div>
             </div>

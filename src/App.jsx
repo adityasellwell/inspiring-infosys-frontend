@@ -4,13 +4,19 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 import Navbar from './components/layout/Navbar/Navbar';
 import Footer from './components/layout/Footer/Footer';
 import ScrollToTop from './components/layout/ScrollToTop/ScrollToTop';
-import Home from './pages/home/Home';
+import Home from './pages/Home/Home';
 import WhyUs from './pages/WhyUs/WhyUs';
-import Portfolio from './pages/Portfolio/Protfolio';
+import Portfolio from './pages/Portfolio/Portfolio';
 import Contact from './pages/Contact/Contact';
-import ApiServices from './pages/Api Services/Api Services';
-import DevelopmentServices from './pages/Developmemt Services/Development services';
-import MoreServices from './pages/More Services/More Services';
+import ApiServices from './pages/ApiServices/ApiServices';
+import DevelopmentServices from './pages/DevelopmentServices/DevelopmentServices';
+import MoreServices from './pages/MoreServices/MoreServices';
+import BusinessAutomation from './pages/BusinessAutomation/BusinessAutomation';
+import WhatsAppApi from './pages/WhatsAppApi/WhatsAppApi';
+import Course from './pages/Course/Course';
+import GetQuote from './pages/GetQuote/GetQuote';
+import Admin from './pages/Admin/Admin';
+
 
 function App() {
   const location = useLocation();
@@ -29,13 +35,15 @@ function App() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  return (
-    <div className="app-layout">
-      {/* Scroll Progress Bar */}
-      <motion.div className="scroll-progress-bar" style={{ scaleX }} />
+  const isAdmin = location.pathname.startsWith('/admin');
 
-      <Navbar />
-      <main className="main-content">
+  return (
+    <div className={isAdmin ? "admin-app-layout" : "app-layout"}>
+      {/* Scroll Progress Bar */}
+      {!isAdmin && <motion.div className="scroll-progress-bar" style={{ scaleX }} />}
+
+      {!isAdmin && <Navbar />}
+      <main className={isAdmin ? "admin-main-wrapper" : "main-content"}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/why-us" element={<Navigate to="/why-us/it-company-in-mumbai" replace />} />
@@ -50,10 +58,23 @@ function App() {
           <Route path="/development-services/:serviceId" element={<DevelopmentServices />} />
           <Route path="/more-services" element={<MoreServices />} />
           <Route path="/more-services/:serviceId" element={<MoreServices />} />
+          <Route path="/ecommerce-services" element={<Navigate to="/ecommerce-services/account-management-service-in-mumbai" replace />} />
+          <Route path="/ecommerce-services/:serviceId" element={<BusinessAutomation />} />
+          <Route path="/business-tools" element={<Navigate to="/business-tools/business-card-scanner-in-mumbai" replace />} />
+          <Route path="/business-tools/:serviceId" element={<BusinessAutomation />} />
+          {/* Kept for backward compatibility if needed, though they will redirect inside the component */}
+          <Route path="/business-automation" element={<BusinessAutomation />} />
+          <Route path="/business-automation/:serviceId" element={<BusinessAutomation />} />
+          <Route path="/whatsapp-api" element={<WhatsAppApi />} />
+          <Route path="/whatsapp-api/:serviceId" element={<WhatsAppApi />} />
+          <Route path="/course" element={<Navigate to="/course/ecommerce-courses-in-mumbai" replace />} />
+          <Route path="/course/ecommerce-courses-in-mumbai" element={<Course />} />
+          <Route path="/get-quote" element={<GetQuote />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
-      <Footer />
-      <ScrollToTop />
+      {!isAdmin && <Footer />}
+      {!isAdmin && <ScrollToTop />}
     </div>
   );
 }
