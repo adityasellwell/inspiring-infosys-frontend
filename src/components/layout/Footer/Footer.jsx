@@ -24,15 +24,15 @@ function Footer() {
         .then((res) => res.json())
         .then((data) => {
           if (data && typeof data.value === 'number') {
-            setVisitorCount(data.value + 99); // Start count at 100 for the first hit (1 + 99 = 100)
+            setVisitorCount(data.value + 50000); // Add 50,000 to the actual count
             localStorage.setItem('inspiring_infosys_visited', 'true');
           } else {
-            setVisitorCount(100);
+            setVisitorCount(50000);
           }
         })
         .catch((err) => {
           console.error('Error incrementing visitor count:', err);
-          setVisitorCount(100);
+          setVisitorCount(50000);
         });
     } else {
       // Returning visitor -> Just get the current count without incrementing
@@ -40,14 +40,14 @@ function Footer() {
         .then((res) => res.json())
         .then((data) => {
           if (data && typeof data.value === 'number') {
-            setVisitorCount(data.value + 99);
+            setVisitorCount(data.value + 50000); // Add 50,000 to the actual count
           } else {
-            setVisitorCount(100);
+            setVisitorCount(50000); // Default to 50,000
           }
         })
         .catch((err) => {
           console.error('Error fetching visitor count:', err);
-          setVisitorCount(100);
+          setVisitorCount(50000);
         });
     }
   }, []);
@@ -73,20 +73,41 @@ function Footer() {
           >
             <div className="footer-logo-wrapper">
               <img src="/images/logo2.png" alt="Inspiring Infosys Logo" className="footer-logo" />
-
             </div>
           </Link>
+
           <p className="footer-desc">
             We solve your complex technical and e-commerce problems so that you can focus on marketing and scaling your business profitably.
           </p>
+
           <div className="social-links">
-            <a href="https://facebook.com/share/1DASqPGPm7/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="social-icon-btn facebook" aria-label="Facebook">
+            <a
+              href="https://facebook.com/share/1DASqPGPm7/?mibextid=wwXIfr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-icon-btn facebook"
+              aria-label="Facebook"
+            >
               <FaFacebookF />
             </a>
-            <a href="https://instagram.com/learnsellwell" target="_blank" rel="noopener noreferrer" className="social-icon-btn instagram" aria-label="Instagram">
+
+            <a
+              href="https://instagram.com/learnsellwell"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-icon-btn instagram"
+              aria-label="Instagram"
+            >
               <FaInstagram />
             </a>
-            <a href="https://linkedin.com/company/inspiring-infosys" target="_blank" rel="noopener noreferrer" className="social-icon-btn linkedin" aria-label="LinkedIn">
+
+            <a
+              href="https://linkedin.com/company/inspiring-infosys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-icon-btn linkedin"
+              aria-label="LinkedIn"
+            >
               <FaLinkedinIn />
             </a>
           </div>
@@ -130,10 +151,12 @@ function Footer() {
               <FaPhoneAlt className="contact-icon" />
               <span>+91 8444040514</span>
             </li>
+
             <li>
               <FaEnvelope className="contact-icon" />
               <span>info@inspiringinfosys.com</span>
             </li>
+
             <li>
               <FaMapMarkerAlt className="contact-icon" />
               <span>Vasai, Thane, Mumbai, MH, India - 401208</span>
@@ -146,6 +169,7 @@ function Footer() {
       <div className="footer-bottom">
         <div className="container footer-bottom-container">
           <p>&copy; {currentYear} Inspiring Infosys. All rights reserved.</p>
+
           <div className="footer-bottom-links">
             <Link to="/privacy-policy">Privacy Policy</Link>
             <Link to="/terms-of-service">Terms of Service</Link>
