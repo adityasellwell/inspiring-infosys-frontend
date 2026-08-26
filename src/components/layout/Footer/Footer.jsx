@@ -80,37 +80,6 @@ function Footer() {
             We solve your complex technical and e-commerce problems so that you can focus on marketing and scaling your business profitably.
           </p>
 
-          <div className="social-links">
-            <a
-              href="https://facebook.com/share/1DASqPGPm7/?mibextid=wwXIfr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="social-icon-btn facebook"
-              aria-label="Facebook"
-            >
-              <FaFacebookF />
-            </a>
-
-            <a
-              href="https://instagram.com/learnsellwell"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="social-icon-btn instagram"
-              aria-label="Instagram"
-            >
-              <FaInstagram />
-            </a>
-
-            <a
-              href="https://linkedin.com/company/inspiring-infosys"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="social-icon-btn linkedin"
-              aria-label="LinkedIn"
-            >
-              <FaLinkedinIn />
-            </a>
-          </div>
 
           {/* Visitor Count Badge */}
           <div className="visitor-count-badge">
@@ -162,6 +131,38 @@ function Footer() {
               <span>Vasai, Thane, Mumbai, MH, India - 401208</span>
             </li>
           </ul>
+
+          <div className="social-links" style={{ marginTop: '0.5rem' }}>
+            <a
+              href="https://facebook.com/share/1DASqPGPm7/?mibextid=wwXIfr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-icon-btn facebook"
+              aria-label="Facebook"
+            >
+              <FaFacebookF />
+            </a>
+
+            <a
+              href="https://instagram.com/learnsellwell"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-icon-btn instagram"
+              aria-label="Instagram"
+            >
+              <FaInstagram />
+            </a>
+
+            <a
+              href="https://linkedin.com/company/inspiring-infosys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-icon-btn linkedin"
+              aria-label="LinkedIn"
+            >
+              <FaLinkedinIn />
+            </a>
+          </div>
         </div>
       </div>
 
@@ -169,11 +170,6 @@ function Footer() {
       <div className="footer-bottom">
         <div className="container footer-bottom-container">
           <p>&copy; {currentYear} Inspiring Infosys. All rights reserved.</p>
-
-          <div className="footer-bottom-links">
-            <Link to="/privacy-policy">Privacy Policy</Link>
-            <Link to="/terms-of-service">Terms of Service</Link>
-          </div>
         </div>
       </div>
     </footer>

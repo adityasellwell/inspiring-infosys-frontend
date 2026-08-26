@@ -610,7 +610,6 @@ const getSlideGradient = (idx) => {
 
 function Home() {
   const [openFaq, setOpenFaq] = useState(null);
-  const [faqSearch, setFaqSearch] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
   const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
@@ -1466,26 +1465,6 @@ function Home() {
           >
             <motion.span variants={fadeUp} className="section-badge">FAQs</motion.span>
             <motion.h2 variants={fadeUp} className="section-title">Frequently Asked Questions</motion.h2>
-            <motion.p variants={fadeUp} className="section-desc">
-              Everything you need to know about working with us.
-            </motion.p>
-          </motion.div>
-
-          {/* Interactive FAQ Search Bar */}
-          <motion.div
-            className="faq-search-container"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <input
-              type="text"
-              placeholder="Search FAQs (e-commerce, software, pricing...)"
-              value={faqSearch}
-              onChange={(e) => setFaqSearch(e.target.value)}
-              className="faq-search-input"
-            />
           </motion.div>
 
           <motion.div
@@ -1495,10 +1474,7 @@ function Home() {
             viewport={{ once: true, margin: '-60px' }}
             variants={stagger}
           >
-            {FAQS.filter(faq =>
-              faq.q.toLowerCase().includes(faqSearch.toLowerCase()) ||
-              faq.a.toLowerCase().includes(faqSearch.toLowerCase())
-            ).map((faq, idx) => (
+            {FAQS.map((faq, idx) => (
               <motion.div key={idx} variants={fadeUp} className={`faq-item ${openFaq === faq.q ? 'open' : ''}`}>
                 <button
                   className="faq-question"
