@@ -1,6 +1,36 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # 301 Redirects from old .php pages to new React URLs
+  RewriteRule ^index\.php$ / [R=301,L,NC]
+  RewriteRule ^contact\.php$ /contact/ecommerce-management-company-in-mumbai [R=301,L,NC]
+  RewriteRule ^why-us\.php$ /why-us/it-company-in-mumbai [R=301,L,NC]
+  RewriteRule ^portfolio\.php$ /portfolio/ecommerce-development-company-in-mumbai [R=301,L,NC]
+  
+  # API Services
+  RewriteRule ^amazon-api-service-provider-in-mumbai\.php$ /api-services/amazon-api-service-provider-in-mumbai [R=301,L,NC]
+  RewriteRule ^flipkart-api-service-provider-in-mumbai\.php$ /api-services/flipkart-api-service-provider-in-mumbai [R=301,L,NC]
+  RewriteRule ^jiomart-api-service-provider-in-mumbai\.php$ /api-services/jiomart-api-service-provider-in-mumbai [R=301,L,NC]
+  RewriteRule ^myntra-api-service-provider-in-mumbai\.php$ /api-services/myntra-api-service-provider-in-mumbai [R=301,L,NC]
+  RewriteRule ^meesho-api-service-provider-in-mumbai\.php$ /api-services/meesho-api-service-provider-in-mumbai [R=301,L,NC]
+
+  # Development Services
+  RewriteRule ^software-development-service-in-mumbai\.php$ /development-services/software-development-service-in-mumbai [R=301,L,NC]
+  RewriteRule ^website-development-service-in-mumbai\.php$ /development-services/website-development-service-in-mumbai [R=301,L,NC]
+  RewriteRule ^mobile-app-development-service-in-mumbai\.php$ /development-services/mobile-app-development-service-in-mumbai [R=301,L,NC]
+  RewriteRule ^it-business-solution-in-mumbai\.php$ /development-services/it-business-solution-in-mumbai [R=301,L,NC]
+  RewriteRule ^erp-crm-solution-in-mumbai\.php$ /development-services/erp-crm-solution-in-mumbai [R=301,L,NC]
+  RewriteRule ^outsource-consulting-service-in-mumbai\.php$ /development-services/outsource-consulting-service-in-mumbai [R=301,L,NC]
+
+  # More Services
+  RewriteRule ^payment-gateway-solution-in-mumbai\.php$ /more-services/payment-gateway-solution-in-mumbai [R=301,L,NC]
+  RewriteRule ^bulk-sms-service-in-mumbai\.php$ /more-services/bulk-sms-service-in-mumbai [R=301,L,NC]
+  RewriteRule ^seo-service-in-mumbai\.php$ /more-services/seo-service-provider-in-mumbai [R=301,L,NC]
+  RewriteRule ^voice-call-service-provider-in-mumbai\.php$ /more-services/voice-call-service-provider-in-mumbai [R=301,L,NC]
+  RewriteRule ^shopify-website-build-in-mumbai\.php$ /more-services/shopify-website-build-in-mumbai [R=301,L,NC]
+
+  # SPA Routing
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
