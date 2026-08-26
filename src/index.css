@@ -147,7 +147,7 @@ svg {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--bg-tertiary);
+  background: rgba(var(--primary-rgb), 0.6);
   border: 2px solid var(--bg-primary);
   border-radius: 5px;
 }

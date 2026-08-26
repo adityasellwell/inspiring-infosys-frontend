@@ -93,21 +93,15 @@
 
 .controls-container {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-}
-
-@media (min-width: 768px) {
-  .controls-container {
-    flex-direction: row;
-  }
+  width: 100%;
 }
 
 .filter-chips {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.5rem;
 }
 

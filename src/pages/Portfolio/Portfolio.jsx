@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiExternalLink, FiSearch } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 import { projectsApi } from '../../api/api';
 import './Portfolio.css';
 
 const PROJECTS = [
   {
     title: 'SellWell',
-    category: 'E-Commerce',
+    category: 'Software',
     img: '/img/portsellwellimage.webp',
     link: 'https://sellwellone.com/',
     desc: 'Centralized e-commerce automation dashboard to manage inventory, orders, and performance across multiple marketplace seller accounts.',
@@ -18,13 +18,6 @@ const PROJECTS = [
     img: '/img/web-spartan.webp',
     link: 'https://spartannutrition.com/',
     desc: 'Custom designed high-performance responsive website for sports nutrition products.',
-  },
-  {
-    title: 'Tap2Cash',
-    category: 'Software',
-    img: '/img/taptocash.webp',
-    link: 'https://tap2cash.in/',
-    desc: 'Interactive POS and financial transaction software solution.',
   },
   {
     title: 'Lactra B2B',
@@ -60,7 +53,6 @@ const FILTERS = ['All', 'Websites', 'E-Commerce', 'Software'];
 
 function Portfolio() {
   const [selectedFilter, setSelectedFilter] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
   const [dbProjects, setDbProjects] = useState([]);
 
   // Fetch showcase projects from backend on mount
@@ -78,12 +70,7 @@ function Portfolio() {
 
   const filteredProjects = activeProjects.filter((project) => {
     const category = project.category || 'Websites';
-    const title = project.title || '';
-    const desc = project.description || project.desc || '';
-    const matchesFilter = selectedFilter === 'All' || category === selectedFilter;
-    const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      desc.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
+    return selectedFilter === 'All' || category === selectedFilter;
   });
 
   return (
@@ -118,7 +105,7 @@ function Portfolio() {
         </div>
       </section>
 
-      {/* ── Filter & Search Controls ──────────────────────────────── */}
+      {/* ── Filter Controls ──────────────────────────────── */}
       <section className="portfolio-controls-section">
         <div className="container controls-container">
           <div className="filter-chips">
@@ -131,16 +118,6 @@ function Portfolio() {
                 {filter}
               </button>
             ))}
-          </div>
-
-          <div className="search-bar">
-            <FiSearch className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search projects..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
           </div>
         </div>
       </section>

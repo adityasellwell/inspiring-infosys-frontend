@@ -128,7 +128,7 @@ function Footer() {
 
             <li>
               <FaMapMarkerAlt className="contact-icon" />
-              <span>Vasai, Thane, Mumbai, MH, India - 401208</span>
+              <span>203, Second Floor, DJ Arcade, Behind Dhuri Arcade, Near Navghar Bus Depot, Next to Rishikesh Hotel, Vasai West, Mumbai, Maharashtra - 401202</span>
             </li>
           </ul>
 
