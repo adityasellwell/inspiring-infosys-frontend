@@ -146,35 +146,35 @@ const WHY_US = [
 const SERVICES = [
   {
     title: 'E-Commerce Automation',
-    img: '/img/sellwell2.png',
+    img: '/img/sellwell2.webp',
     items: ['Account Management', 'Advertising & Marketing', 'Product Listing & Content', 'Inventory & Order Sync', 'Automated Pricing'],
     link: '/business-automation',
     label: 'Automation Tools',
   },
   {
     title: 'WhatsApp API',
-    img: '/img/order.png',
+    img: '/img/order.webp',
     items: ['Connect WhatsApp', 'Shared Live Chat', 'Broadcast Campaigns', 'Message Templates', 'Automated Order Alerts'],
     link: '/whatsapp-api',
     label: 'WhatsApp API',
   },
   {
     title: 'API Services',
-    img: '/img/imageApi.png',
+    img: '/img/imageApi.webp',
     items: ['Amazon', 'Flipkart', 'Jiomart', 'Myntra', 'Meesho'],
     link: '/api-services',
     label: 'E-Commerce APIs',
   },
   {
     title: 'Development Services',
-    img: '/img/sdlc.png',
+    img: '/img/sdlc.webp',
     items: ['Software Development', 'Website Development', 'App Development', 'IT Business Solutions', 'ERP & CRM'],
     link: '/development-services',
     label: 'Dev Solutions',
   },
   {
     title: 'Business Card Scanner',
-    img: '/img/card.png',
+    img: '/img/card.webp',
     items: ['AI Card Recognition', 'WhatsApp Based', 'Google Sheets Export', 'CRM Integration', 'Bulk Processing'],
     link: '/business-automation/business-card-scanner',
     label: 'Agent Tap2Read',
@@ -182,12 +182,12 @@ const SERVICES = [
 ];
 
 const PROJECTS = [
-  { title: 'SellWell', category: 'E-Commerce Automation', img: '/img/portsellwellimage.png', link: 'https://sellwellone.com/' },
-  { title: 'Lactra B2B', category: 'Website Development', img: '/img/Lactra.jpg', link: 'https://www.lactra.in/ ' },
-  { title: 'Spartan Nutrition', category: 'Website Development', img: '/img/web-spartan.png', link: 'https://spartannutrition.com/' },
-  { title: 'Tap2Cash', category: 'Software Development', img: '/img/taptocash.png', link: 'https://tap2cash.in/' },
-  { title: 'Ayaan Toys', category: 'E-Commerce', img: '/img/Web-ayantoys.png', link: 'https://ayaantoys.in' },
-  { title: 'Lycot Swimwear', category: 'Website Development', img: '/img/Web-lycot.png', link: 'https://www.lycot.com/password' },
+  { title: 'SellWell', category: 'E-Commerce Automation', img: '/img/portsellwellimage.webp', link: 'https://sellwellone.com/' },
+  { title: 'Lactra B2B', category: 'Website Development', img: '/img/Lactra.webp', link: 'https://www.lactra.in/ ' },
+  { title: 'Spartan Nutrition', category: 'Website Development', img: '/img/web-spartan.webp', link: 'https://spartannutrition.com/' },
+  { title: 'Tap2Cash', category: 'Software Development', img: '/img/taptocash.webp', link: 'https://tap2cash.in/' },
+  { title: 'Ayaan Toys', category: 'E-Commerce', img: '/img/Web-ayantoys.webp', link: 'https://ayaantoys.in' },
+  { title: 'Lycot Swimwear', category: 'Website Development', img: '/img/Web-lycot.webp', link: 'https://www.lycot.com/password' },
 ];
 
 const TECH = [
@@ -307,7 +307,7 @@ const SERVICES_SLIDES = [
     subheading: "Centralize your seller accounts, automate inventory sync across multiple channels, manage dynamic pricing, and protect your brand registrations.",
     primaryCta: { label: "Explore Automation", path: "https://sellwellone.com/", isExternal: true },
     secondaryCta: { label: "Contact Us", path: "/contact/ecommerce-management-company-in-mumbai" },
-    bgImage: "/img/ecoms.png",
+    bgImage: "/img/ecoms.webp",
     gradient: "linear-gradient(135deg, #0d62a9 0%, #0a8fd4 40%, #06b6d4 70%, #8bc53f 100%)"
   },
   {
@@ -316,7 +316,7 @@ const SERVICES_SLIDES = [
     subheading: "Connect your official WhatsApp Business line to route support chats to a shared inbox, run broadcasting campaigns, and trigger automated purchase notifications.",
     primaryCta: { label: "Discover WhatsApp API", path: "https://sellwellone.com/", isExternal: true },
     secondaryCta: { label: "Contact Us", path: "/contact/ecommerce-management-company-in-mumbai" },
-    bgImage: "/img/shared_chat_inbox.jpg",
+    bgImage: "/img/shared_chat_inbox.webp",
     gradient: "linear-gradient(135deg, #0d62a9 0%, #059669 40%, #10b981 70%, #8bc53f 100%)"
   },
   {
@@ -325,7 +325,7 @@ const SERVICES_SLIDES = [
     subheading: "Integrate official APIs to sync inventory, catalog listings, order handovers, and tracking bills directly from your seller dashboard.",
     primaryCta: { label: "Learn API Services", path: "https://sellwellone.com/", isExternal: true },
     secondaryCta: { label: "Contact Us", path: "/contact/ecommerce-management-company-in-mumbai" },
-    bgImage: "/img/imageApi.png",
+    bgImage: "/img/imageApi.webp",
     gradient: "linear-gradient(135deg, #0f172a 0%, #0d62a9 40%, #0284c7 70%, #06b6d4 100%)"
   },
   {
@@ -334,7 +334,7 @@ const SERVICES_SLIDES = [
     subheading: "Design and build native mobile apps, custom ERP/CRM tools, Shopify stores, and enterprise portals to streamline operations.",
     primaryCta: { label: "See Development Services", path: "/development-services", isExternal: false },
     secondaryCta: { label: "Contact Us", path: "/contact/ecommerce-management-company-in-mumbai" },
-    bgImage: "/img/Soft-develop.png",
+    bgImage: "/img/Soft-develop.webp",
     gradient: "linear-gradient(135deg, #0d62a9 0%, #4f46e5 40%, #06b6d4 70%, #8bc53f 100%)"
   },
   {
@@ -343,7 +343,7 @@ const SERVICES_SLIDES = [
     subheading: "Send a business card image on WhatsApp and instantly capture contact details, organize them automatically, export to sheets and sync with your CRM.",
     primaryCta: { label: "Learn Scanner Features", path: "https://sellwellone.com/", isExternal: true },
     secondaryCta: { label: "Contact Us", path: "/contact/ecommerce-management-company-in-mumbai" },
-    bgImage: "/img/card.png",
+    bgImage: "/img/card.webp",
     gradient: "linear-gradient(135deg, #0d62a9 0%, #0d9488 40%, #0f766e 70%, #8bc53f 100%)"
   }
 ];
@@ -745,6 +745,8 @@ function Home() {
                   src={SERVICES_SLIDES[currentServiceIndex].bgImage}
                   alt=""
                   className="classic-slide-bg-image"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="classic-slide-bg-overlay"></div>
               </div>
@@ -818,7 +820,7 @@ function Home() {
         <motion.div
           className="hero-bg-image"
           style={{
-            backgroundImage: "url('/img/modern-3d-bg.png')",
+            backgroundImage: "url('/img/modern-3d-bg.webp')",
             x: bgTranslateX,
             y: bgTranslateY
           }}
@@ -942,9 +944,10 @@ function Home() {
               }}
             >
               <img
-                src="/img/banner-three-image.png"
+                src="/img/banner-three-image.webp"
                 alt="Inspiring Infosys — Advanced IT & E-Commerce Solutions"
                 className="hero-image"
+                decoding="async"
               />
             </motion.div>
 
@@ -1078,7 +1081,7 @@ function Home() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <img src="/img/images.png" alt="Why choose Inspiring Infosys" className="why-image" />
+            <img src="/img/images.webp" alt="Why choose Inspiring Infosys" className="why-image" loading="lazy" decoding="async" />
           </motion.div>
         </div>
       </section>
@@ -1093,7 +1096,7 @@ function Home() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <img src="/img/imagess.png" alt="We exceed expectations" className="why-image" />
+            <img src="/img/imagess.webp" alt="We exceed expectations" className="why-image" loading="lazy" decoding="async" />
           </motion.div>
 
           <motion.div
@@ -1144,7 +1147,7 @@ function Home() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <img src="/img/ecoms.png" alt="SellWell Digital Strategy" className="why-image" />
+            <img src="/img/ecoms.webp" alt="SellWell Digital Strategy" className="why-image" loading="lazy" decoding="async" />
           </motion.div>
         </div>
       </section>
@@ -1191,7 +1194,7 @@ function Home() {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <div className="service-card-img-wrap">
-                  <img src={svc.img} alt={svc.title} className="service-card-img" />
+                  <img src={svc.img} alt={svc.title} className="service-card-img" loading="lazy" decoding="async" />
                   <span className="service-card-label">{svc.label}</span>
                 </div>
                 <div className="service-card-body">
@@ -1246,7 +1249,7 @@ function Home() {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <div className="project-img-wrap">
-                  <img src={proj.img} alt={proj.title} className="project-img" />
+                  <img src={proj.img} alt={proj.title} className="project-img" loading="lazy" decoding="async" />
                   <div className="project-overlay">
                     <Link to={proj.link} className="project-overlay-btn" aria-label={`View ${proj.title}`}>
                       <FiArrowRight size={20} />

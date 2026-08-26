@@ -40,7 +40,7 @@ function Admin() {
   // Form Fields State
   const [statForm, setStatForm] = useState({ label: '', value: '', suffix: '+', sortOrder: 0, isActive: true });
   const [testiForm, setTestiForm] = useState({ name: '', text: '', rating: 5, timeAgo: 'Just now', initials: '', isActive: true });
-  const [projForm, setProjForm] = useState({ title: '', category: 'Websites', imgUrl: '/img/ecoms.png', link: '', description: '', isActive: true });
+  const [projForm, setProjForm] = useState({ title: '', category: 'Websites', imgUrl: '/img/ecoms.webp', link: '', description: '', isActive: true });
   const [catForm, setCatForm] = useState({ id: '', title: '', desc: '', iconName: 'FiShoppingCart', sortOrder: 0, isActive: true });
   const [turnoverForm, setTurnoverForm] = useState({ label: '', sortOrder: 1, isActive: true });
   const [quoteForm, setQuoteForm] = useState({ name: '', email: '', phone: '', service: '', companyName: '', turnover: '', businessDesc: '', message: '', status: 'new' });
@@ -295,7 +295,7 @@ function Admin() {
   const cancelProjEdit = () => {
     setEditingId(null);
     setIsEditing(false);
-    setProjForm({ title: '', category: 'Websites', imgUrl: '/img/ecoms.png', link: '', description: '', isActive: true });
+    setProjForm({ title: '', category: 'Websites', imgUrl: '/img/ecoms.webp', link: '', description: '', isActive: true });
   };
 
   const handleProjFormSubmit = async (e) => {
@@ -313,7 +313,7 @@ function Admin() {
         const res = await projectsApi.create(projForm);
         if (res.success) {
           setProjectsList(prev => [...prev, res.data]);
-          setProjForm({ title: '', category: 'Websites', imgUrl: '/img/ecoms.png', link: '', description: '', isActive: true });
+          setProjForm({ title: '', category: 'Websites', imgUrl: '/img/ecoms.webp', link: '', description: '', isActive: true });
         } else {
           alert(res.message || 'Operation failed');
         }
@@ -593,7 +593,7 @@ function Admin() {
       <div className="admin-login-screen">
         <div className="admin-login-card">
           <div className="login-header">
-            <img src="/img/logo.png" alt="Inspiring Infosys" className="login-logo" onError={(e) => e.target.style.display = 'none'} />
+            <img src="/img/logo.webp" alt="Inspiring Infosys" className="login-logo" onError={(e) => e.target.style.display = 'none'} decoding="async" />
             <h2>Admin Panel Login</h2>
             <p>Enter email and password to access dashboard</p>
           </div>
@@ -672,9 +672,11 @@ function Admin() {
             aria-label="Scroll to top"
           >
             <img
-              src="/images/logo2.png"
+              src="/images/logo2.webp"
               alt="Inspiring Infosys Logo"
               className="admin-top-logo"
+              loading="lazy"
+              decoding="async"
             />
           </button>
         </div>
@@ -1071,7 +1073,7 @@ function Admin() {
                       <label>Image URL Path</label>
                       <input
                         type="text"
-                        placeholder="E.g., /img/web-spartan.png"
+                        placeholder="E.g., /img/web-spartan.webp"
                         value={projForm.imgUrl}
                         onChange={(e) => setProjForm({ ...projForm, imgUrl: e.target.value })}
                         required

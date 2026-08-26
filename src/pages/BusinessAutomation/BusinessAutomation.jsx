@@ -20,7 +20,7 @@ const stagger = {
 const AUTOMATION_DATA = {
   'account-management': {
     name: 'Account Management',
-    image: '/images/sellwellbgremoved.png',
+    image: '/images/sellwellbgremoved.webp',
     title: 'Complete E-Commerce Account Management',
     desc: 'SellWell will manage all your seller accounts across different E-Commerce platforms. We actively monitor performance metrics, escalate guideline and policy changes, and provide solutions for account flags so your seller rating remains optimal.',
     details: [
@@ -31,7 +31,7 @@ const AUTOMATION_DATA = {
   },
   'advertising-marketing': {
     name: 'Advertising & Marketing',
-    image: '/img/ads.png',
+    image: '/img/ads.webp',
     title: 'Revenue-Oriented PPC Ad Campaigns & Marketing',
     desc: 'Generate maximum profitability. After deep research of competitors and keywords, we suggest and implement the best PPC ad structures, optimize search-term bids daily, and configure lightning deals for a high return on investment.',
     details: [
@@ -42,7 +42,7 @@ const AUTOMATION_DATA = {
   },
   'product-content-listing': {
     name: 'Product Listing & Content',
-    image: '/img/catalog.png',
+    image: '/img/catalog.webp',
     title: 'High-Converting Product Content & Catalog Listings',
     desc: 'Build discoverability across marketplaces. We create rich product catalogs with search-optimized titles, comparative charts, bullet descriptions, and immersive A+ brand store graphics to convert page visits into orders.',
     details: [
@@ -53,7 +53,7 @@ const AUTOMATION_DATA = {
   },
   'inventory-order-sync': {
     name: 'Inventory & Order Sync',
-    image: '/img/auto.png',
+    image: '/img/auto.webp',
     title: 'Automated Real-Time Inventory & Order Lifecycle Management',
     desc: 'Avoid cancellation penalties and out-of-stock listings. We implement centralized tracking for incoming warehouse stock, purchase orders, client dispatches, courier handovers, and return logistics logs.',
     details: [
@@ -64,7 +64,7 @@ const AUTOMATION_DATA = {
   },
   'automated-pricing': {
     name: 'Automated Pricing Rules',
-    image: '/img/autoprice.png',
+    image: '/img/autoprice.webp',
     title: 'Dynamic Automated Pricing Tools & Buy Box Protection',
     desc: 'Win the Buy Box instantly. Configure smart pricing rules that respond to competitor price changes in real-time. Set customized threshold rules that protect your profit margins while keeping listings highly competitive.',
     details: [
@@ -75,7 +75,7 @@ const AUTOMATION_DATA = {
   },
   'brand-protection': {
     name: 'Brand Protection & Reinstate Support',
-    image: '/img/highjack.png',
+    image: '/img/highjack.webp',
     title: 'Brand Registry, Hijacker Removal, & Listing Restoration',
     desc: 'Protect your brand identity. We guide you through trademark registration, apply for official marketplace brand registries, file policy warnings against hijackers, and submit search & rescue listing appeals to reinstate suppressed products.',
     details: [
@@ -86,7 +86,7 @@ const AUTOMATION_DATA = {
   },
   'business-card-scanner': {
     name: 'Business Card Scanner',
-    image: '/img/card.png',
+    image: '/img/card.webp',
     title: 'AI-Powered Business Card Scanner (Agent Tap2Read)',
     desc: 'Turn business cards into leads instantly. Send a business card image on WhatsApp and instantly capture contact information, organize it automatically, export to sheets, and sync with your CRM.',
     details: [
@@ -234,7 +234,7 @@ function BusinessAutomation() {
 
               <div className="business-service-visual">
                 <div className="business-image-card">
-                  <img src={activeService.image} alt={activeService.name} className="business-visual-img" />
+                  <img src={activeService.image} alt={activeService.name} className="business-visual-img" loading="lazy" decoding="async" />
                 </div>
               </div>
             </motion.div>

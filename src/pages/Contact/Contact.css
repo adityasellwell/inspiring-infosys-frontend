@@ -6,7 +6,7 @@
 .contact-hero {
   position: relative;
   padding: 5.5rem 0 4.5rem;
-  background: url('/img/home-bg.jpg') center center no-repeat;
+  background: url('/img/home-bg.webp') center center no-repeat;
   background-size: cover;
   border-bottom: 1px solid var(--border-color);
   overflow: hidden;

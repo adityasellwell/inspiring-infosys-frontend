@@ -17,7 +17,7 @@ const stagger = {
 const SERVICES_DATA = {
   amazon: {
     name: 'Amazon SP-API',
-    logo: '/img/amazon1.png',
+    logo: '/img/amazon1.webp',
     title: 'Accelerate Your Amazon Business with Selling Partner APIs',
     desc: 'Power your Amazon marketplace business with custom-built apps and Selling Partner API integrations. We help brands, aggregators, and sellers automate complex operations, reduce manual errors, and scale faster.',
     features: [
@@ -29,7 +29,7 @@ const SERVICES_DATA = {
   },
   flipkart: {
     name: 'Flipkart API',
-    logo: '/img/flipkart1.png',
+    logo: '/img/flipkart1.webp',
     title: 'Automate Flipkart Operations and Order Cycles',
     desc: 'The Flipkart Marketplace Seller APIs allow your software applications to programmatically access and exchange data with the Flipkart seller dashboard. Streamline order processing, shipping labels, and invoices at scale.',
     features: [
@@ -41,7 +41,7 @@ const SERVICES_DATA = {
   },
   jiomart: {
     name: 'JioMart API',
-    logo: '/img/jiomart.png', // Fallback marketplace graphic
+    logo: '/img/jiomart.webp', // Fallback marketplace graphic
     title: 'JioMart Integration & Centralized Account Sync',
     desc: 'Scale your reach on India\'s fastest-growing grocery and electronics marketplace. Our JioMart API connectors help you centralize price catalog management and sync order feeds into your local ERP or POS system.',
     features: [
@@ -53,7 +53,7 @@ const SERVICES_DATA = {
   },
   myntra: {
     name: 'Myntra API',
-    logo: '/img/myntra.png',
+    logo: '/img/myntra.webp',
     title: 'Automated Fashion E-Commerce Operations for Myntra',
     desc: 'Manage fashion listings, catalog sheets, order dispatches, and returns programmatically. Our Myntra API integrations help fashion brands maintain high marketplace rating scores by keeping fulfillment times minimal.',
     features: [
@@ -65,7 +65,7 @@ const SERVICES_DATA = {
   },
   meesho: {
     name: 'Meesho API',
-    logo: '/img/meesho.png',
+    logo: '/img/meesho.webp',
     title: 'Meesho Automation for Social E-Commerce Sellers',
     desc: 'Scale your social e-commerce sales on Meesho with smart API automation tools. Programmatically handle high order volumes, auto-sync pricing adjustments, and retrieve Meesho payout settlement reports instantly.',
     features: [
@@ -187,7 +187,7 @@ function ApiServices() {
 
               <div className="api-service-visual">
                 <div className="api-logo-card">
-                  <img src={activeService.logo} alt={`${activeService.name} logo`} className="api-logo-img" />
+                  <img src={activeService.logo} alt={`${activeService.name} logo`} className="api-logo-img" loading="lazy" decoding="async" />
                 </div>
                 <div className="api-tech-badge">
                   <FiCpu size={18} /> Marketplace Sync Active

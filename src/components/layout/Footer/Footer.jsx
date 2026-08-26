@@ -72,7 +72,7 @@ function Footer() {
             }}
           >
             <div className="footer-logo-wrapper">
-              <img src="/images/logo2.png" alt="Inspiring Infosys Logo" className="footer-logo" />
+              <img src="/images/logo2.webp" alt="Inspiring Infosys Logo" className="footer-logo" loading="lazy" decoding="async" />
             </div>
           </Link>
 

@@ -17,7 +17,7 @@ const stagger = {
 const WHATSAPP_DATA = {
   'connect-whatsapp': {
     name: 'Connect WhatsApp',
-    image: '/img/wp.png',
+    image: '/img/wp.webp',
     title: 'Meta Official WhatsApp Cloud API Integration',
     desc: 'Link your official WhatsApp Business API directly with your e-commerce platform. Automate customer chats, trigger notification responses, and secure your messaging workflows through official Meta API gateways.',
     details: [
@@ -28,7 +28,7 @@ const WHATSAPP_DATA = {
   },
   'shared-live-chat': {
     name: 'Shared Live Chat',
-    image: '/img/livechat.png',
+    image: '/img/livechat.webp',
     title: 'Shared Live Chat Support Team Inbox',
     desc: 'Equip your agents with a unified team inbox. Monitor incoming client messages in real-time, allocate tickets to agents automatically, log response durations, and resolve customer issues collaboratively.',
     details: [
@@ -39,7 +39,7 @@ const WHATSAPP_DATA = {
   },
   'contact-organizer': {
     name: 'Contact Organizer',
-    image: '/img/contact.png',
+    image: '/img/contact.webp',
     title: 'Smart Contact Organizer & CRM Sync',
     desc: 'Automatically organize and tag your contact directories. Segment clients by order status (e.g. abandoned cart, repeat customer), sync contacts with your CRM database, and export Excel lists for targeted outreach.',
     details: [
@@ -50,7 +50,7 @@ const WHATSAPP_DATA = {
   },
   'message-templates': {
     name: 'Message Templates',
-    image: '/img/message.png',
+    image: '/img/message.webp',
     title: 'Template Builder & Interactive Buttons',
     desc: 'Build and register approved Meta templates. Personalize messaging fields with dynamic variables, add interactive call-to-action buttons (such as order tracking or support links), and track verification status.',
     details: [
@@ -61,7 +61,7 @@ const WHATSAPP_DATA = {
   },
   'broadcast-campaigns': {
     name: 'Broadcast Campaigns',
-    image: '/img/livechat.png',
+    image: '/img/livechat.webp',
     title: 'Bulk Broadcast Campaigns & ROI Analytics',
     desc: 'Announce seasonal deals and product launches. Send WhatsApp broadcasts to thousands of opted-in customers simultaneously, and evaluate campaigns using read ratios, reply counts, and conversion metrics.',
     details: [
@@ -72,7 +72,7 @@ const WHATSAPP_DATA = {
   },
   'automated-order-alerts': {
     name: 'Automated Order Alerts',
-    image: '/img/order.png',
+    image: '/img/order.webp',
     title: 'Triggered Transaction & Cart Recovery Alerts',
     desc: 'Automate checkout alerts. Trigger WhatsApp messages when a customer completes an order, when packages are marked for shipment dispatch, or to recover sales from abandoned shopping carts.',
     details: [
@@ -211,7 +211,7 @@ function WhatsAppApi() {
 
               <div className="whatsapp-service-visual">
                 <div className="whatsapp-image-card">
-                  <img src={activeService.image} alt={activeService.name} className="whatsapp-visual-img" />
+                  <img src={activeService.image} alt={activeService.name} className="whatsapp-visual-img" loading="lazy" decoding="async" />
                 </div>
               </div>
             </motion.div>

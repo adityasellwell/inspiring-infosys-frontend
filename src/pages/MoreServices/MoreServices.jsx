@@ -17,7 +17,7 @@ const stagger = {
 const MORE_DATA = {
   'payment-gateway-solution': {
     name: 'Payment Gateway',
-    image: '/img/payment.png',
+    image: '/img/payment.webp',
     title: 'Secure, Fast Payment Gateway Integrations',
     desc: 'Integrate reliable domestic and international payment gateways into your website or e-commerce store. We help you setup shopping carts, configure merchant accounts, and secure digital checkout interfaces.',
     details: [
@@ -28,7 +28,7 @@ const MORE_DATA = {
   },
   'bulk-sms-services': {
     name: 'Bulk SMS Services',
-    image: '/img/high.png',
+    image: '/img/high.webp',
     title: 'High-Delivery Promotional and Transactional Bulk SMS',
     desc: 'Reach your audience instantly. We set up transactional SMS channels for order updates, verification OTPs, and promotional SMS gateways to distribute marketing campaigns to customers at scale.',
     details: [
@@ -39,7 +39,7 @@ const MORE_DATA = {
   },
   'seo-services': {
     name: 'SEO Services',
-    image: '/img/seo.png',
+    image: '/img/seo.webp',
     title: 'Proven Search Engine Optimization (SEO) & Marketing',
     desc: 'Drive organic consumer traffic directly to your website. We implement thorough keyword research, perform on-page SEO audits, fix code bugs, and set up tracking to help you grow sales and ranking revenue.',
     details: [
@@ -50,7 +50,7 @@ const MORE_DATA = {
   },
   'voice-call-provider': {
     name: 'Voice Call Provider',
-    image: '/img/broadcast.png',
+    image: '/img/broadcast.webp',
     title: 'Automated Voice Broadcast & Interactive Systems (IVR)',
     desc: 'Boost conversion rates with custom voice broadcast solutions. Broadcast recorded messages, reminders, or alert responses to thousands of customers simultaneously with complete delivery logs.',
     details: [
@@ -61,7 +61,7 @@ const MORE_DATA = {
   },
   'build-shopify-website': {
     name: 'Build Shopify Website',
-    image: '/img/shopify.png',
+    image: '/img/shopify.webp',
     title: 'Sleek, Conversion-Focused Shopify Store Development',
     desc: 'Launch your online storefront with Shopify. We design customized Shopify themes, set up product inventory collections, integrate payment gateways, and configure checkout funnels so you can start selling immediately.',
     details: [
@@ -183,7 +183,7 @@ function MoreServices() {
 
               <div className="more-service-visual">
                 <div className="more-image-card">
-                  <img src={activeService.image} alt={activeService.name} className="more-visual-img" />
+                  <img src={activeService.image} alt={activeService.name} className="more-visual-img" loading="lazy" decoding="async" />
                 </div>
               </div>
             </motion.div>

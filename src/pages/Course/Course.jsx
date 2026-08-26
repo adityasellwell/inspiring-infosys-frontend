@@ -88,9 +88,10 @@ function Course() {
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
               <img
-                src="/images/alamsir.png"
+                src="/images/alamsir.webp"
                 alt="E-Commerce training program"
                 className="course-hero-img"
+                decoding="async"
               />
             </motion.div>
           </motion.div>
@@ -130,9 +131,11 @@ function Course() {
             <div className="instructor-image-col">
               <div className="instructor-photo-wrapper">
                 <img
-                  src="/images/alamsir2.png"
+                  src="/images/alamsir2.webp"
                   alt="Aalam Ansari - Lead Instructor"
                   className="instructor-img"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             </div>

@@ -151,9 +151,10 @@ function Navbar() {
           <div className="navbar-logo-wrapper">
 
             <img
-              src="/images/logo2.png"
+              src="/images/logo2.webp"
               alt="Inspiring Infosys Logo"
               className="navbar-logo"
+              decoding="async"
             />
 
           </div>

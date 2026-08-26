@@ -17,7 +17,7 @@ const stagger = {
 const DEV_DATA = {
   'software-development': {
     name: 'Software Development',
-    image: '/img/Soft-develop.png',
+    image: '/img/Soft-develop.webp',
     title: 'Bespoke Software Engineering for Enterprise Workflows',
     desc: 'Empower your daily workflows with robust custom software applications. We build feature-rich retail POS systems, inventory monitors, and school ERP dashboards designed to coordinate all departments, reduce paperwork, and improve communication.',
     details: [
@@ -28,7 +28,7 @@ const DEV_DATA = {
   },
   'website-development': {
     name: 'Website Development',
-    image: '/img/webdev.png',
+    image: '/img/webdev.webp',
     title: 'Fast, High-Converting Custom Responsive Websites',
     desc: 'Your brand website serves as the hub of your online outreach. We build beautiful, accessible websites optimized for lightning-fast page loading speeds, seamless desktop and mobile rendering, and optimal lead conversion.',
     details: [
@@ -39,7 +39,7 @@ const DEV_DATA = {
   },
   'app-development': {
     name: 'App Development',
-    image: '/img/appdev.png',
+    image: '/img/appdev.webp',
     title: 'Cross-Platform Mobile Application Development',
     desc: 'Translate your app ideas into powerful user experiences. We develop accessible cross-platform mobile apps for Android and iOS using high-performance frameworks like Flutter and React Native to keep users engaged.',
     details: [
@@ -50,7 +50,7 @@ const DEV_DATA = {
   },
   'it-business-solution': {
     name: 'IT Business Solutions',
-    image: '/img/host.png',
+    image: '/img/host.webp',
     title: 'Reliable Cloud Servers, Hosting, and Tech Solutions',
     desc: 'Eliminate system downtime. We manage cloud hosting servers, setup domains, configure secure emails, and install robust firewalls so that your online services run smoothly and securely 24/7.',
     details: [
@@ -61,7 +61,7 @@ const DEV_DATA = {
   },
   'erp-crm-solution': {
     name: 'ERP & CRM',
-    image: '/img/crm.png',
+    image: '/img/crm.webp',
     title: 'Bespoke ERP & CRM Customer Pipeline Dashboards',
     desc: 'Gain real-time business visibility. We design custom ERP and CRM dashboards tailored specifically to your company, allowing managers to track customer pipelines, follow leads, and generate performance sheets.',
     details: [
@@ -72,7 +72,7 @@ const DEV_DATA = {
   },
   'outsource-consulting': {
     name: 'Outsourcing & Consulting',
-    image: '/img/team.jpg',
+    image: '/img/team.webp',
     title: 'Outsourced Technical Consulting & Dedicated Development Teams',
     desc: 'Accelerate your development cycle by outsourcing to our dedicated teams. We provide technical consulting, architecture reviews, legacy migrations, and full-time remote developer teams customized to your exact timeline and requirements.',
     details: [
@@ -194,7 +194,7 @@ function DevelopmentServices() {
 
               <div className="dev-service-visual">
                 <div className={`dev-image-card ${activeTab === 'website-development' ? 'transparent-card' : ''}`}>
-                  <img src={activeService.image} alt={activeService.name} className="dev-visual-img" />
+                  <img src={activeService.image} alt={activeService.name} className="dev-visual-img" loading="lazy" decoding="async" />
                 </div>
               </div>
             </motion.div>

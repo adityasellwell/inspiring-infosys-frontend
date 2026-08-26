@@ -8,49 +8,49 @@ const PROJECTS = [
   {
     title: 'SellWell',
     category: 'E-Commerce',
-    img: '/img/portsellwellimage.png',
+    img: '/img/portsellwellimage.webp',
     link: 'https://sellwellone.com/',
     desc: 'Centralized e-commerce automation dashboard to manage inventory, orders, and performance across multiple marketplace seller accounts.',
   },
   {
     title: 'Spartan Nutrition',
     category: 'Websites',
-    img: '/img/web-spartan.png',
+    img: '/img/web-spartan.webp',
     link: 'https://spartannutrition.com/',
     desc: 'Custom designed high-performance responsive website for sports nutrition products.',
   },
   {
     title: 'Tap2Cash',
     category: 'Software',
-    img: '/img/taptocash.png',
+    img: '/img/taptocash.webp',
     link: 'https://tap2cash.in/',
     desc: 'Interactive POS and financial transaction software solution.',
   },
   {
     title: 'Lactra B2B',
     category: 'E-Commerce',
-    img: '/img/web-lactra.png',
+    img: '/img/web-lactra.webp',
     link: 'https://www.lactra.in/',
     desc: 'Wholesale B2B ordering portal and e-commerce listing management solution.',
   },
   {
     title: 'Ayaan Toys',
     category: 'E-Commerce',
-    img: '/img/Web-ayantoys.png',
+    img: '/img/Web-ayantoys.webp',
     link: 'https://ayaantoys.in',
     desc: 'Product catalog setup, inventory tracking and seller account automation.',
   },
   {
     title: 'Clasi Air',
     category: 'Websites',
-    img: '/img/Web-clasair.png',
+    img: '/img/Web-clasair.webp',
     link: 'https://clasiair.com',
     desc: 'Brand website optimized for page speed, search visibility, and conversion.',
   },
   {
     title: 'Lycot Swimwear',
     category: 'E-Commerce',
-    img: '/img/Web-lycot.png',
+    img: '/img/Web-lycot.webp',
     link: 'https://www.lycot.com/password',
     desc: 'Marketplace account setup, listings optimization, and active ad campaign management.',
   },
@@ -161,7 +161,7 @@ function Portfolio() {
                   className="portfolio-item-card"
                 >
                   <div className="portfolio-card-img-wrap">
-                    <img src={project.imgUrl || project.img} alt={project.title} className="portfolio-card-img" />
+                    <img src={project.imgUrl || project.img} alt={project.title} className="portfolio-card-img" loading="lazy" decoding="async" />
                     {project.link && (
                       <div className="portfolio-card-overlay">
                         <a

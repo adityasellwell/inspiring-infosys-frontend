@@ -56,7 +56,7 @@ function WhyUs() {
             transition={{ duration: 0.6 }}
             className="value-img-wrap"
           >
-            <img src="/img/growth.png" alt="Growth partner illustration" className="value-img" />
+            <img src="/img/growth.webp" alt="Growth partner illustration" className="value-img" loading="lazy" decoding="async" />
           </motion.div>
 
           <motion.div
@@ -196,7 +196,7 @@ function WhyUs() {
             transition={{ duration: 0.6 }}
             className="solutions-img-wrap"
           >
-            <img src="/img/offering.png" alt="Complete digital features" className="solutions-img" />
+            <img src="/img/offering.webp" alt="Complete digital features" className="solutions-img" loading="lazy" decoding="async" />
           </motion.div>
         </div>
       </section>
