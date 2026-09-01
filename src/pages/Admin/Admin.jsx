@@ -5,7 +5,7 @@ import {
   FiMenu
 } from 'react-icons/fi';
 import {
-  authApi, statsApi, testimonialsApi, projectsApi, quotesApi, consultationsApi, categoriesApi, turnoverApi
+  authApi, statsApi, testimonialsApi, projectsApi, quotesApi, consultationsApi, categoriesApi, turnoverApi, employeesApi
 } from '../../api/api';
 import './Admin.css';
 
@@ -30,6 +30,7 @@ function Admin() {
   const [statsList, setStatsList] = useState([]);
   const [testimonialsList, setTestimonialsList] = useState([]);
   const [projectsList, setProjectsList] = useState([]);
+  const [employeesList, setEmployeesList] = useState([]);
   const [quoteCategories, setQuoteCategories] = useState([]);
   const [turnoverOptions, setTurnoverOptions] = useState([]);
 
@@ -44,6 +45,7 @@ function Admin() {
   const [catForm, setCatForm] = useState({ id: '', title: '', desc: '', iconName: 'FiShoppingCart', sortOrder: 0, isActive: true });
   const [turnoverForm, setTurnoverForm] = useState({ label: '', sortOrder: 1, isActive: true });
   const [quoteForm, setQuoteForm] = useState({ name: '', email: '', phone: '', service: '', companyName: '', turnover: '', businessDesc: '', message: '', status: 'new' });
+  const [employeeForm, setEmployeeForm] = useState({ name: '', email: '', joinDate: '' });
 
   // Specific Filing Option Add Form (inline under Get Quote Config)
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
@@ -81,6 +83,11 @@ function Admin() {
     // Load projects
     projectsApi.getAll()
       .then(res => res.success && setProjectsList(res.data))
+      .catch(err => console.error(err));
+
+    // Load employees
+    employeesApi.getAll()
+      .then(res => res.success && setEmployeesList(res.data))
       .catch(err => console.error(err));
 
     // Load quote setup categories & filings
@@ -587,6 +594,68 @@ function Admin() {
     }
   };
 
+  // ── Employee Operations ───────────────────────────────────────────
+  const startEditEmployee = (emp) => {
+    setEditingId(emp.id);
+    setIsEditing(true);
+    setEmployeeForm({
+      name: emp.name,
+      email: emp.email,
+      joinDate: emp.joinDate ? new Date(emp.joinDate).toISOString().split('T')[0] : ''
+    });
+  };
+
+  const cancelEmployeeEdit = () => {
+    setEditingId(null);
+    setIsEditing(false);
+    setEmployeeForm({ name: '', email: '', joinDate: '' });
+  };
+
+  const handleEmployeeChange = (e) => {
+    const { name, value } = e.target;
+    setEmployeeForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleEmployeeFormSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (isEditing) {
+        const res = await employeesApi.update(editingId, employeeForm);
+        if (res.success) {
+          setEmployeesList(prev => prev.map(item => item.id === editingId ? res.data : item));
+          cancelEmployeeEdit();
+        } else {
+          alert(res.message || 'Failed to update employee');
+        }
+      } else {
+        const res = await employeesApi.create(employeeForm);
+        if (res.success) {
+          setEmployeeForm({ name: '', email: '', joinDate: '' });
+          fetchAllData();
+        } else {
+          alert(res.message || 'Failed to create employee');
+        }
+      }
+    } catch (error) {
+      console.error('[EMPLOYEE FORM]', error);
+      alert('Server error');
+    }
+  };
+
+  const handleDeleteEmployee = async (id) => {
+    if (!window.confirm('Delete this employee?')) return;
+    try {
+      const res = await employeesApi.delete(id);
+      if (res.success) {
+        setEmployeesList(prev => prev.filter(item => item.id !== id));
+      } else {
+        alert(res.message || 'Deletion failed');
+      }
+    } catch (err) {
+      alert('Deletion failed');
+    }
+  };
+
   // ── Render Login Screen if not authenticated ────────────────────
   if (!token) {
     return (
@@ -741,6 +810,12 @@ function Admin() {
               onClick={() => { setActiveTab('projects'); cancelProjEdit(); cancelQuoteEdit(); setIsSidebarOpen(false); }}
             >
               <FiFileText size={16} /> Portfolio CMS
+            </button>
+            <button
+              className={`admin-sidebar-btn ${activeTab === 'employees' ? 'active' : ''}`}
+              onClick={() => { setActiveTab('employees'); cancelEmployeeEdit(); setIsSidebarOpen(false); }}
+            >
+              <FiUsers size={16} /> Employees
             </button>
             <button
               className={`admin-sidebar-btn ${activeTab === 'quotes' ? 'active' : ''}`}
@@ -1158,6 +1233,113 @@ function Admin() {
                         </td>
                       </tr>
                     ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ─── Employees Management Section ─── */}
+          {activeTab === 'employees' && (
+            <div className="admin-projects-tab-pane">
+              <div className="admin-content-header">
+                <h1>Manage Employees</h1>
+              </div>
+
+              {/* Add/Edit Employee Form */}
+              <div className="admin-card">
+                <div className="admin-card-header">
+                  <h2>{isEditing ? 'Edit Employee' : 'Add New Employee'}</h2>
+                </div>
+                <form onSubmit={handleEmployeeFormSubmit} className="login-form">
+                  <div className="form-grid form-grid-2">
+                    <div className="admin-input-group">
+                      <label>Name</label>
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="E.g., Rahul Sharma"
+                        value={employeeForm.name}
+                        onChange={handleEmployeeChange}
+                        required
+                      />
+                    </div>
+                    <div className="admin-input-group">
+                      <label>Email</label>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="E.g., rahul@company.com"
+                        value={employeeForm.email}
+                        onChange={handleEmployeeChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="admin-input-group">
+                    <label>Join Date</label>
+                    <input
+                      type="date"
+                      name="joinDate"
+                      value={employeeForm.joinDate}
+                      onChange={handleEmployeeChange}
+                      required
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem', gap: '0.75rem' }}>
+                    {isEditing && (
+                      <button type="button" className="btn-gray" onClick={cancelEmployeeEdit}>
+                        Cancel
+                      </button>
+                    )}
+                    <button type="submit" className="btn-orange">
+                      {isEditing ? 'Update Employee' : <><FiPlus size={15} /> Add Employee</>}
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Employee List Table */}
+              <div className="table-responsive">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Join Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {employeesList.length === 0 ? (
+                      <tr>
+                        <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                          No employees found.
+                        </td>
+                      </tr>
+                    ) : (
+                      employeesList.map(employee => (
+                        <tr key={employee.id}>
+                          <td>{employee.id}</td>
+                          <td><strong>{employee.name}</strong></td>
+                          <td>{employee.email}</td>
+                          <td>{employee.joinDate ? new Date(employee.joinDate).toLocaleDateString() : '-'}</td>
+                          <td>
+                            <div className="table-actions">
+                              <button className="btn-table-action edit" onClick={() => startEditEmployee(employee)} title="Edit">
+                                <FiEdit2 />
+                              </button>
+                              <button className="btn-table-action delete" onClick={() => handleDeleteEmployee(employee.id)} title="Delete">
+                                <FiTrash2 />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

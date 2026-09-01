@@ -311,3 +311,38 @@ export const turnoverApi = {
     return res.json();
   }
 };
+// ── Employee Endpoints ─────────────────────────────────────────────
+export const employeesApi = {
+  getAll: async () => {
+    const res = await fetch(`${API_BASE}/employees`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  create: async (employeeData) => {
+    const res = await fetch(`${API_BASE}/employees`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(employeeData),
+    });
+    return res.json();
+  },
+
+  update: async (id, employeeData) => {
+    const res = await fetch(`${API_BASE}/employees/${id}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(employeeData),
+    });
+    return res.json();
+  },
+
+  delete: async (id) => {
+    const res = await fetch(`${API_BASE}/employees/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(false),
+    });
+    return res.json();
+  }
+};
