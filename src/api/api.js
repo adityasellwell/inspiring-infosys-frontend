@@ -1,5 +1,9 @@
 // API client layer for Inspiring Infosys CMS & Leads
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = import.meta.env.VITE_API_URL || (
+  typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3001/api'
+    : 'https://apiinspiringinfosys.com/api'
+);
 
 // Helper to add auth headers automatically
 const getHeaders = (isJson = true) => {

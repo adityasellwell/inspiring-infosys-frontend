@@ -7,13 +7,14 @@ import {
 import {
   authApi, statsApi, testimonialsApi, projectsApi, quotesApi, consultationsApi, categoriesApi, turnoverApi, employeesApi
 } from '../../api/api';
+import OfferLetter from './components/OfferLetter';
 import './Admin.css';
 
 function Admin() {
   const [token, setToken] = useState(localStorage.getItem('admin_token'));
   const [adminName, setAdminName] = useState(localStorage.getItem('admin_name') || 'Admin');
   const [activeTab, setActiveTab] = useState('stats'); // Default to Stats like Screenshot 1
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuTimeoutRef = useRef(null);
 
@@ -45,7 +46,11 @@ function Admin() {
   const [catForm, setCatForm] = useState({ id: '', title: '', desc: '', iconName: 'FiShoppingCart', sortOrder: 0, isActive: true });
   const [turnoverForm, setTurnoverForm] = useState({ label: '', sortOrder: 1, isActive: true });
   const [quoteForm, setQuoteForm] = useState({ name: '', email: '', phone: '', service: '', companyName: '', turnover: '', businessDesc: '', message: '', status: 'new' });
-  const [employeeForm, setEmployeeForm] = useState({ name: '', email: '', joinDate: '' });
+  const [employeeForm, setEmployeeForm] = useState({ name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
+  const [selectedOfferLetterEmployee, setSelectedOfferLetterEmployee] = useState(null);
+  const [employeeSubmitting, setEmployeeSubmitting] = useState(false);
+  const [showEmployeeForm, setShowEmployeeForm] = useState(false);
+  const [printingEmployee, setPrintingEmployee] = useState(null);
 
   // Specific Filing Option Add Form (inline under Get Quote Config)
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
@@ -595,20 +600,36 @@ function Admin() {
   };
 
   // ── Employee Operations ───────────────────────────────────────────
+  const handlePrintEmployee = (emp) => {
+    setPrintingEmployee(emp);
+    setTimeout(() => {
+      window.print();
+      setPrintingEmployee(null);
+    }, 300);
+  };
+
   const startEditEmployee = (emp) => {
     setEditingId(emp.id);
     setIsEditing(true);
+    setShowEmployeeForm(true);
     setEmployeeForm({
       name: emp.name,
       email: emp.email,
-      joinDate: emp.joinDate ? new Date(emp.joinDate).toISOString().split('T')[0] : ''
+      phone: emp.phone || '',
+      department: emp.department || '',
+      designation: emp.designation || '',
+      joinDate: emp.joinDate ? new Date(emp.joinDate).toISOString().split('T')[0] : '',
+      salary: emp.salary || '',
+      status: emp.status || 'Active',
+      address: emp.address || ''
     });
   };
 
   const cancelEmployeeEdit = () => {
     setEditingId(null);
     setIsEditing(false);
-    setEmployeeForm({ name: '', email: '', joinDate: '' });
+    setShowEmployeeForm(false);
+    setEmployeeForm({ name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
   };
 
   const handleEmployeeChange = (e) => {
@@ -618,6 +639,18 @@ function Admin() {
 
   const handleEmployeeFormSubmit = async (e) => {
     e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(employeeForm.email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+    const numericSalary = parseFloat(employeeForm.salary);
+    if (isNaN(numericSalary) || numericSalary <= 0) {
+      alert('Salary must be a positive number.');
+      return;
+    }
+
+    setEmployeeSubmitting(true);
     try {
       if (isEditing) {
         const res = await employeesApi.update(editingId, employeeForm);
@@ -630,7 +663,7 @@ function Admin() {
       } else {
         const res = await employeesApi.create(employeeForm);
         if (res.success) {
-          setEmployeeForm({ name: '', email: '', joinDate: '' });
+          setEmployeeForm({ name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
           fetchAllData();
         } else {
           alert(res.message || 'Failed to create employee');
@@ -639,11 +672,13 @@ function Admin() {
     } catch (error) {
       console.error('[EMPLOYEE FORM]', error);
       alert('Server error');
+    } finally {
+      setEmployeeSubmitting(false);
     }
   };
 
   const handleDeleteEmployee = async (id) => {
-    if (!window.confirm('Delete this employee?')) return;
+    if (!window.confirm('Are you sure you want to delete this employee?')) return;
     try {
       const res = await employeesApi.delete(id);
       if (res.success) {
@@ -779,7 +814,7 @@ function Admin() {
         </div>
       </header>
 
-      <div className="admin-dashboard-container">
+      <div className={`admin-dashboard-container ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
 
         {/* Overlay backdrop to close sidebar on mobile when clicked outside */}
         {isSidebarOpen && (
@@ -787,7 +822,7 @@ function Admin() {
         )}
 
         {/* ── Left Sidebar Panel ── */}
-        <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : 'collapsed'}`}>
           <div className="admin-sidebar-header">
             <h2>Admin Panel</h2>
           </div>
@@ -1241,108 +1276,194 @@ function Admin() {
 
           {/* ─── Employees Management Section ─── */}
           {activeTab === 'employees' && (
-            <div className="admin-projects-tab-pane">
-              <div className="admin-content-header">
-                <h1>Manage Employees</h1>
-              </div>
-
-              {/* Add/Edit Employee Form */}
-              <div className="admin-card">
-                <div className="admin-card-header">
-                  <h2>{isEditing ? 'Edit Employee' : 'Add New Employee'}</h2>
+            <div className="admin-employees-tab-pane">
+              <div className="admin-content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <h1>Manage Employees</h1>
                 </div>
-                <form onSubmit={handleEmployeeFormSubmit} className="login-form">
-                  <div className="form-grid form-grid-2">
-                    <div className="admin-input-group">
-                      <label>Name</label>
-                      <input
-                        type="text"
-                        name="name"
-                        placeholder="E.g., Rahul Sharma"
-                        value={employeeForm.name}
-                        onChange={handleEmployeeChange}
-                        required
-                      />
-                    </div>
-                    <div className="admin-input-group">
-                      <label>Email</label>
-                      <input
-                        type="email"
-                        name="email"
-                        placeholder="E.g., rahul@company.com"
-                        value={employeeForm.email}
-                        onChange={handleEmployeeChange}
-                        required
-                      />
-                    </div>
-                  </div>
+                <button
+                  type="button"
+                  className="btn-orange"
+                  onClick={() => {
+                    if (showEmployeeForm || isEditing) {
+                      cancelEmployeeEdit();
+                    } else {
+                      cancelEmployeeEdit();
+                      setShowEmployeeForm(true);
+                    }
+                  }}
+                >
+                  {showEmployeeForm || isEditing ? (
+                    <><FiX size={16} /> Close Form</>
+                  ) : (
+                    <><FiPlus size={16} /> Add Employee</>
+                  )}
+                </button>
+              </div>
 
-                  <div className="admin-input-group">
-                    <label>Join Date</label>
-                    <input
-                      type="date"
-                      name="joinDate"
-                      value={employeeForm.joinDate}
-                      onChange={handleEmployeeChange}
-                      required
-                    />
+              {/* If Form is Open (Add or Edit) -> Render ONLY Form Card */}
+              {(showEmployeeForm || isEditing) ? (
+                <div className="admin-card">
+                  <div className="admin-card-header">
+                    <h2>{isEditing ? 'Edit Employee' : 'Add New Employee'}</h2>
                   </div>
+                  <form onSubmit={handleEmployeeFormSubmit} className="login-form">
+                    <div className="form-grid form-grid-2">
+                      <div className="admin-input-group">
+                        <label>Name</label>
+                        <input type="text" name="name" placeholder="E.g., Rahul Sharma" value={employeeForm.name} onChange={handleEmployeeChange} required />
+                      </div>
+                      <div className="admin-input-group">
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="E.g., rahul@company.com" value={employeeForm.email} onChange={handleEmployeeChange} required />
+                      </div>
+                    </div>
+                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
+                      <div className="admin-input-group">
+                        <label>Phone</label>
+                        <input type="tel" name="phone" placeholder="E.g., 9876543210" value={employeeForm.phone} onChange={handleEmployeeChange} required />
+                      </div>
+                      <div className="admin-input-group">
+                        <label>Department</label>
+                        <input type="text" name="department" placeholder="E.g., IT" value={employeeForm.department} onChange={handleEmployeeChange} required />
+                      </div>
+                    </div>
+                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
+                      <div className="admin-input-group">
+                        <label>Designation</label>
+                        <input type="text" name="designation" placeholder="E.g., Software Engineer" value={employeeForm.designation} onChange={handleEmployeeChange} required />
+                      </div>
+                      <div className="admin-input-group">
+                        <label>Join Date</label>
+                        <input type="date" name="joinDate" value={employeeForm.joinDate} onChange={handleEmployeeChange} required />
+                      </div>
+                    </div>
+                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
+                      <div className="admin-input-group">
+                        <label>Salary</label>
+                        <input type="number" step="0.01" name="salary" placeholder="E.g., 50000.00" value={employeeForm.salary} onChange={handleEmployeeChange} required />
+                      </div>
+                      <div className="admin-input-group">
+                        <label>Status</label>
+                        <select name="status" value={employeeForm.status} onChange={handleEmployeeChange} required>
+                          <option value="Active">Active</option>
+                          <option value="Inactive">Inactive</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="admin-input-group" style={{ marginTop: '1.25rem' }}>
+                      <label>Address (Optional)</label>
+                      <textarea name="address" rows="3" placeholder="E.g., 123 Main St..." value={employeeForm.address} onChange={handleEmployeeChange} />
+                    </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem', gap: '0.75rem' }}>
-                    {isEditing && (
-                      <button type="button" className="btn-gray" onClick={cancelEmployeeEdit}>
-                        Cancel
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem', marginBottom: '0.5rem', gap: '0.75rem' }}>
+                      {isEditing && (
+                        <button type="button" className="btn-gray" onClick={cancelEmployeeEdit} disabled={employeeSubmitting}>
+                          Cancel Edit
+                        </button>
+                      )}
+                      <button type="submit" className="btn-orange" disabled={employeeSubmitting}>
+                        {employeeSubmitting
+                          ? (isEditing ? 'Updating...' : 'Creating...')
+                          : (isEditing ? 'Update Employee' : 'Create Employee')
+                        }
                       </button>
-                    )}
-                    <button type="submit" className="btn-orange">
-                      {isEditing ? 'Update Employee' : <><FiPlus size={15} /> Add Employee</>}
-                    </button>
+                    </div>
+                  </form>
+                </div>
+              ) : (
+                /* Otherwise -> Render ONLY Employee List Table Card */
+                <div className="admin-card employee-list-card">
+                  <div className="admin-card-header">
+                    <h2>Employee List</h2>
                   </div>
-                </form>
-              </div>
-
-              {/* Employee List Table */}
-              <div className="table-responsive">
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Join Date</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {employeesList.length === 0 ? (
-                      <tr>
-                        <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                          No employees found.
-                        </td>
-                      </tr>
-                    ) : (
-                      employeesList.map(employee => (
-                        <tr key={employee.id}>
-                          <td>{employee.id}</td>
-                          <td><strong>{employee.name}</strong></td>
-                          <td>{employee.email}</td>
-                          <td>{employee.joinDate ? new Date(employee.joinDate).toLocaleDateString() : '-'}</td>
-                          <td>
-                            <div className="table-actions">
-                              <button className="btn-table-action edit" onClick={() => startEditEmployee(employee)} title="Edit">
-                                <FiEdit2 />
-                              </button>
-                              <button className="btn-table-action delete" onClick={() => handleDeleteEmployee(employee.id)} title="Delete">
-                                <FiTrash2 />
-                              </button>
-                            </div>
-                          </td>
+                  <div className="employee-table-wrapper table-responsive">
+                    <table className="admin-table employee-table">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Name</th>
+                          <th>Email</th>
+                          <th>Phone</th>
+                          <th>Department</th>
+                          <th>Designation</th>
+                          <th>Join Date</th>
+                          <th>Salary</th>
+                          <th>Status</th>
+                          <th>Actions</th>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                      </thead>
+                      <tbody>
+                        {employeesList.length === 0 ? (
+                          <tr>
+                            <td colSpan="10" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                              No employees found.
+                            </td>
+                          </tr>
+                        ) : (
+                          employeesList.map((employee, index) => (
+                            <tr key={employee.id}>
+                              <td>{index + 1}</td>
+                              <td><strong>{employee.name}</strong></td>
+                              <td>{employee.email}</td>
+                              <td>{employee.phone}</td>
+                              <td>{employee.department}</td>
+                              <td>{employee.designation}</td>
+                              <td>{employee.joinDate ? new Date(employee.joinDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</td>
+                              <td>₹{Number(employee.salary).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                              <td>
+                                <span className={`status-badge status-${employee.status === 'Active' ? 'active' : 'inactive'}`}>
+                                  {employee.status}
+                                </span>
+                              </td>
+                              <td>
+                                <div className="table-actions" style={{ flexWrap: 'nowrap', gap: '0.3rem' }}>
+                                  <button
+                                    className="btn-table-action edit"
+                                    onClick={() => startEditEmployee(employee)}
+                                    title="Edit Employee"
+                                  >
+                                    <FiEdit2 size={14} />
+                                  </button>
+                                  <button
+                                    className="btn-table-action delete"
+                                    onClick={() => handleDeleteEmployee(employee.id)}
+                                    title="Delete Employee"
+                                  >
+                                    <FiTrash2 size={14} />
+                                  </button>
+                                  <button
+                                    className="btn-offer-letter-action"
+                                    onClick={() => setSelectedOfferLetterEmployee(employee)}
+                                    title="Generate Offer Letter"
+                                    style={{
+                                      padding: '0.25rem 0.45rem',
+                                      fontSize: '0.72rem',
+                                      fontWeight: '700',
+                                      borderRadius: '5px',
+                                      background: '#eff6ff',
+                                      color: '#2563eb',
+                                      border: '1px solid #bfdbfe',
+                                      cursor: 'pointer',
+                                      whiteSpace: 'nowrap',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '0.25rem'
+                                    }}
+                                  >
+                                    <FiFileText size={12} /> Offer Letter
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -1909,11 +2030,41 @@ function Admin() {
                 </div>
               </div>
 
+            {/* End Sidebar tabs */}
+
+          {/* ─── Hidden Print Layout (Only visible in @media print) ─── */}
+          {printingEmployee && (
+            <div className="print-employee-container">
+              <div className="print-header">
+                <h1>INSPIRING INFOSYS</h1>
+                <h2>EMPLOYEE DETAILS</h2>
+              </div>
+              <div className="print-details">
+                <div className="print-row"><strong>Employee ID:</strong> <span>{printingEmployee.id}</span></div>
+                <div className="print-row"><strong>Name:</strong> <span>{printingEmployee.name}</span></div>
+                <div className="print-row"><strong>Email:</strong> <span>{printingEmployee.email}</span></div>
+                <div className="print-row"><strong>Phone:</strong> <span>{printingEmployee.phone}</span></div>
+                <div className="print-row"><strong>Department:</strong> <span>{printingEmployee.department}</span></div>
+                <div className="print-row"><strong>Designation:</strong> <span>{printingEmployee.designation}</span></div>
+                <div className="print-row"><strong>Join Date:</strong> <span>{printingEmployee.joinDate ? new Date(printingEmployee.joinDate).toLocaleDateString() : '-'}</span></div>
+                <div className="print-row"><strong>Salary:</strong> <span>₹{Number(printingEmployee.salary).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
+                <div className="print-row"><strong>Status:</strong> <span>{printingEmployee.status}</span></div>
+                <div className="print-row" style={{ gridColumn: 'span 2' }}><strong>Address:</strong> <span>{printingEmployee.address}</span></div>
+              </div>
+            </div>
+          )}
+
             </div>
           )}
 
         </main>
 
+      {selectedOfferLetterEmployee && (
+        <OfferLetter
+          employee={selectedOfferLetterEmployee}
+          onClose={() => setSelectedOfferLetterEmployee(null)}
+        />
+      )}
       </div>
     </div>
   );

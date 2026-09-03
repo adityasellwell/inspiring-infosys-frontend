@@ -21,12 +21,13 @@
 }
 
 .admin-dashboard-container {
-  display: flex;
-  flex: 1;
+  display: block;
   width: 100%;
   /* Push content below the fixed 64px navbar */
   padding-top: 64px;
   min-height: 100vh;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* ── Full Top Navbar ── */
@@ -310,6 +311,24 @@
   font-weight: 600;
 }
 
+/* ── Mobile & Desktop Toggle Button ── */
+.admin-mobile-toggle {
+  background: transparent;
+  border: none;
+  color: #0f172a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.admin-mobile-toggle:hover {
+  background-color: #f1f5f9;
+}
+
 /* ── Left Sidebar Panel ── */
 .admin-sidebar {
   width: 240px;
@@ -328,6 +347,17 @@
   height: calc(100vh - 64px);
   overflow-y: auto;
   z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s ease;
+}
+
+.admin-sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+.admin-dashboard-container.sidebar-collapsed .admin-content-pane {
+  margin-left: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 .admin-sidebar-header {
@@ -409,17 +439,21 @@
 
 /* ── Right Content Area ── */
 .admin-content-pane {
-  flex: 1;
+  display: block;
   background-color: #f8fafc;
-  padding: 2.5rem 3rem;
+  padding: 1.5rem 1.75rem;
   overflow-y: auto;
+  overflow-x: hidden;
   /* Full height minus the fixed navbar, pushed right by sidebar width */
   min-height: calc(100vh - 64px);
   margin-left: 240px;
+  width: calc(100% - 240px);
+  max-width: calc(100% - 240px);
+  box-sizing: border-box;
 }
 
 .admin-content-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .admin-content-header h1 {
@@ -427,7 +461,7 @@
   font-weight: 850;
   color: #0f172a;
   letter-spacing: -0.02em;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
 }
 
 /* ── Inline CMS Cards ── */
@@ -435,9 +469,12 @@
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 1.75rem;
+  padding: 1.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-card-header {
@@ -459,9 +496,11 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 900px) {
   .form-grid-2 {
     grid-template-columns: 1fr 1fr;
   }
@@ -476,6 +515,8 @@
   flex-direction: column;
   gap: 0.5rem;
   text-align: left;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-input-group label {
@@ -488,6 +529,7 @@
 .admin-input-group select,
 .admin-input-group textarea {
   width: 100%;
+  box-sizing: border-box;
   font-family: inherit;
   font-size: 0.95rem;
   padding: 0.65rem 0.85rem;
@@ -527,40 +569,116 @@
 /* ── CRUD Table Styles ── */
 .table-responsive {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   background: #ffffff;
   margin-top: 1rem;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .admin-table th {
   background: #f8fafc;
-  padding: 0.85rem 1.15rem;
+  padding: 0.85rem 1rem;
   font-weight: 700;
   color: #475569;
   border-bottom: 1px solid #e2e8f0;
   text-transform: uppercase;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .admin-table td {
-  padding: 1rem 1.15rem;
+  padding: 0.85rem 1rem;
   border-bottom: 1px solid #e2e8f0;
   color: #334155;
   vertical-align: middle;
+  white-space: nowrap;
 }
 
 .admin-table tr:last-child td {
   border-bottom: none;
+}
+
+/* ── Employee Management UI Layout Controls ── */
+.admin-employees-tab-pane {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.employee-list-card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.employee-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 1rem;
+}
+
+.employee-table {
+  width: 100%;
+  min-width: 100%;
+  border-collapse: collapse;
+  display: table !important;
+  font-size: 0.82rem;
+}
+
+.employee-table thead {
+  display: table-header-group !important;
+}
+
+.employee-table tbody {
+  display: table-row-group !important;
+}
+
+.employee-table tr {
+  display: table-row !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.employee-table th {
+  display: table-cell !important;
+  white-space: nowrap !important;
+  word-break: normal !important;
+  padding: 0.65rem 0.5rem !important;
+  font-size: 0.7rem !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.employee-table td {
+  display: table-cell !important;
+  white-space: nowrap !important;
+  word-break: normal !important;
+  padding: 0.65rem 0.5rem !important;
+  font-size: 0.82rem !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.employee-table td::before {
+  display: none !important;
 }
 
 /* Status Badges */
@@ -734,6 +852,16 @@
   color: var(--primary);
 }
 
+/* ── Medium Screen Breakpoint (Laptop / Tablet) ── */
+@media (max-width: 1200px) {
+  .admin-content-pane {
+    padding: 1.75rem 1.5rem;
+  }
+  .admin-card {
+    padding: 1.25rem 1rem;
+  }
+}
+
 /* ── Mobile Responsive Overrides ── */
 @media (max-width: 768px) {
   .admin-app-layout {
@@ -802,6 +930,7 @@
 
   .admin-sidebar.open {
     left: 0;
+    transform: translateX(0);
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25);
   }
 
@@ -910,6 +1039,17 @@
   .admin-projects-tab-pane .admin-table td:nth-child(4)::before { content: "Link"; }
   .admin-projects-tab-pane .admin-table td:nth-child(5)::before { content: "Description"; }
 
+  /* Employees labels */
+  .admin-employees-tab-pane .admin-table td:nth-child(1)::before { content: "ID"; }
+  .admin-employees-tab-pane .admin-table td:nth-child(2)::before { content: "Name"; }
+  .admin-employees-tab-pane .admin-table td:nth-child(3)::before { content: "Email"; }
+  .admin-employees-tab-pane .admin-table td:nth-child(4)::before { content: "Phone"; }
+  .admin-employees-tab-pane .admin-table td:nth-child(5)::before { content: "Department"; }
+  .admin-employees-tab-pane .admin-table td:nth-child(6)::before { content: "Designation"; }
+  .admin-employees-tab-pane .admin-table td:nth-child(7)::before { content: "Join Date"; }
+  .admin-employees-tab-pane .admin-table td:nth-child(8)::before { content: "Salary"; }
+  .admin-employees-tab-pane .admin-table td:nth-child(9)::before { content: "Status"; }
+
   /* 2. Stats CMS labels */
   .admin-stats-tab-pane .admin-table td:nth-child(1)::before { content: "Label"; }
   .admin-stats-tab-pane .admin-table td:nth-child(2)::before { content: "Value"; }
@@ -957,5 +1097,62 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
+  }
+}
+
+/* ─── PRINT MEDIA STYLES ─── */
+@media print {
+  .admin-top-navbar, header {
+    display: none !important;
+  }
+  .print-employee-container, .print-employee-container * {
+    visibility: visible;
+  }
+  .print-employee-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 2rem;
+    font-family: inherit;
+  }
+  .print-header {
+    text-align: center;
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+  .print-header h1 {
+    font-size: 24pt;
+    font-weight: 900;
+    color: #0f172a;
+    margin: 0 0 0.5rem 0;
+  }
+  .print-header h2 {
+    font-size: 16pt;
+    color: #64748b;
+    margin: 0;
+  }
+  .print-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .print-row {
+    font-size: 14pt;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .print-row strong {
+    color: #334155;
+    display: block;
+    font-size: 10pt;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+  .print-row span {
+    color: #0f172a;
+    font-weight: 600;
   }
 }

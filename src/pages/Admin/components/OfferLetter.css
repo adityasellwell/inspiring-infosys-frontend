@@ -1,0 +1,576 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ── Modal Overlay Backdrop ── */
+.offer-letter-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+/* Modal Card Window */
+.offer-letter-modal-card {
+  background: #0f172a;
+  border-radius: 14px;
+  width: 980px;
+  max-width: 98vw;
+  height: 96vh;
+  max-height: 96vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  animation: modalFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Compact Header Bar */
+.offer-letter-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  flex-shrink: 0;
+  border-bottom: 1px solid #1e293b;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+.modal-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.modal-icon {
+  color: #38bdf8;
+}
+
+.modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-modal-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 6px;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.88rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-modal-print:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Modal Body Scroll Area */
+.offer-letter-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1rem;
+  background: #475569;
+  box-sizing: border-box;
+}
+
+.offer-letter-document-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+/* ════════════════════════ A4 PAGE STYLING ════════════════════════ */
+.offer-letter-page {
+  width: 210mm;
+  min-height: 297mm;
+  height: 297mm;
+  background: #ffffff;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  box-sizing: border-box;
+  padding: 0 15mm 25mm 15mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #1e293b;
+  font-size: 10.2pt;
+  line-height: 1.55;
+}
+
+/* ── Top Header Logo & Meta Row ── */
+.doc-logo-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12mm;
+  padding-bottom: 4px;
+}
+
+.header-company-logo {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+}
+
+.doc-meta-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 10pt;
+  color: #1e293b;
+  margin-top: 10px;
+  margin-bottom: 25px;
+}
+
+.doc-ref {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.doc-date {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+/* Recipient */
+.doc-recipient {
+  margin-bottom: 20px;
+  font-size: 10.5pt;
+  line-height: 1.45;
+}
+
+.to-label {
+  margin: 0 0 4px 0;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.recipient-name {
+  margin: 0 0 4px 0;
+  font-size: 11.5pt;
+  color: #0f172a;
+}
+
+.recipient-addr,
+.recipient-contact {
+  margin: 0 0 2px 0;
+  font-size: 9.8pt;
+  color: #334155;
+}
+
+/* Subject */
+.doc-subject {
+  margin-bottom: 20px;
+  font-size: 10.8pt;
+  color: #0f172a;
+}
+
+/* Paragraphs */
+.doc-paragraphs p {
+  margin-bottom: 14px;
+  text-align: justify;
+  font-size: 10.2pt;
+  line-height: 1.6;
+  color: #1e293b;
+}
+
+.offer-details-intro {
+  margin-top: 15px;
+  margin-bottom: 8px !important;
+}
+
+.position-highlight-box {
+  margin: 10px 0 15px 30px;
+  font-size: 11pt;
+  color: #0f172a;
+}
+
+/* ── PAGE 2 STYLING ── */
+.checklist-heading {
+  font-size: 10.8pt;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 15px;
+}
+
+.checklist-items {
+  list-style-type: disc;
+  padding-left: 35px;
+  margin-bottom: 40px;
+}
+
+.checklist-items li {
+  margin-bottom: 10px;
+  font-size: 10.2pt;
+  line-height: 1.55;
+  color: #1e293b;
+}
+
+.page-signature-section {
+  margin-top: 30px;
+}
+
+.company-sig-box {
+  margin-bottom: 40px;
+  text-align: right;
+  padding-right: 20px;
+}
+
+.sig-for-company {
+  font-size: 10.8pt;
+  margin-bottom: 15px;
+  color: #0f172a;
+}
+
+.stamp-wrapper {
+  height: 95px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+}
+
+.official-stamp-img {
+  height: 90px;
+  width: auto;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.sig-title {
+  font-size: 10.2pt;
+  font-weight: 600;
+  color: #334155;
+}
+
+.acceptance-declaration p {
+  font-size: 10.2pt;
+  line-height: 1.55;
+  margin-bottom: 25px;
+  color: #1e293b;
+}
+
+.dots-line {
+  font-size: 12pt;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  color: #64748b;
+}
+
+.receiver-sig-label {
+  font-size: 10.2pt;
+  color: #0f172a;
+}
+
+/* ── PAGE 3 ANNEXURE STYLING ── */
+.annexure-title {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.annexure-title h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: 13pt;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.annexure-sub {
+  font-size: 10.2pt;
+  margin-bottom: 15px;
+  color: #334155;
+}
+
+.remuneration-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 25px;
+  font-family: 'Inter', sans-serif;
+}
+
+.remuneration-table th,
+.remuneration-table td {
+  border: 1.5px solid #0f172a;
+  padding: 8px 14px;
+  font-size: 10pt;
+  text-align: left;
+}
+
+.remuneration-table th {
+  background: #f1f5f9;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.terms-block h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 10.8pt;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 10px 0;
+}
+
+.terms-block ul {
+  list-style-type: disc;
+  padding-left: 25px;
+  margin-bottom: 15px;
+}
+
+.terms-block li {
+  margin-bottom: 6px;
+  font-size: 10.2pt;
+  line-height: 1.5;
+  color: #1e293b;
+}
+
+.terms-block p {
+  margin-bottom: 14px;
+  text-align: justify;
+  font-size: 10.2pt;
+  line-height: 1.5;
+  color: #1e293b;
+}
+
+.annexure-signatures-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.annexure-sig-col {
+  width: 45%;
+}
+
+.right-col {
+  text-align: right;
+}
+
+.inline-stamp {
+  justify-content: flex-end;
+  height: 70px;
+}
+
+.sig-heading {
+  font-size: 10.2pt;
+  margin-bottom: 20px;
+  color: #0f172a;
+}
+
+.sig-sub {
+  font-size: 9.8pt;
+  margin-top: 5px;
+  color: #334155;
+}
+
+/* ── OFFICIAL FOOTER (On Every Page) ── */
+.official-page-footer {
+  width: 100%;
+  margin-top: auto;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+}
+
+.footer-address {
+  text-align: center;
+  font-size: 8.2pt;
+  color: #475569;
+  margin-bottom: 8px;
+  line-height: 1.35;
+}
+
+.footer-color-bar {
+  display: flex;
+  width: 100%;
+  height: 26px;
+  font-size: 9.2pt;
+  font-weight: 700;
+  color: #ffffff;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-left {
+  width: 38%;
+  background-color: #8cc63f;
+  /* Inspiring Infosys Green */
+  display: flex;
+  align-items: center;
+  padding-left: 15px;
+}
+
+.bar-right {
+  width: 62%;
+  background-color: #0073e6;
+  /* Inspiring Infosys Blue */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 15px;
+}
+
+/* ════════════════════════ PRINT RULES ════════════════════════ */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide background website/admin dashboard elements */
+  .admin-top-navbar,
+  .admin-sidebar,
+  .admin-content-pane,
+  .admin-mobile-toggle,
+  header,
+  aside,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset dashboard container to static block */
+  .admin-dashboard-container {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: transparent !important;
+  }
+
+  /* Reset modal overlay to static document flow */
+  .offer-letter-modal-overlay {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .offer-letter-modal-card {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+
+  .offer-letter-modal-header {
+    display: none !important;
+  }
+
+  .offer-letter-modal-body {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    overflow: visible !important;
+  }
+
+  .offer-letter-document-wrapper {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .offer-letter-page {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    padding: 15mm 15mm 20mm 15mm !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 auto !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    box-sizing: border-box !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+}
