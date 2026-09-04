@@ -71,6 +71,17 @@ function App() {
           <Route path="/course/ecommerce-courses-in-mumbai" element={<Course />} />
           <Route path="/get-quote" element={<GetQuote />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/login" element={<Navigate to="/" replace />} />
+          
+          {/* Legacy & Short URL redirects */}
+          <Route path="/api-services/amazon" element={<Navigate to="/api-services/amazon-api-service-provider-in-mumbai" replace />} />
+          <Route path="/development-services/website-development" element={<Navigate to="/development-services/website-development-service-in-mumbai" replace />} />
+          <Route path="/development-services/software-development" element={<Navigate to="/development-services/software-development-service-in-mumbai" replace />} />
+          <Route path="/development-services/app-development" element={<Navigate to="/development-services/mobile-app-development-service-in-mumbai" replace />} />
+          <Route path="/more-services/seo-services" element={<Navigate to="/more-services/seo-and-digital-marketing-service-in-mumbai" replace />} />
+
+          {/* Catch-all redirect for any unknown paths */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       {!isAdmin && <Footer />}

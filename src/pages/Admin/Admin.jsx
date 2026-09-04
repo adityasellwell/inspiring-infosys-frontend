@@ -46,7 +46,7 @@ function Admin() {
   const [catForm, setCatForm] = useState({ id: '', title: '', desc: '', iconName: 'FiShoppingCart', sortOrder: 0, isActive: true });
   const [turnoverForm, setTurnoverForm] = useState({ label: '', sortOrder: 1, isActive: true });
   const [quoteForm, setQuoteForm] = useState({ name: '', email: '', phone: '', service: '', companyName: '', turnover: '', businessDesc: '', message: '', status: 'new' });
-  const [employeeForm, setEmployeeForm] = useState({ name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
+  const [employeeForm, setEmployeeForm] = useState({ empId: '', name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
   const [selectedOfferLetterEmployee, setSelectedOfferLetterEmployee] = useState(null);
   const [employeeSubmitting, setEmployeeSubmitting] = useState(false);
   const [showEmployeeForm, setShowEmployeeForm] = useState(false);
@@ -613,8 +613,9 @@ function Admin() {
     setIsEditing(true);
     setShowEmployeeForm(true);
     setEmployeeForm({
-      name: emp.name,
-      email: emp.email,
+      empId: emp.empId || '',
+      name: emp.name || '',
+      email: emp.email || '',
       phone: emp.phone || '',
       department: emp.department || '',
       designation: emp.designation || '',
@@ -629,7 +630,7 @@ function Admin() {
     setEditingId(null);
     setIsEditing(false);
     setShowEmployeeForm(false);
-    setEmployeeForm({ name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
+    setEmployeeForm({ empId: '', name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
   };
 
   const handleEmployeeChange = (e) => {
@@ -663,7 +664,7 @@ function Admin() {
       } else {
         const res = await employeesApi.create(employeeForm);
         if (res.success) {
-          setEmployeeForm({ name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
+          setEmployeeForm({ empId: '', name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
           fetchAllData();
         } else {
           alert(res.message || 'Failed to create employee');
@@ -1310,39 +1311,45 @@ function Admin() {
                   <form onSubmit={handleEmployeeFormSubmit} className="login-form">
                     <div className="form-grid form-grid-2">
                       <div className="admin-input-group">
-                        <label>Name</label>
+                        <label>Emp ID</label>
+                        <input type="text" name="empId" placeholder="E.g., EMP001" value={employeeForm.empId} onChange={handleEmployeeChange} />
+                      </div>
+                      <div className="admin-input-group">
+                        <label>Emp Name</label>
                         <input type="text" name="name" placeholder="E.g., Rahul Sharma" value={employeeForm.name} onChange={handleEmployeeChange} required />
                       </div>
+                    </div>
+                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
                       <div className="admin-input-group">
                         <label>Email</label>
                         <input type="email" name="email" placeholder="E.g., rahul@company.com" value={employeeForm.email} onChange={handleEmployeeChange} required />
                       </div>
-                    </div>
-                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
                       <div className="admin-input-group">
                         <label>Phone</label>
                         <input type="tel" name="phone" placeholder="E.g., 9876543210" value={employeeForm.phone} onChange={handleEmployeeChange} required />
                       </div>
+                    </div>
+                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
                       <div className="admin-input-group">
                         <label>Department</label>
                         <input type="text" name="department" placeholder="E.g., IT" value={employeeForm.department} onChange={handleEmployeeChange} required />
                       </div>
-                    </div>
-                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
                       <div className="admin-input-group">
                         <label>Designation</label>
                         <input type="text" name="designation" placeholder="E.g., Software Engineer" value={employeeForm.designation} onChange={handleEmployeeChange} required />
                       </div>
+                    </div>
+                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
                       <div className="admin-input-group">
                         <label>Join Date</label>
                         <input type="date" name="joinDate" value={employeeForm.joinDate} onChange={handleEmployeeChange} required />
                       </div>
-                    </div>
-                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
                       <div className="admin-input-group">
                         <label>Salary</label>
                         <input type="number" step="0.01" name="salary" placeholder="E.g., 50000.00" value={employeeForm.salary} onChange={handleEmployeeChange} required />
                       </div>
+                    </div>
+                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
                       <div className="admin-input-group">
                         <label>Status</label>
                         <select name="status" value={employeeForm.status} onChange={handleEmployeeChange} required>
@@ -1350,10 +1357,10 @@ function Admin() {
                           <option value="Inactive">Inactive</option>
                         </select>
                       </div>
-                    </div>
-                    <div className="admin-input-group" style={{ marginTop: '1.25rem' }}>
-                      <label>Address (Optional)</label>
-                      <textarea name="address" rows="3" placeholder="E.g., 123 Main St..." value={employeeForm.address} onChange={handleEmployeeChange} />
+                      <div className="admin-input-group">
+                        <label>Address (Optional)</label>
+                        <textarea name="address" rows="2" placeholder="E.g., 123 Main St..." value={employeeForm.address} onChange={handleEmployeeChange} />
+                      </div>
                     </div>
 
 
@@ -1382,22 +1389,23 @@ function Admin() {
                     <table className="admin-table employee-table">
                       <thead>
                         <tr>
-                          <th>ID</th>
-                          <th>Name</th>
-                          <th>Email</th>
-                          <th>Phone</th>
-                          <th>Department</th>
-                          <th>Designation</th>
-                          <th>Join Date</th>
-                          <th>Salary</th>
-                          <th>Status</th>
-                          <th>Actions</th>
+                          <th>SR NO</th>
+                          <th>EMP ID</th>
+                          <th>EMP NAME</th>
+                          <th>EMAIL</th>
+                          <th>PHONE</th>
+                          <th>DEPARTMENT</th>
+                          <th>DESIGNATION</th>
+                          <th>JOIN DATE</th>
+                          <th>SALARY</th>
+                          <th>STATUS</th>
+                          <th>ACTIONS</th>
                         </tr>
                       </thead>
                       <tbody>
                         {employeesList.length === 0 ? (
                           <tr>
-                            <td colSpan="10" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                            <td colSpan="11" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
                               No employees found.
                             </td>
                           </tr>
@@ -1405,6 +1413,7 @@ function Admin() {
                           employeesList.map((employee, index) => (
                             <tr key={employee.id}>
                               <td>{index + 1}</td>
+                              <td><strong>{employee.empId || employee.id}</strong></td>
                               <td><strong>{employee.name}</strong></td>
                               <td>{employee.email}</td>
                               <td>{employee.phone}</td>

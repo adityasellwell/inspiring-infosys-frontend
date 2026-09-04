@@ -153,30 +153,74 @@
   line-height: 1.55;
 }
 
-/* ── Top Header Logo & Meta Row ── */
-.doc-logo-banner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 12mm;
-  padding-bottom: 4px;
+/* ── Top Curved Blue Header Banner ── */
+.doc-top-blue-header {
+  position: relative;
+  width: calc(100% + 30mm);
+  margin-left: -15mm;
+  margin-right: -15mm;
+  margin-top: 0;
+  margin-bottom: 4mm;
+  height: 115px;
+  min-height: 115px;
+  flex-shrink: 0;
+  overflow: hidden;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
 }
 
-.header-company-logo {
-  height: 52px;
+.header-wave-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.header-logo-container {
+  position: absolute;
+  top: 14px;
+  right: 15mm;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.header-banner-logo {
+  height: 44px;
   width: auto;
   object-fit: contain;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  mix-blend-mode: multiply;
+  filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.2));
+}
+
+.doc-logo-banner {
+  display: none;
 }
 
 .doc-meta-row {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   font-family: 'Inter', sans-serif;
   font-size: 10pt;
   color: #1e293b;
   margin-top: 10px;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+/* Page 2 Specific Spacing */
+.page-2 .doc-meta-row {
+  margin-top: 10px;
+  margin-bottom: 15px;
+  flex-shrink: 0;
 }
 
 .doc-ref {
@@ -322,7 +366,12 @@
 /* ── PAGE 3 ANNEXURE STYLING ── */
 .annexure-title {
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+}
+
+.page-2 .annexure-title {
+  margin-top: 0;
+  margin-bottom: 12px;
 }
 
 .annexure-title h2 {
@@ -335,21 +384,21 @@
 
 .annexure-sub {
   font-size: 10.2pt;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   color: #334155;
 }
 
 .remuneration-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 25px;
+  margin-bottom: 18px;
   font-family: 'Inter', sans-serif;
 }
 
 .remuneration-table th,
 .remuneration-table td {
   border: 1.5px solid #0f172a;
-  padding: 8px 14px;
+  padding: 7px 12px;
   font-size: 10pt;
   text-align: left;
 }
@@ -365,27 +414,27 @@
   font-size: 10.8pt;
   font-weight: 800;
   color: #0f172a;
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
 }
 
 .terms-block ul {
   list-style-type: disc;
   padding-left: 25px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .terms-block li {
-  margin-bottom: 6px;
-  font-size: 10.2pt;
-  line-height: 1.5;
+  margin-bottom: 4px;
+  font-size: 10pt;
+  line-height: 1.45;
   color: #1e293b;
 }
 
 .terms-block p {
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   text-align: justify;
-  font-size: 10.2pt;
-  line-height: 1.5;
+  font-size: 10pt;
+  line-height: 1.45;
   color: #1e293b;
 }
 
@@ -563,7 +612,7 @@
     width: 210mm !important;
     height: 297mm !important;
     min-height: 297mm !important;
-    padding: 15mm 15mm 20mm 15mm !important;
+    padding: 0 15mm 20mm 15mm !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     margin: 0 auto !important;

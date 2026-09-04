@@ -104,11 +104,11 @@ function Footer() {
         <div className="footer-col">
           <h4 className="footer-heading">Services</h4>
           <ul className="footer-links">
-            <li><Link to="/api-services/amazon">Amazon API Integration</Link></li>
-            <li><Link to="/development-services/website-development">Website Development</Link></li>
-            <li><Link to="/development-services/software-development">Software Development</Link></li>
-            <li><Link to="/development-services/app-development">Mobile App Dev</Link></li>
-            <li><Link to="/more-services/seo-services">SEO & Digital Marketing</Link></li>
+            <li><Link to="/api-services/amazon-api-service-provider-in-mumbai">Amazon API Integration</Link></li>
+            <li><Link to="/development-services/website-development-service-in-mumbai">Website Development</Link></li>
+            <li><Link to="/development-services/software-development-service-in-mumbai">Software Development</Link></li>
+            <li><Link to="/development-services/mobile-app-development-service-in-mumbai">Mobile App Dev</Link></li>
+            <li><Link to="/more-services/seo-and-digital-marketing-service-in-mumbai">SEO & Digital Marketing</Link></li>
           </ul>
         </div>
 

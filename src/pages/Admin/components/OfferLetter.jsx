@@ -22,6 +22,23 @@ function OfferLetter({ employee, onClose }) {
   const numericSalary = Number(employee.salary || 0);
   const formattedSalary = `₹${numericSalary.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
 
+  // Reference Number Format: e.g., 26-27/August/001
+  const offerDate = employee.joinDate ? new Date(employee.joinDate) : new Date();
+  const yearShort = String(offerDate.getFullYear()).slice(-2);
+  const nextYearShort = String(offerDate.getFullYear() + 1).slice(-2);
+  const finYearStr = `${yearShort}-${nextYearShort}`;
+  const monthNameStr = offerDate.toLocaleDateString('en-US', { month: 'long' });
+  
+  let refNo;
+  if (employee.empId && employee.empId.includes('/')) {
+    refNo = employee.empId;
+  } else {
+    const rawId = employee.empId || String(employee.id || 1);
+    const cleanNum = rawId.replace(/\D/g, '') || String(employee.id || 1);
+    const paddedNum = cleanNum.padStart(3, '0');
+    refNo = `${finYearStr}/${monthNameStr}/${paddedNum}`;
+  }
+
   const handlePrint = () => {
     window.print();
   };
@@ -61,13 +78,26 @@ function OfferLetter({ employee, onClose }) {
 
             {/* ════════════════════════ PAGE 1: OFFER LETTER ════════════════════════ */}
             <div className="offer-letter-page page-1">
-              {/* Official Clean Document Header */}
-              <div className="doc-logo-banner">
-                <img src="/images/logo2.webp" alt="Inspiring Infosys Logo" className="header-company-logo" />
+              {/* Top Curved Blue Header Banner */}
+              <div className="doc-top-blue-header">
+                <svg className="header-wave-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="blueHeaderGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#08529c" />
+                      <stop offset="60%" stopColor="#0b66b8" />
+                      <stop offset="100%" stopColor="#0d7acc" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M 0,0 L 1000,0 L 1000,125 C 650,115 350,20 0,60 Z" fill="url(#blueHeaderGrad1)" />
+                </svg>
+                <div className="header-logo-container">
+                  <img src="/images/logo2.webp" alt="Inspiring Infosys Logo" className="header-banner-logo" />
+                </div>
               </div>
 
-              {/* Date Row */}
+              {/* Date & Ref Row */}
               <div className="doc-meta-row">
+                <span className="doc-ref">Ref No: {refNo}</span>
                 <span className="doc-date">{currentDateFormatted}</span>
               </div>
 
@@ -121,13 +151,26 @@ function OfferLetter({ employee, onClose }) {
 
             {/* ════════════════════════ PAGE 2: ANNEXURE A ════════════════════════ */}
             <div className="offer-letter-page page-2">
-              {/* Official Clean Document Header */}
-              <div className="doc-logo-banner">
-                <img src="/images/logo2.webp" alt="Inspiring Infosys Logo" className="header-company-logo" />
+              {/* Top Curved Blue Header Banner */}
+              <div className="doc-top-blue-header">
+                <svg className="header-wave-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="blueHeaderGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#08529c" />
+                      <stop offset="60%" stopColor="#0b66b8" />
+                      <stop offset="100%" stopColor="#0d7acc" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M 0,0 L 1000,0 L 1000,125 C 650,115 350,20 0,60 Z" fill="url(#blueHeaderGrad2)" />
+                </svg>
+                <div className="header-logo-container">
+                  <img src="/images/logo2.webp" alt="Inspiring Infosys Logo" className="header-banner-logo" />
+                </div>
               </div>
 
-              {/* Date Row */}
+              {/* Date & Ref Row */}
               <div className="doc-meta-row">
+                <span className="doc-ref">Ref No: {refNo}</span>
                 <span className="doc-date">{currentDateFormatted}</span>
               </div>
 
@@ -221,13 +264,26 @@ function OfferLetter({ employee, onClose }) {
 
             {/* ════════════════════════ PAGE 3: CHECKLIST & DECLARATION ════════════════════════ */}
             <div className="offer-letter-page page-3">
-              {/* Official Clean Document Header */}
-              <div className="doc-logo-banner">
-                <img src="/images/logo2.webp" alt="Inspiring Infosys Logo" className="header-company-logo" />
+              {/* Top Curved Blue Header Banner */}
+              <div className="doc-top-blue-header">
+                <svg className="header-wave-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="blueHeaderGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#08529c" />
+                      <stop offset="60%" stopColor="#0b66b8" />
+                      <stop offset="100%" stopColor="#0d7acc" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M 0,0 L 1000,0 L 1000,125 C 650,115 350,20 0,60 Z" fill="url(#blueHeaderGrad3)" />
+                </svg>
+                <div className="header-logo-container">
+                  <img src="/images/logo2.webp" alt="Inspiring Infosys Logo" className="header-banner-logo" />
+                </div>
               </div>
 
-              {/* Date Row */}
+              {/* Date & Ref Row */}
               <div className="doc-meta-row">
+                <span className="doc-ref">Ref No: {refNo}</span>
                 <span className="doc-date">{currentDateFormatted}</span>
               </div>
 
