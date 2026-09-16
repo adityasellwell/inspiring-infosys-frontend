@@ -68,6 +68,16 @@ export const statsApi = {
       headers: getHeaders(false),
     });
     return res.json();
+  },
+  getVisitorCount: async () => {
+    const res = await fetch(`${API_BASE}/stats/visitor-count`);
+    return res.json();
+  },
+  hitVisitorCount: async () => {
+    const res = await fetch(`${API_BASE}/stats/visitor-count/hit`, {
+      method: 'POST'
+    });
+    return res.json();
   }
 };
 
@@ -315,10 +325,26 @@ export const turnoverApi = {
     return res.json();
   }
 };
-// ── Employee Endpoints ─────────────────────────────────────────────
+// ── Employee Admin HR Operations Endpoints ──────────────────────────
 export const employeesApi = {
-  getAll: async () => {
-    const res = await fetch(`${API_BASE}/employees`, {
+  getDashboardStats: async () => {
+    const res = await fetch(`${API_BASE}/employees/dashboard-stats`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  getAll: async (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    const url = query ? `${API_BASE}/employees?${query}` : `${API_BASE}/employees`;
+    const res = await fetch(url, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  getById: async (id) => {
+    const res = await fetch(`${API_BASE}/employees/${id}`, {
       headers: getHeaders(false),
     });
     return res.json();
@@ -342,10 +368,302 @@ export const employeesApi = {
     return res.json();
   },
 
-  delete: async (id) => {
-    const res = await fetch(`${API_BASE}/employees/${id}`, {
+  delete: async (id, permanent = false) => {
+    const res = await fetch(`${API_BASE}/employees/${id}${permanent ? '?permanent=true' : ''}`, {
       method: 'DELETE',
       headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  resetPassword: async (id, password) => {
+    const res = await fetch(`${API_BASE}/employees/${id}/reset-password`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ password }),
+    });
+    return res.json();
+  },
+
+  uploadDocument: async (empId, docData) => {
+    const res = await fetch(`${API_BASE}/employees/${empId}/documents`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(docData),
+    });
+    return res.json();
+  },
+
+  deleteDocument: async (docId) => {
+    const res = await fetch(`${API_BASE}/employees/documents/${docId}`, {
+      method: 'DELETE',
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  generateLetter: async (empId, letterData) => {
+    const res = await fetch(`${API_BASE}/employees/${empId}/letters`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(letterData),
+    });
+    return res.json();
+  },
+
+  getAllRequests: async () => {
+    const res = await fetch(`${API_BASE}/employees/requests/all`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  updateRequestStatus: async (reqId, status) => {
+    const res = await fetch(`${API_BASE}/employees/requests/${reqId}/status`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ status }),
+    });
+    return res.json();
+  },
+
+  issueSalarySlip: async (slipData) => {
+    const res = await fetch(`${API_BASE}/employees/salary-slips`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(slipData),
+    });
+    return res.json();
+  },
+
+  getAllQueries: async () => {
+    const res = await fetch(`${API_BASE}/employees/queries/all`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  replyQuery: async (id, reply) => {
+    const res = await fetch(`${API_BASE}/employees/queries/${id}/reply`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ reply }),
+    });
+    return res.json();
+  },
+
+  getAllLeaves: async () => {
+    const res = await fetch(`${API_BASE}/employees/leaves/all`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  updateLeaveStatus: async (id, status) => {
+    const res = await fetch(`${API_BASE}/employees/leaves/${id}/status`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ status }),
+    });
+    return res.json();
+  },
+
+  generateLetter: async (employeeId, letterData) => {
+    const res = await fetch(`${API_BASE}/employees/${employeeId}/letters`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(letterData),
+    });
+    return res.json();
+  },
+
+  toggleLetterAccess: async (employeeId, letterData) => {
+    const res = await fetch(`${API_BASE}/employees/${employeeId}/letters/toggle-access`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(letterData),
+    });
+    return res.json();
+  },
+
+  publishNotice: async (noticeData) => {
+    const res = await fetch(`${API_BASE}/employees/notices`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(noticeData),
+    });
+    return res.json();
+  },
+
+  deleteNotice: async (id) => {
+    const res = await fetch(`${API_BASE}/employees/notices/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  getAllAttendance: async () => {
+    const res = await fetch(`${API_BASE}/employees/attendance/all`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  deleteAttendance: async (id) => {
+    const res = await fetch(`${API_BASE}/employees/attendance/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  cleanDuplicateAttendance: async () => {
+    const res = await fetch(`${API_BASE}/employees/attendance/clean-duplicates`, {
+      method: 'POST',
+      headers: getHeaders(false),
+    });
+    return res.json();
+  }
+};
+
+// ── Employee Portal Client Endpoints ────────────────────────────────
+const getEmployeeHeaders = (isJson = true) => {
+  const token = localStorage.getItem('employee_token');
+  const headers = {};
+  if (isJson) {
+    headers['Content-Type'] = 'application/json';
+  }
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+};
+
+export const employeePortalApi = {
+  login: async (email, password) => {
+    const res = await fetch(`${API_BASE}/employee-portal/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    return res.json();
+  },
+
+  getMe: async () => {
+    const res = await fetch(`${API_BASE}/employee-portal/me`, {
+      headers: getEmployeeHeaders(false),
+    });
+    return res.json();
+  },
+
+  updateProfile: async (profileData) => {
+    const res = await fetch(`${API_BASE}/employee-portal/profile`, {
+      method: 'POST',
+      headers: getEmployeeHeaders(),
+      body: JSON.stringify(profileData),
+    });
+    return res.json();
+  },
+
+  clockIn: async (notes = '') => {
+    const res = await fetch(`${API_BASE}/employee-portal/clock-in`, {
+      method: 'POST',
+      headers: getEmployeeHeaders(),
+      body: JSON.stringify({ notes }),
+    });
+    return res.json();
+  },
+
+  clockOut: async () => {
+    const res = await fetch(`${API_BASE}/employee-portal/clock-out`, {
+      method: 'POST',
+      headers: getEmployeeHeaders(),
+      body: JSON.stringify({}),
+    });
+    return res.json();
+  },
+
+  applyLeave: async (leaveData) => {
+    const res = await fetch(`${API_BASE}/employee-portal/leaves`, {
+      method: 'POST',
+      headers: getEmployeeHeaders(),
+      body: JSON.stringify(leaveData),
+    });
+    return res.json();
+  },
+
+  submitQuery: async (queryData) => {
+    const res = await fetch(`${API_BASE}/employee-portal/queries`, {
+      method: 'POST',
+      headers: getEmployeeHeaders(),
+      body: JSON.stringify(queryData),
+    });
+    return res.json();
+  },
+
+  submitDwr: async (dwrData) => {
+    const res = await fetch(`${API_BASE}/employee-portal/dwr`, {
+      method: 'POST',
+      headers: getEmployeeHeaders(),
+      body: JSON.stringify(dwrData),
+    });
+    return res.json();
+  },
+
+  logout: () => {
+    localStorage.removeItem('employee_token');
+    localStorage.removeItem('employee_name');
+  }
+};
+
+export const clientServicesApi = {
+  getAll: async () => {
+    const res = await fetch(`${API_BASE}/client-services`, {
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  create: async (data) => {
+    const res = await fetch(`${API_BASE}/client-services`, {
+      method: 'POST',
+      headers: getHeaders(true),
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  },
+
+  update: async (id, data) => {
+    const res = await fetch(`${API_BASE}/client-services/${id}`, {
+      method: 'PUT',
+      headers: getHeaders(true),
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  },
+
+  delete: async (id) => {
+    const res = await fetch(`${API_BASE}/client-services/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  sendAlert: async (id) => {
+    const res = await fetch(`${API_BASE}/client-services/send-alert/${id}`, {
+      method: 'POST',
+      headers: getHeaders(false),
+    });
+    return res.json();
+  },
+
+  autoLookup: async (domain) => {
+    const res = await fetch(`${API_BASE}/client-services/auto-lookup`, {
+      method: 'POST',
+      headers: getHeaders(true),
+      body: JSON.stringify({ domain }),
     });
     return res.json();
   }

@@ -2,52 +2,58 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 import { FiUsers } from 'react-icons/fi';
+import { statsApi } from '../../../api/api';
 import './Footer.css';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
   const location = useLocation();
 
-  const [visitorCount, setVisitorCount] = React.useState(0);
+  const [visitorCount, setVisitorCount] = React.useState(50215);
   const fetchedRef = React.useRef(false);
 
   React.useEffect(() => {
     if (fetchedRef.current) return;
     fetchedRef.current = true;
 
-    const hasVisited = localStorage.getItem('inspiring_infosys_visited');
-    const key = 'inspiring-infosys-unique-visitors-v1';
+    // Session & Returning visit tracking keys
+    const SESSION_KEY = 'inspiring_infosys_session_active';
+    const LAST_VISIT_TIME_KEY = 'inspiring_infosys_last_visit_timestamp';
+    const now = Date.now();
+    const THIRTY_MINUTES = 30 * 60 * 1000; // 30 mins session window
 
-    if (!hasVisited) {
-      // New unique visitor -> Increment the count
-      fetch(`https://countapi.mileshilliard.com/api/v1/hit/${key}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data && typeof data.value === 'number') {
-            setVisitorCount(data.value + 50000); // Add 50,000 to the actual count
-            localStorage.setItem('inspiring_infosys_visited', 'true');
-          } else {
-            setVisitorCount(50000);
+    const isSessionActive = sessionStorage.getItem(SESSION_KEY);
+    const lastVisitTimestamp = localStorage.getItem(LAST_VISIT_TIME_KEY);
+
+    // If new session or returning after 30+ minutes of inactivity, count as unique visit
+    const isNewUniqueVisit = !isSessionActive || !lastVisitTimestamp || (now - parseInt(lastVisitTimestamp, 10) > THIRTY_MINUTES);
+
+    if (isNewUniqueVisit) {
+      statsApi.hitVisitorCount()
+        .then((res) => {
+          if (res && res.success && typeof res.count === 'number') {
+            setVisitorCount(res.count);
           }
+          sessionStorage.setItem(SESSION_KEY, 'true');
+          localStorage.setItem(LAST_VISIT_TIME_KEY, String(now));
         })
-        .catch((err) => {
-          console.error('Error incrementing visitor count:', err);
-          setVisitorCount(50000);
+        .catch(() => {
+          setVisitorCount(50215);
+          sessionStorage.setItem(SESSION_KEY, 'true');
+          localStorage.setItem(LAST_VISIT_TIME_KEY, String(now));
         });
     } else {
-      // Returning visitor -> Just get the current count without incrementing
-      fetch(`https://countapi.mileshilliard.com/api/v1/get/${key}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data && typeof data.value === 'number') {
-            setVisitorCount(data.value + 50000); // Add 50,000 to the actual count
-          } else {
-            setVisitorCount(50000); // Default to 50,000
+      // Same session internal navigation -> Fetch current count without incrementing
+      statsApi.getVisitorCount()
+        .then((res) => {
+          if (res && res.success && typeof res.count === 'number') {
+            setVisitorCount(res.count);
           }
+          localStorage.setItem(LAST_VISIT_TIME_KEY, String(now));
         })
-        .catch((err) => {
-          console.error('Error fetching visitor count:', err);
-          setVisitorCount(50000);
+        .catch(() => {
+          setVisitorCount(50215);
+          localStorage.setItem(LAST_VISIT_TIME_KEY, String(now));
         });
     }
   }, []);

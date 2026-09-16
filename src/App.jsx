@@ -16,6 +16,7 @@ import WhatsAppApi from './pages/WhatsAppApi/WhatsAppApi';
 import Course from './pages/Course/Course';
 import GetQuote from './pages/GetQuote/GetQuote';
 import Admin from './pages/Admin/Admin';
+import EmployeeDashboard from './pages/Employee/EmployeeDashboard';
 
 
 function App() {
@@ -35,7 +36,7 @@ function App() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  const isAdmin = location.pathname.startsWith('/admin');
+  const isAdmin = location.pathname.startsWith('/admin') || location.pathname.startsWith('/employee');
 
   return (
     <div className={isAdmin ? "admin-app-layout" : "app-layout"}>
@@ -71,6 +72,16 @@ function App() {
           <Route path="/course/ecommerce-courses-in-mumbai" element={<Course />} />
           <Route path="/get-quote" element={<GetQuote />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/*" element={<Admin />} />
+          <Route path="/admin/employees" element={<Admin />} />
+          <Route path="/admin/staff" element={<Admin />} />
+          <Route path="/admin/attendance" element={<Admin />} />
+          <Route path="/admin/leaves" element={<Admin />} />
+          <Route path="/admin/queries" element={<Admin />} />
+          <Route path="/employee" element={<EmployeeDashboard />} />
+          <Route path="/employee/*" element={<EmployeeDashboard />} />
+          <Route path="/employee/login" element={<EmployeeDashboard />} />
+          <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
           <Route path="/login" element={<Navigate to="/" replace />} />
           
           {/* Legacy & Short URL redirects */}

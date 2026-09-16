@@ -1,9 +1,38 @@
-import React from 'react';
-import { FiPrinter, FiX, FiFileText } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { FiPrinter, FiX, FiFileText, FiCalendar, FiEdit3, FiRotateCcw, FiCheck } from 'react-icons/fi';
 import './OfferLetter.css';
 
 function OfferLetter({ employee, onClose }) {
   if (!employee) return null;
+
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  const parseLocalDate = (dateString) => {
+    if (!dateString) return null;
+    const clean = String(dateString).split('T')[0];
+    const parts = clean.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      return new Date(year, month, day);
+    }
+    return new Date(dateString);
+  };
+
+  const getInitialJoinDateStr = () => {
+    if (employee.joinDate) {
+      const d = parseLocalDate(employee.joinDate);
+      if (d && !isNaN(d.getTime())) {
+        return d.toISOString().split('T')[0];
+      }
+    }
+    return todayStr;
+  };
+
+  const [joiningDate, setJoiningDate] = useState(getInitialJoinDateStr());
+  const [salaryInput, setSalaryInput] = useState(String(employee.salary || 0));
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const currentDateFormatted = new Date().toLocaleDateString('en-GB', {
     day: '2-digit',
@@ -11,64 +40,234 @@ function OfferLetter({ employee, onClose }) {
     year: 'numeric'
   }).replace(/\//g, '-');
 
-  const formattedJoinDate = employee.joinDate
-    ? new Date(employee.joinDate).toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }).replace(/\//g, '/')
-    : '05/08/2026';
+  const formatDateDisplay = (dateString) => {
+    const d = parseLocalDate(dateString);
+    if (!d || isNaN(d.getTime())) return dateString || '';
+    return d.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).replace(/\//g, '/');
+  };
 
-  const numericSalary = Number(employee.salary || 0);
-  const formattedSalary = `₹${numericSalary.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+  const formattedJoinDate = formatDateDisplay(joiningDate);
 
-  // Reference Number Format: e.g., 26-27/August/001
-  const offerDate = employee.joinDate ? new Date(employee.joinDate) : new Date();
-  const yearShort = String(offerDate.getFullYear()).slice(-2);
-  const nextYearShort = String(offerDate.getFullYear() + 1).slice(-2);
-  const finYearStr = `${yearShort}-${nextYearShort}`;
-  const monthNameStr = offerDate.toLocaleDateString('en-US', { month: 'long' });
-  
-  let refNo;
-  if (employee.empId && employee.empId.includes('/')) {
-    refNo = employee.empId;
-  } else {
+  const formatCurrency = (val) => {
+    const num = Number(val || 0);
+    return `₹${num.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+  };
+
+  const getInitialRefNo = () => {
+    const offerDate = parseLocalDate(joiningDate) || new Date();
+    const yearShort = String(offerDate.getFullYear()).slice(-2);
+    const nextYearShort = String(offerDate.getFullYear() + 1).slice(-2);
+    const finYearStr = `${yearShort}-${nextYearShort}`;
+    const monthNameStr = offerDate.toLocaleDateString('en-US', { month: 'long' });
+
+    if (employee.empId && employee.empId.includes('/')) {
+      return employee.empId;
+    }
     const rawId = employee.empId || String(employee.id || 1);
     const cleanNum = rawId.replace(/\D/g, '') || String(employee.id || 1);
     const paddedNum = cleanNum.padStart(3, '0');
-    refNo = `${finYearStr}/${monthNameStr}/${paddedNum}`;
-  }
+    return `${finYearStr}/${monthNameStr}/${paddedNum}`;
+  };
+
+  // Editable text states
+  const [refNo, setRefNo] = useState(getInitialRefNo());
+  const [candidateName, setCandidateName] = useState(employee.name || '');
+  const [designationText, setDesignationText] = useState(employee.designation || 'Full Stack Developer');
+  const [departmentText, setDepartmentText] = useState(employee.department || 'IT & Software');
+  const [salaryText, setSalaryText] = useState(formatCurrency(salaryInput));
+  const [subjectText, setSubjectText] = useState('Subject: Offer of Employment');
+
+  const [para1, setPara1] = useState(
+    `I am writing to you on behalf of INSPIRING INFOSYS, innovative IT & E-Commerce Company specializing in IT & E-Commerce Service Provider. We have thoroughly reviewed your qualifications and are delighted to extend a formal offer of employment to you for the position of ${designationText} at INSPIRING INFOSYS.`
+  );
+
+  const [para2, setPara2] = useState(
+    `We were impressed by your skills, experience, and achievements, which align perfectly with our company's goals and values. We believe that your expertise will greatly contribute to our continued success. We are excited to have you join our team and contribute to our mission.`
+  );
+
+  const [para3, setPara3] = useState(
+    `As a ${designationText}, you will be responsible for [${departmentText ? `${departmentText} Department Tasks & Core Project Execution` : 'Software Development & Technical Duties'}]. Additionally, you will have the opportunity to collaborate with a talented and motivated team, work on cutting-edge projects, and contribute to our company's growth and innovation.`
+  );
+
+  const [para4, setPara4] = useState(
+    `Please note that this offer is contingent upon successful completion of background checks and any other pre-employment requirements. You will receive further instructions regarding these processes separately. You are requested to join us by ${formattedJoinDate}. In the event of you are not joining us within the aforementioned date or not requesting for an extension to that effect, this offer shall stand withdrawn automatically. The remuneration offered is as mentioned under Annexure A.`
+  );
+
+  const [probationText, setProbationText] = useState('3 months');
+  const [commitmentText, setCommitmentText] = useState('1 to 2.5 years');
+  const [signatoryTitle, setSignatoryTitle] = useState('Authorized Signatory/ Director');
+  const [offerDetailsIntro, setOfferDetailsIntro] = useState('Here are the details of our offer:');
+  const [sincerelyText, setSincerelyText] = useState('Sincerely,');
+  const [teamText, setTeamText] = useState('Inspiring Infosys Team');
+  const [forCompanyText, setForCompanyText] = useState('Inspiring Infosys');
+
+  // Page 2 Annexure A states
+  const [annexureTitleText, setAnnexureTitleText] = useState('Annexure A');
+  const [annexureSubText, setAnnexureSubText] = useState('Particulars of remuneration & other benefits are appended here below:');
+  const [thComponentsText, setThComponentsText] = useState('Components');
+  const [thAmountText, setThAmountText] = useState('Amount (Rs.)');
+  const [tdBasicSalaryText, setTdBasicSalaryText] = useState('Basic Salary (Per Month)');
+  const [termsHeadingText, setTermsHeadingText] = useState('Compensation & Employment Terms');
+
+  const [termBullet1, setTermBullet1] = useState(
+    `Standard probation period will be ${probationText} from the date of joining.`
+  );
+  const [termBullet2, setTermBullet2] = useState(
+    `The basic monthly salary will be ${salaryText}, payable in accordance with the company regular payroll schedule.`
+  );
+  const [termBullet3, setTermBullet3] = useState(
+    `Salary revision and performance appraisal will be conducted periodically based on individual performance, skills, and overall contribution.`
+  );
+
+  const [termPara1, setTermPara1] = useState(
+    `While there is no formal employment bond, we expect a mutual commitment from employees to remain with the company for a minimum of ${commitmentText}. This understanding helps ensure continuity and supports long-term growth for both the employee and the organization.`
+  );
+  const [termPara2, setTermPara2] = useState(
+    `Working hours are from 10:00 AM to 7:00 PM with Sundays off and observance of national holidays. Additionally, employees are entitled to 10 paid leaves annually. For new joining they must complete one year to take benefit of annual paid leave.`
+  );
+  const [termPara3, setTermPara3] = useState(
+    `According to company policy, it is mandatory to complete the notice period before departing. Failure to do so will result in withholding of the final month's salary and others benefits like experience letter, relieving letter until the notice period is fulfilled.`
+  );
+  const [termPara4, setTermPara4] = useState(
+    `Please return the signed copy of this document as a token of acceptance for our records.`
+  );
+  const [termPara5, setTermPara5] = useState(
+    `We are eagerly anticipating your positive response and look forward to welcoming you to the INSPIRING INFOSYS team. Thank you for considering this offer, and we believe that together, we will achieve great things.`
+  );
+
+  const [receivedByHeading, setReceivedByHeading] = useState('Received By');
+  const [receivedBySub, setReceivedBySub] = useState('Signature of Employee with Date');
+
+  // Page 3 Checklist & Declaration states
+  const [checklistHeading, setChecklistHeading] = useState('You are required to submit the following at the time of joining:');
+  const [checklistItem1, setChecklistItem1] = useState('Passport Size photographs – 1 nos.');
+  const [checklistItem2, setChecklistItem2] = useState('Photocopy of your testimonials – Std 10 level onwards.');
+  const [checklistItem3, setChecklistItem3] = useState('Proof of DOB, Aadhar Card, PAN Card , Voter Card.');
+  const [checklistItem4, setChecklistItem4] = useState('One Cancelled Cheque of your own Bank Account.');
+  const [checklistItem5, setChecklistItem5] = useState('Post Card Size Family Photo – 3 Copies (applicable only for those who are entitled for ESIC)(optional)');
+  const [checklistItem6, setChecklistItem6] = useState('Fitness Certificate & Blood group Certificate provided by a Registered Medical Practitioner.(optional)');
+
+  const [declarationPara, setDeclarationPara] = useState(
+    'I hereby declare that, I have read and understood the above-mentioned terms and in agreement with them and also hereby confirm to accept the offer.'
+  );
+  const [receiverSigLabel, setReceiverSigLabel] = useState('Signature of Receiver');
+
+  // Sync formatted salary when salary input changes in header
+  useEffect(() => {
+    setSalaryText(formatCurrency(salaryInput));
+  }, [salaryInput]);
+
+  // Sync paras when dates/desig change unless overridden
+  useEffect(() => {
+    setPara1(`I am writing to you on behalf of INSPIRING INFOSYS, innovative IT & E-Commerce Company specializing in IT & E-Commerce Service Provider. We have thoroughly reviewed your qualifications and are delighted to extend a formal offer of employment to you for the position of ${designationText} at INSPIRING INFOSYS.`);
+    setPara3(`As a ${designationText}, you will be responsible for [${departmentText ? `${departmentText} Department Tasks & Core Project Execution` : 'Software Development & Technical Duties'}]. Additionally, you will have the opportunity to collaborate with a talented and motivated team, work on cutting-edge projects, and contribute to our company's growth and innovation.`);
+    setPara4(`Please note that this offer is contingent upon successful completion of background checks and any other pre-employment requirements. You will receive further instructions regarding these processes separately. You are requested to join us by ${formattedJoinDate}. In the event of you are not joining us within the aforementioned date or not requesting for an extension to that effect, this offer shall stand withdrawn automatically. The remuneration offered is as mentioned under Annexure A.`);
+    setTermBullet1(`Standard probation period will be ${probationText} from the date of joining.`);
+    setTermBullet2(`The basic monthly salary will be ${salaryText}, payable in accordance with the company regular payroll schedule.`);
+    setTermPara1(`While there is no formal employment bond, we expect a mutual commitment from employees to remain with the company for a minimum of ${commitmentText}. This understanding helps ensure continuity and supports long-term growth for both the employee and the organization.`);
+  }, [joiningDate, designationText, departmentText, probationText, commitmentText, salaryText]);
+
+  const handleResetDefaults = () => {
+    setRefNo(getInitialRefNo());
+    setCandidateName(employee.name || '');
+    setDesignationText(employee.designation || 'Full Stack Developer');
+    setDepartmentText(employee.department || 'IT & Software');
+    setSalaryInput(String(employee.salary || 0));
+    setSalaryText(formatCurrency(employee.salary || 0));
+    setSubjectText('Subject: Offer of Employment');
+    setOfferDetailsIntro('Here are the details of our offer:');
+    setSincerelyText('Sincerely,');
+    setTeamText('Inspiring Infosys Team');
+    setForCompanyText('Inspiring Infosys');
+    setSignatoryTitle('Authorized Signatory/ Director');
+    setProbationText('3 months');
+    setCommitmentText('1 to 2.5 years');
+    setPara1(`I am writing to you on behalf of INSPIRING INFOSYS, innovative IT & E-Commerce Company specializing in IT & E-Commerce Service Provider. We have thoroughly reviewed your qualifications and are delighted to extend a formal offer of employment to you for the position of ${employee.designation || 'Full Stack Developer'} at INSPIRING INFOSYS.`);
+    setPara2(`We were impressed by your skills, experience, and achievements, which align perfectly with our company's goals and values. We believe that your expertise will greatly contribute to our continued success. We are excited to have you join our team and contribute to our mission.`);
+    setPara3(`As a ${employee.designation || 'Full Stack Developer'}, you will be responsible for [${employee.department ? `${employee.department} Department Tasks & Core Project Execution` : 'Software Development & Technical Duties'}]. Additionally, you will have the opportunity to collaborate with a talented and motivated team, work on cutting-edge projects, and contribute to our company's growth and innovation.`);
+    setPara4(`Please note that this offer is contingent upon successful completion of background checks and any other pre-employment requirements. You will receive further instructions regarding these processes separately. You are requested to join us by ${formattedJoinDate}. In the event of you are not joining us within the aforementioned date or not requesting for an extension to that effect, this offer shall stand withdrawn automatically. The remuneration offered is as mentioned under Annexure A.`);
+    setAnnexureTitleText('Annexure A');
+    setAnnexureSubText('Particulars of remuneration & other benefits are appended here below:');
+    setThComponentsText('Components');
+    setThAmountText('Amount (Rs.)');
+    setTdBasicSalaryText('Basic Salary (Per Month)');
+    setTermsHeadingText('Compensation & Employment Terms');
+    setTermBullet1(`Standard probation period will be 3 months from the date of joining.`);
+    setTermBullet2(`The basic monthly salary will be ${formatCurrency(employee.salary || 0)}, payable in accordance with the company regular payroll schedule.`);
+    setTermBullet3(`Salary revision and performance appraisal will be conducted periodically based on individual performance, skills, and overall contribution.`);
+    setTermPara1(`While there is no formal employment bond, we expect a mutual commitment from employees to remain with the company for a minimum of 1 to 2.5 years. This understanding helps ensure continuity and supports long-term growth for both the employee and the organization.`);
+    setTermPara2(`Working hours are from 10:00 AM to 7:00 PM with Sundays off and observance of national holidays. Additionally, employees are entitled to 10 paid leaves annually. For new joining they must complete one year to take benefit of annual paid leave.`);
+    setTermPara3(`According to company policy, it is mandatory to complete the notice period before departing. Failure to do so will result in withholding of the final month's salary and others benefits like experience letter, relieving letter until the notice period is fulfilled.`);
+    setTermPara4(`Please return the signed copy of this document as a token of acceptance for our records.`);
+    setTermPara5(`We are eagerly anticipating your positive response and look forward to welcoming you to the INSPIRING INFOSYS team. Thank you for considering this offer, and we believe that together, we will achieve great things.`);
+    setReceivedByHeading('Received By');
+    setReceivedBySub('Signature of Employee with Date');
+    setChecklistHeading('You are required to submit the following at the time of joining:');
+    setChecklistItem1('Passport Size photographs – 1 nos.');
+    setChecklistItem2('Photocopy of your testimonials – Std 10 level onwards.');
+    setChecklistItem3('Proof of DOB, Aadhar Card, PAN Card , Voter Card.');
+    setChecklistItem4('One Cancelled Cheque of your own Bank Account.');
+    setChecklistItem5('Post Card Size Family Photo – 3 Copies (applicable only for those who are entitled for ESIC)(optional)');
+    setChecklistItem6('Fitness Certificate & Blood group Certificate provided by a Registered Medical Practitioner.(optional)');
+    setDeclarationPara('I hereby declare that, I have read and understood the above-mentioned terms and in agreement with them and also hereby confirm to accept the offer.');
+    setReceiverSigLabel('Signature of Receiver');
+  };
 
   const handlePrint = () => {
-    window.print();
+    setIsEditMode(false);
+    setTimeout(() => {
+      window.print();
+    }, 100);
   };
+
+  const recipientPrefix = candidateName && (candidateName.toLowerCase().startsWith('mr.') || candidateName.toLowerCase().startsWith('ms.'))
+    ? ''
+    : 'Mr./Ms. ';
 
   return (
     <div className="offer-letter-modal-overlay" onClick={onClose}>
       <div className="offer-letter-modal-card" onClick={(e) => e.stopPropagation()}>
+        
         {/* Modal Header Bar */}
         <div className="offer-letter-modal-header no-print">
-          <div className="modal-header-title">
-            <FiFileText size={20} className="modal-icon" />
-            <span>Official Employee Offer Letter – <strong>{employee.name}</strong></span>
-          </div>
-          <div className="modal-header-actions">
-            <button
-              type="button"
-              className="btn-modal-print"
-              onClick={handlePrint}
-              title="Print or Save as PDF"
-            >
-              <FiPrinter size={16} /> Print / Save as PDF
-            </button>
-            <button
-              type="button"
-              className="btn-modal-close"
-              onClick={onClose}
-              title="Close Modal"
-            >
-              <FiX size={18} />
-            </button>
+          <div className="header-top-row">
+            <div className="modal-header-title">
+              <FiFileText size={20} className="modal-icon" />
+              <span>Official Offer Letter – <strong>{candidateName}</strong></span>
+            </div>
+
+            <div className="modal-header-actions">
+              <button
+                type="button"
+                className={`btn-toggle-edit ${isEditMode ? 'active' : ''}`}
+                onClick={() => setIsEditMode(!isEditMode)}
+                title={isEditMode ? 'Finish Editing' : 'Click text on offer letter to edit directly'}
+              >
+                {isEditMode ? <><FiCheck size={14} /> Done Editing</> : <><FiEdit3 size={14} /> Edit Text</>}
+              </button>
+
+              <button
+                type="button"
+                className="btn-modal-print"
+                onClick={handlePrint}
+                title="Print or Save as PDF"
+              >
+                <FiPrinter size={16} /> Print / Save PDF
+              </button>
+
+              <button
+                type="button"
+                className="btn-modal-close"
+                onClick={onClose}
+                title="Close Modal"
+              >
+                <FiX size={18} />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -76,8 +275,14 @@ function OfferLetter({ employee, onClose }) {
         <div className="offer-letter-modal-body">
           <div className="offer-letter-document-wrapper">
 
+            {isEditMode && (
+              <div className="edit-banner-info no-print">
+                <FiEdit3 size={14} /> <strong>Inline Edit Mode Active:</strong> Click on any text inside ANY page of the offer letter below to edit headings, terms, tables, checklist items, or signatures directly!
+              </div>
+            )}
+
             {/* ════════════════════════ PAGE 1: OFFER LETTER ════════════════════════ */}
-            <div className="offer-letter-page page-1">
+            <div className={`offer-letter-page page-1 ${isEditMode ? 'editable-page-active' : ''}`}>
               {/* Top Curved Blue Header Banner */}
               <div className="doc-top-blue-header">
                 <svg className="header-wave-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
@@ -97,44 +302,144 @@ function OfferLetter({ employee, onClose }) {
 
               {/* Date & Ref Row */}
               <div className="doc-meta-row">
-                <span className="doc-ref">Ref No: {refNo}</span>
+                <span className="doc-ref">
+                  Ref No: <strong
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setRefNo(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >{refNo}</strong>
+                </span>
                 <span className="doc-date">{currentDateFormatted}</span>
               </div>
 
               {/* Recipient */}
               <div className="doc-recipient">
                 <p className="to-label">To,</p>
-                <p className="recipient-name"><strong>{employee.name.startsWith('Mr.') || employee.name.startsWith('Ms.') ? employee.name : `Mr./Ms. ${employee.name}`}</strong></p>
+                <p className="recipient-name">
+                  <strong>
+                    {recipientPrefix}
+                    <span
+                      contentEditable={isEditMode}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => setCandidateName(e.target.innerText)}
+                      className={isEditMode ? 'editable-field' : ''}
+                    >{candidateName}</span>
+                  </strong>
+                </p>
               </div>
 
               {/* Subject */}
               <div className="doc-subject">
-                <u><strong>Subject: Offer of Employment</strong></u>
+                <u>
+                  <strong
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setSubjectText(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >{subjectText}</strong>
+                </u>
               </div>
 
               {/* Letter Paragraphs */}
               <div className="doc-paragraphs">
-                <p>
-                  I am writing to you on behalf of <strong>INSPIRING INFOSYS</strong>, innovative IT & E-Commerce Company specializing in IT & E-Commerce Service Provider. We have thoroughly reviewed your qualifications and are delighted to extend a formal offer of employment to you for the position of <strong>{employee.designation || 'Full Stack Developer'}</strong> at <strong>INSPIRING INFOSYS</strong>.
+                <p
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setPara1(e.target.innerText)}
+                  className={isEditMode ? 'editable-field' : ''}
+                >
+                  {para1}
                 </p>
 
-                <p>
-                  We were impressed by your skills, experience, and achievements, which align perfectly with our company's goals and values. We believe that your expertise will greatly contribute to our continued success. We are excited to have you join our team and contribute to our mission.
+                <p
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setPara2(e.target.innerText)}
+                  className={isEditMode ? 'editable-field' : ''}
+                >
+                  {para2}
                 </p>
 
-                <p>
-                  As a <strong>{employee.designation || 'Full Stack Developer'}</strong>, you will be responsible for [{employee.department ? `${employee.department} Department Tasks & Core Project Execution` : 'Software Development & Technical Duties'}]. Additionally, you will have the opportunity to collaborate with a talented and motivated team, work on cutting-edge projects, and contribute to our company's growth and innovation.
+                <p
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setPara3(e.target.innerText)}
+                  className={isEditMode ? 'editable-field' : ''}
+                >
+                  {para3}
                 </p>
 
-                <p className="offer-details-intro">Here are the details of our offer:</p>
+                <p
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setOfferDetailsIntro(e.target.innerText)}
+                  className={`offer-details-intro ${isEditMode ? 'editable-field' : ''}`}
+                >
+                  {offerDetailsIntro}
+                </p>
 
                 <div className="position-highlight-box">
-                  <strong>Position: {employee.designation || 'Full Stack Developer'}</strong>
+                  <strong>Position: <span
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setDesignationText(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >{designationText}</span></strong>
                 </div>
 
-                <p>
-                  Please note that this offer is contingent upon successful completion of background checks and any other pre-employment requirements. You will receive further instructions regarding these processes separately. You are requested to join us by <strong>{formattedJoinDate}</strong>. In the event of you are not joining us within the aforementioned date or not requesting for an extension to that effect, this offer shall stand withdrawn automatically. The remuneration offered is as mentioned under Annexure A.
+                <p
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setPara4(e.target.innerText)}
+                  className={isEditMode ? 'editable-field' : ''}
+                >
+                  {para4}
                 </p>
+              </div>
+
+              {/* Signatures for Page 1 */}
+              <div className="annexure-signatures-row" style={{ marginTop: '15px', marginBottom: '10px' }}>
+                <div className="annexure-sig-col">
+                  <p
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setSincerelyText(e.target.innerText)}
+                    className={`sig-heading ${isEditMode ? 'editable-field' : ''}`}
+                  >
+                    {sincerelyText}
+                  </p>
+                  <p
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setTeamText(e.target.innerText)}
+                    className={`sig-sub ${isEditMode ? 'editable-field' : ''}`}
+                  >
+                    <strong>{teamText}</strong>
+                  </p>
+                </div>
+
+                <div className="annexure-sig-col right-col">
+                  <p
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setForCompanyText(e.target.innerText)}
+                    className={`sig-heading ${isEditMode ? 'editable-field' : ''}`}
+                  >
+                    For <strong>{forCompanyText}</strong>
+                  </p>
+                  <div className="stamp-wrapper inline-stamp">
+                    <img src="/images/company-stamp.png" alt="Inspiring Infosys Stamp & Signature" className="official-stamp-img" />
+                  </div>
+                  <p className="sig-sub">
+                    <strong
+                      contentEditable={isEditMode}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => setSignatoryTitle(e.target.innerText)}
+                      className={isEditMode ? 'editable-field' : ''}
+                    >{signatoryTitle}</strong>
+                  </p>
+                </div>
               </div>
 
               {/* Official Footer */}
@@ -150,7 +455,7 @@ function OfferLetter({ employee, onClose }) {
             </div>
 
             {/* ════════════════════════ PAGE 2: ANNEXURE A ════════════════════════ */}
-            <div className="offer-letter-page page-2">
+            <div className={`offer-letter-page page-2 ${isEditMode ? 'editable-page-active' : ''}`}>
               {/* Top Curved Blue Header Banner */}
               <div className="doc-top-blue-header">
                 <svg className="header-wave-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
@@ -170,83 +475,207 @@ function OfferLetter({ employee, onClose }) {
 
               {/* Date & Ref Row */}
               <div className="doc-meta-row">
-                <span className="doc-ref">Ref No: {refNo}</span>
+                <span className="doc-ref">
+                  Ref No: <strong
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setRefNo(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >{refNo}</strong>
+                </span>
                 <span className="doc-date">{currentDateFormatted}</span>
               </div>
 
               {/* Annexure A Title */}
               <div className="annexure-title">
-                <h2>Annexure A</h2>
+                <h2
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setAnnexureTitleText(e.target.innerText)}
+                  className={isEditMode ? 'editable-field' : ''}
+                >
+                  {annexureTitleText}
+                </h2>
               </div>
 
-              <p className="annexure-sub">Particulars of remuneration & other benefits are appended here below:</p>
+              <p
+                contentEditable={isEditMode}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => setAnnexureSubText(e.target.innerText)}
+                className={`annexure-sub ${isEditMode ? 'editable-field' : ''}`}
+              >
+                {annexureSubText}
+              </p>
 
               {/* Remuneration Table */}
               <table className="remuneration-table">
                 <thead>
                   <tr>
-                    <th>Components</th>
-                    <th>Amount (Rs.)</th>
+                    <th
+                      contentEditable={isEditMode}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => setThComponentsText(e.target.innerText)}
+                      className={isEditMode ? 'editable-field' : ''}
+                    >
+                      {thComponentsText}
+                    </th>
+                    <th
+                      contentEditable={isEditMode}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => setThAmountText(e.target.innerText)}
+                      className={isEditMode ? 'editable-field' : ''}
+                    >
+                      {thAmountText}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Basic Salary (Per Month)</td>
-                    <td><strong>{formattedSalary}</strong></td>
+                    <td
+                      contentEditable={isEditMode}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => setTdBasicSalaryText(e.target.innerText)}
+                      className={isEditMode ? 'editable-field' : ''}
+                    >
+                      {tdBasicSalaryText}
+                    </td>
+                    <td>
+                      <strong
+                        contentEditable={isEditMode}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) => setSalaryText(e.target.innerText)}
+                        className={isEditMode ? 'editable-field' : ''}
+                      >{salaryText}</strong>
+                    </td>
                   </tr>
                 </tbody>
               </table>
 
               {/* Compensation & Terms */}
               <div className="terms-block">
-                <h3>Compensation & Employment Terms</h3>
+                <h3
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setTermsHeadingText(e.target.innerText)}
+                  className={isEditMode ? 'editable-field' : ''}
+                >
+                  {termsHeadingText}
+                </h3>
                 <ul>
-                  <li>
-                    Standard probation period will be <strong>3 months</strong> from the date of joining.
+                  <li
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setTermBullet1(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >
+                    {termBullet1}
                   </li>
-                  <li>
-                    The basic monthly salary will be <strong>{formattedSalary}</strong>, payable in accordance with the company regular payroll schedule.
+                  <li
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setTermBullet2(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >
+                    {termBullet2}
                   </li>
-                  <li>
-                    Salary revision and performance appraisal will be conducted periodically based on individual <strong>performance, skills, and overall contribution</strong>.
+                  <li
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setTermBullet3(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >
+                    {termBullet3}
                   </li>
                 </ul>
 
-                <p>
-                  While there is no formal employment bond, we expect a mutual commitment from employees to remain with the company for a minimum of <strong>1 to 2.5 years</strong>. This understanding helps ensure continuity and supports long-term growth for both the employee and the organization.
+                <p
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setTermPara1(e.target.innerText)}
+                  className={isEditMode ? 'editable-field' : ''}
+                >
+                  {termPara1}
                 </p>
 
-                <p>
-                  Working hours are from 10:00 AM to 7:00 PM with Sundays off and observance of national holidays. Additionally, employees are entitled to 10 paid leaves annually. For new joining they must complete one year to take benefit of annual paid leave.
+                <p
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setTermPara2(e.target.innerText)}
+                  className={isEditMode ? 'editable-field' : ''}
+                >
+                  {termPara2}
                 </p>
 
-                <p>
-                  According to company policy, it is mandatory to complete the notice period before departing. Failure to do so will result in withholding of the final month's salary and others benefits like experience letter, relieving letter until the notice period is fulfilled.
+                <p
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setTermPara3(e.target.innerText)}
+                  className={isEditMode ? 'editable-field' : ''}
+                >
+                  {termPara3}
                 </p>
 
-                <p>
-                  Please return the signed copy of this document as a token of acceptance for our records.
+                <p
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setTermPara4(e.target.innerText)}
+                  className={isEditMode ? 'editable-field' : ''}
+                >
+                  {termPara4}
                 </p>
 
-                <p>
-                  We are eagerly anticipating your positive response and look forward to welcoming you to the <strong>INSPIRING INFOSYS</strong> team. Thank you for considering this offer, and we believe that together, we will achieve great things.
+                <p
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setTermPara5(e.target.innerText)}
+                  className={isEditMode ? 'editable-field' : ''}
+                >
+                  {termPara5}
                 </p>
               </div>
 
               {/* Bottom Signatures for Annexure */}
               <div className="annexure-signatures-row">
                 <div className="annexure-sig-col">
-                  <p className="sig-heading">Received By</p>
+                  <p
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setReceivedByHeading(e.target.innerText)}
+                    className={`sig-heading ${isEditMode ? 'editable-field' : ''}`}
+                  >
+                    {receivedByHeading}
+                  </p>
                   <div className="dots-line">……………………………………………</div>
-                  <p className="sig-sub"><strong>Signature of Employee with Date</strong></p>
+                  <p
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setReceivedBySub(e.target.innerText)}
+                    className={`sig-sub ${isEditMode ? 'editable-field' : ''}`}
+                  >
+                    <strong>{receivedBySub}</strong>
+                  </p>
                 </div>
 
                 <div className="annexure-sig-col right-col">
-                  <p className="sig-heading">For <strong>Inspiring Infosys</strong></p>
+                  <p
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setForCompanyText(e.target.innerText)}
+                    className={`sig-heading ${isEditMode ? 'editable-field' : ''}`}
+                  >
+                    For <strong>{forCompanyText}</strong>
+                  </p>
                   <div className="stamp-wrapper inline-stamp">
                     <img src="/images/company-stamp.png" alt="Inspiring Infosys Stamp & Signature" className="official-stamp-img" />
                   </div>
-                  <p className="sig-sub"><strong>Authorized Signatory/ Director</strong></p>
+                  <p className="sig-sub">
+                    <strong
+                      contentEditable={isEditMode}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => setSignatoryTitle(e.target.innerText)}
+                      className={isEditMode ? 'editable-field' : ''}
+                    >{signatoryTitle}</strong>
+                  </p>
                 </div>
               </div>
 
@@ -263,7 +692,7 @@ function OfferLetter({ employee, onClose }) {
             </div>
 
             {/* ════════════════════════ PAGE 3: CHECKLIST & DECLARATION ════════════════════════ */}
-            <div className="offer-letter-page page-3">
+            <div className={`offer-letter-page page-3 ${isEditMode ? 'editable-page-active' : ''}`}>
               {/* Top Curved Blue Header Banner */}
               <div className="doc-top-blue-header">
                 <svg className="header-wave-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
@@ -283,40 +712,122 @@ function OfferLetter({ employee, onClose }) {
 
               {/* Date & Ref Row */}
               <div className="doc-meta-row">
-                <span className="doc-ref">Ref No: {refNo}</span>
+                <span className="doc-ref">
+                  Ref No: <strong
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setRefNo(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >{refNo}</strong>
+                </span>
                 <span className="doc-date">{currentDateFormatted}</span>
               </div>
 
               {/* Requirements Checklist */}
               <div className="joining-checklist-block">
-                <p className="checklist-heading">You are required to submit the following at the time of joining:</p>
+                <p
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setChecklistHeading(e.target.innerText)}
+                  className={`checklist-heading ${isEditMode ? 'editable-field' : ''}`}
+                >
+                  {checklistHeading}
+                </p>
 
                 <ul className="checklist-items">
-                  <li>Passport Size photographs – 1 nos.</li>
-                  <li>Photocopy of your testimonials – Std 10 level onwards.</li>
-                  <li>Proof of DOB, Aadhar Card, PAN Card , Voter Card.</li>
-                  <li>One Cancelled Cheque of your own Bank Account.</li>
-                  <li>Post Card Size Family Photo – 3 Copies (applicable only for those who are entitled for ESIC)(optional)</li>
-                  <li>Fitness Certificate & Blood group Certificate provided by a Registered Medical Practitioner.(optional)</li>
+                  <li
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setChecklistItem1(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >
+                    {checklistItem1}
+                  </li>
+                  <li
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setChecklistItem2(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >
+                    {checklistItem2}
+                  </li>
+                  <li
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setChecklistItem3(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >
+                    {checklistItem3}
+                  </li>
+                  <li
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setChecklistItem4(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >
+                    {checklistItem4}
+                  </li>
+                  <li
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setChecklistItem5(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >
+                    {checklistItem5}
+                  </li>
+                  <li
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setChecklistItem6(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >
+                    {checklistItem6}
+                  </li>
                 </ul>
               </div>
 
               {/* Signatures */}
               <div className="page-signature-section">
                 <div className="company-sig-box">
-                  <p className="sig-for-company">For <strong>Inspiring Infosys</strong></p>
+                  <p
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setForCompanyText(e.target.innerText)}
+                    className={`sig-for-company ${isEditMode ? 'editable-field' : ''}`}
+                  >
+                    For <strong>{forCompanyText}</strong>
+                  </p>
                   <div className="stamp-wrapper">
                     <img src="/images/company-stamp.png" alt="Inspiring Infosys Stamp & Signature" className="official-stamp-img" />
                   </div>
-                  <p className="sig-title">Director/Authorized Signatory</p>
+                  <p className="sig-title">
+                    <span
+                      contentEditable={isEditMode}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => setSignatoryTitle(e.target.innerText)}
+                      className={isEditMode ? 'editable-field' : ''}
+                    >{signatoryTitle}</span>
+                  </p>
                 </div>
 
                 <div className="acceptance-declaration">
-                  <p>
-                    I hereby declare that, I have read and understood the above-mentioned terms and in agreement with them and also hereby confirm to accept the offer.
+                  <p
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setDeclarationPara(e.target.innerText)}
+                    className={isEditMode ? 'editable-field' : ''}
+                  >
+                    {declarationPara}
                   </p>
                   <div className="dots-line">……………………………………………</div>
-                  <p className="receiver-sig-label"><strong>Signature of Receiver</strong></p>
+                  <p
+                    contentEditable={isEditMode}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setReceiverSigLabel(e.target.innerText)}
+                    className={`receiver-sig-label ${isEditMode ? 'editable-field' : ''}`}
+                  >
+                    <strong>{receiverSigLabel}</strong>
+                  </p>
                 </div>
               </div>
 

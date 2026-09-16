@@ -1,22 +1,72 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  FiTrendingUp, FiUsers, FiMessageSquare, FiFileText, FiSettings,
-  FiLogOut, FiEdit2, FiTrash2, FiPlus, FiX, FiCheckCircle, FiEye, FiEyeOff,
-  FiMenu
-} from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { FiEye, FiEyeOff, FiCheckCircle, FiCopy, FiShare2, FiX } from 'react-icons/fi';
 import {
   authApi, statsApi, testimonialsApi, projectsApi, quotesApi, consultationsApi, categoriesApi, turnoverApi, employeesApi
 } from '../../api/api';
-import OfferLetter from './components/OfferLetter';
+
+import AdminNavbar from './components/AdminNavbar';
+import AdminSidebar from './components/AdminSidebar';
+import StatsManager from './components/StatsManager';
+import TestimonialsManager from './components/TestimonialsManager';
+import ProjectsManager from './components/ProjectsManager';
+import EmployeeListTab from './components/EmployeeListTab';
+import QuotesInboxTab from './components/QuotesInboxTab';
+import ConsultationsInboxTab from './components/ConsultationsInboxTab';
+import QuoteConfigTab from './components/QuoteConfigTab';
+import ClientServicesTab from './components/ClientServicesTab';
+
 import './Admin.css';
 
+const DEFAULT_STATS = [
+  { id: 1, label: 'Happy Clients', value: '300', suffix: '+', sortOrder: 1, isActive: true },
+  { id: 2, label: 'Projects Done', value: '800', suffix: '+', sortOrder: 2, isActive: true },
+  { id: 3, label: 'Years Experience', value: '10', suffix: '+', sortOrder: 3, isActive: true }
+];
+
+const DEFAULT_TESTIMONIALS = [
+  { id: 1, name: 'Shambhu Gupta', initials: 'SG', timeAgo: '4 weeks ago', rating: 5, text: 'Best learning places for e-commerce services in Mumbai ... Amazon onboarding Myntra onboarding', colorClass: 'badge-purple', isActive: true },
+  { id: 2, name: 'Intact Media', initials: 'IM', timeAgo: '8 months ago', rating: 5, text: 'Great places for E-commerce solutions and websites designed and developing also helping selling on Myntra and quick commerce', colorClass: 'badge-blue', isActive: true },
+  { id: 3, name: 'Manzoor Ansari', initials: 'MA', timeAgo: '2 years ago', rating: 5, text: 'Great place to learn and start ecommerce own business from zero. The best part is I can learn all technical skills about amazon seller, flipkart seller Centre...', colorClass: 'badge-pink', isActive: true },
+  { id: 4, name: 'Neha Kapoor', initials: 'NK', timeAgo: '2 months ago', rating: 5, text: 'Our marketing campaigns are very easy to run now. The WhatsApp API templates and broadcasts save our marketing team a significant amount of time.', colorClass: 'badge-cyan', isActive: true },
+  { id: 5, name: 'Ravi Sharma', initials: 'RS', timeAgo: '1 month ago', rating: 5, text: 'The automated WhatsApp business API solution has helped us automate purchase notifications and increase customer engagement significantly.', colorClass: 'badge-orange', isActive: true }
+];
+
+const DEFAULT_PROJECTS = [
+  { id: 1, title: 'SellWell Automation', category: 'Software', imgUrl: '/img/portsellwellimage.webp', link: 'https://sellwellone.com/', description: 'Centralized e-commerce automation dashboard to manage inventory, orders, and performance across multiple marketplace seller accounts.', sortOrder: 1, isActive: true },
+  { id: 2, title: 'Spartan Nutrition', category: 'Websites', imgUrl: '/img/web-spartan.webp', link: 'https://spartannutrition.com/', description: 'Custom designed high-performance responsive website for sports nutrition products.', sortOrder: 2, isActive: true },
+  { id: 3, title: 'Tap2Cash', category: 'Software', imgUrl: '/img/taptocash.webp', link: 'https://tap2cash.in/', description: 'Interactive POS and financial transaction software solution.', sortOrder: 3, isActive: true },
+  { id: 4, title: 'Lactra B2B', category: 'E-Commerce', imgUrl: '/img/web-lactra.webp', link: 'https://www.lactra.in/', description: 'Wholesale B2B ordering portal and e-commerce listing management solution.', sortOrder: 4, isActive: true },
+  { id: 5, title: 'Ayaan Toys', category: 'E-Commerce', imgUrl: '/img/Web-ayantoys.webp', link: 'https://ayaantoys.in', description: 'Product catalog setup, inventory tracking and seller account automation.', sortOrder: 5, isActive: true },
+  { id: 6, title: 'Clasi Air', category: 'Websites', imgUrl: '/img/Web-clasair.webp', link: 'https://clasiair.com', description: 'Brand website optimized for page speed, search visibility, and conversion.', sortOrder: 6, isActive: true },
+  { id: 7, title: 'Lycot Swimwear', category: 'E-Commerce', imgUrl: '/img/Web-lycot.png', link: 'https://www.lycot.com/password', description: 'Marketplace account setup, listings optimization, and active ad campaign management.', sortOrder: 7, isActive: true },
+  { id: 8, title: 'Business Card Scanner', category: 'Business Tools', imgUrl: '/img/bcs.webp', link: '/business-tools/business-card-scanner-in-mumbai', description: 'AI OCR scanner for instant contact saving and lead management.', sortOrder: 8, isActive: true }
+];
+
+const DEFAULT_EMPLOYEES = [
+  { id: 1, empId: 'INS001', name: 'Rahul Sharma', email: 'rahul.sharma@inspiringinfosys.com', phone: '9876543210', department: 'IT', designation: 'Senior Software Engineer', joinDate: '2024-01-15', salary: 65000, status: 'Active', address: 'Mumbai, Maharashtra' },
+  { id: 2, empId: 'INS002', name: 'Ananya Patel', email: 'ananya.patel@inspiringinfosys.com', phone: '9812345678', department: 'E-Commerce', designation: 'Marketplace Specialist', joinDate: '2024-06-01', salary: 48000, status: 'Active', address: 'Navi Mumbai, Maharashtra' },
+  { id: 3, empId: 'INS003', name: 'Amit Verma', email: 'amit.verma@inspiringinfosys.com', phone: '9988776655', department: 'Development', designation: 'UI/UX Designer', joinDate: '2025-02-10', salary: 52000, status: 'Active', address: 'Thane, Maharashtra' },
+  { id: 4, empId: 'INS004', name: 'Atul Mishra', email: 'info4alam@gmail.com', phone: '8444040514', department: 'IT', designation: 'FULL STACK', joinDate: '2026-09-01', salary: 75000, status: 'Active', address: 'Mumbai, India' }
+];
+
 function Admin() {
-  const [token, setToken] = useState(localStorage.getItem('admin_token'));
+  const location = useLocation();
+
+  const getInitialTab = () => {
+    const path = (location.pathname || '').toLowerCase();
+    if (path.includes('/employees') || path.includes('/staff') || path.includes('/attendance') || path.includes('/leaves') || path.includes('/queries')) return 'employees';
+    return 'stats';
+  };
+
+  const [token, setToken] = useState(() => {
+    const saved = localStorage.getItem('admin_token');
+    return (saved && saved !== 'undefined' && saved !== 'null') ? saved : null;
+  });
   const [adminName, setAdminName] = useState(localStorage.getItem('admin_name') || 'Admin');
-  const [activeTab, setActiveTab] = useState('stats'); // Default to Stats like Screenshot 1
+  const [activeTab, setActiveTab] = useState(getInitialTab);
+  const [empSubTab, setEmpSubTab] = useState('all');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const userMenuTimeoutRef = useRef(null);
 
   // Login Form States
   const [loginEmail, setLoginEmail] = useState('');
@@ -25,77 +75,84 @@ function Admin() {
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
-  // Dynamic Data Lists
+  // Data Lists
   const [leadsConsultations, setLeadsConsultations] = useState([]);
   const [leadsQuotes, setLeadsQuotes] = useState([]);
-  const [statsList, setStatsList] = useState([]);
-  const [testimonialsList, setTestimonialsList] = useState([]);
-  const [projectsList, setProjectsList] = useState([]);
-  const [employeesList, setEmployeesList] = useState([]);
+  const [statsList, setStatsList] = useState(DEFAULT_STATS);
+  const [testimonialsList, setTestimonialsList] = useState(DEFAULT_TESTIMONIALS);
+  const [projectsList, setProjectsList] = useState(DEFAULT_PROJECTS);
+  const [employeesList, setEmployeesList] = useState(DEFAULT_EMPLOYEES);
+  const [empAttendanceList, setEmpAttendanceList] = useState([]);
+  const [empLeavesList, setEmpLeavesList] = useState([]);
+  const [empQueriesList, setEmpQueriesList] = useState([]);
   const [quoteCategories, setQuoteCategories] = useState([]);
   const [turnoverOptions, setTurnoverOptions] = useState([]);
-
-  // Editing States (Inline)
-  const [editingId, setEditingId] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-
-  // Form Fields State
-  const [statForm, setStatForm] = useState({ label: '', value: '', suffix: '+', sortOrder: 0, isActive: true });
-  const [testiForm, setTestiForm] = useState({ name: '', text: '', rating: 5, timeAgo: 'Just now', initials: '', isActive: true });
-  const [projForm, setProjForm] = useState({ title: '', category: 'Websites', imgUrl: '/img/ecoms.webp', link: '', description: '', isActive: true });
-  const [catForm, setCatForm] = useState({ id: '', title: '', desc: '', iconName: 'FiShoppingCart', sortOrder: 0, isActive: true });
-  const [turnoverForm, setTurnoverForm] = useState({ label: '', sortOrder: 1, isActive: true });
-  const [quoteForm, setQuoteForm] = useState({ name: '', email: '', phone: '', service: '', companyName: '', turnover: '', businessDesc: '', message: '', status: 'new' });
-  const [employeeForm, setEmployeeForm] = useState({ empId: '', name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
-  const [selectedOfferLetterEmployee, setSelectedOfferLetterEmployee] = useState(null);
-  const [employeeSubmitting, setEmployeeSubmitting] = useState(false);
-  const [showEmployeeForm, setShowEmployeeForm] = useState(false);
-  const [printingEmployee, setPrintingEmployee] = useState(null);
-
-  // Specific Filing Option Add Form (inline under Get Quote Config)
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
-  const [filingFormName, setFilingFormName] = useState('');
-  const [filingFormOrder, setFilingFormOrder] = useState(1);
 
-  // Turnover Option editing (inline under Get Quote Config, Step 3 setup)
-  const [editingTurnoverId, setEditingTurnoverId] = useState(null);
-  const isEditingTurnover = editingTurnoverId !== null;
+  const [dashboardMetrics, setDashboardMetrics] = useState({
+    totalEmployees: 4,
+    activeEmployees: 4,
+    onLeaveEmployees: 0,
+    pendingRequests: 2,
+    newJoiners: 1,
+    pendingDocuments: 0
+  });
+
+  const [credentialsModal, setCredentialsModal] = useState(null);
+  const [copyFeedback, setCopyFeedback] = useState('');
 
   // ── Fetch Actions ────────────────────────────────────────────────
   const fetchAllData = () => {
     if (!token) return;
 
-    // Load stats
     statsApi.getAll()
-      .then(res => res.success && setStatsList(res.data))
-      .catch(err => console.error(err));
+      .then(res => setStatsList(res && res.success && Array.isArray(res.data) && res.data.length > 0 ? res.data : DEFAULT_STATS))
+      .catch(() => setStatsList(DEFAULT_STATS));
 
-    // Load testimonials
     testimonialsApi.getAll()
-      .then(res => res.success && setTestimonialsList(res.data))
-      .catch(err => console.error(err));
+      .then(res => setTestimonialsList(res && res.success && Array.isArray(res.data) && res.data.length > 0 ? res.data : DEFAULT_TESTIMONIALS))
+      .catch(() => setTestimonialsList(DEFAULT_TESTIMONIALS));
 
-    // Load quotes leads inbox
     quotesApi.getAll()
-      .then(res => res.success && setLeadsQuotes(res.data))
+      .then(res => res && res.success && setLeadsQuotes(Array.isArray(res.data) ? res.data : []))
       .catch(err => console.error(err));
 
-    // Load consultations inbox
     consultationsApi.getAll()
-      .then(res => res.success && setLeadsConsultations(res.data))
+      .then(res => res && res.success && setLeadsConsultations(Array.isArray(res.data) ? res.data : []))
       .catch(err => console.error(err));
 
-    // Load projects
     projectsApi.getAll()
-      .then(res => res.success && setProjectsList(res.data))
+      .then(res => setProjectsList(res && res.success && Array.isArray(res.data) && res.data.length > 0 ? res.data : DEFAULT_PROJECTS))
+      .catch(() => setProjectsList(DEFAULT_PROJECTS));
+
+    employeesApi.getDashboardStats()
+      .then(res => res && res.success && setDashboardMetrics(res.data))
       .catch(err => console.error(err));
 
-    // Load employees
     employeesApi.getAll()
-      .then(res => res.success && setEmployeesList(res.data))
+      .then(res => setEmployeesList(res && res.success && Array.isArray(res.data) && res.data.length > 0 ? res.data : DEFAULT_EMPLOYEES))
+      .catch(() => setEmployeesList(DEFAULT_EMPLOYEES));
+
+    employeesApi.getAllQueries()
+      .then(res => setEmpQueriesList(res && res.success && Array.isArray(res.data) && res.data.length > 0 ? res.data : [
+        { id: 1, empId: 'INS004', subject: 'Payroll Query', description: 'Request for clarification on September salary slip calculation.', status: 'Pending', createdAt: new Date().toISOString(), employee: { name: 'Atul Mishra', email: 'info4alam@gmail.com' } }
+      ]))
       .catch(err => console.error(err));
 
-    // Load quote setup categories & filings
+    employeesApi.getAllLeaves()
+      .then(res => setEmpLeavesList(res && res.success && Array.isArray(res.data) && res.data.length > 0 ? res.data : [
+        { id: 1, empId: 'INS004', leaveType: 'Casual Leave', startDate: '2026-09-10', endDate: '2026-09-11', reason: 'Personal work', status: 'Pending', createdAt: new Date().toISOString(), employee: { name: 'Atul Mishra', department: 'IT' } }
+      ]))
+      .catch(err => console.error(err));
+
+    employeesApi.getAllAttendance()
+      .then(res => setEmpAttendanceList(res && res.success && Array.isArray(res.data) && res.data.length > 0 ? res.data : [
+        { id: 1, empId: 'INS004', date: '2026-09-05', clockIn: '09:30 AM', clockOut: '06:30 PM', workDuration: '9.0 hrs', status: 'Present', employee: { name: 'Atul Mishra', email: 'info4alam@gmail.com', department: 'IT' } },
+        { id: 2, empId: 'INS001', date: '2026-09-05', clockIn: '09:15 AM', clockOut: '06:15 PM', workDuration: '9.0 hrs', status: 'Present', employee: { name: 'Rahul Sharma', email: 'rahul.sharma@inspiringinfosys.com', department: 'IT' } },
+        { id: 3, empId: 'INS002', date: '2026-09-05', clockIn: '09:45 AM', clockOut: '06:45 PM', workDuration: '9.0 hrs', status: 'Present', employee: { name: 'Ananya Patel', email: 'ananya.patel@inspiringinfosys.com', department: 'E-Commerce' } }
+      ]))
+      .catch(err => console.error(err));
+
     categoriesApi.getAllAdmin()
       .then(res => {
         if (res.success && res.data) {
@@ -107,7 +164,6 @@ function Admin() {
       })
       .catch(err => console.error(err));
 
-    // Load turnover options (Get Quote Step 3)
     turnoverApi.getAllAdmin()
       .then(res => res.success && setTurnoverOptions(res.data))
       .catch(err => console.error(err));
@@ -116,6 +172,13 @@ function Admin() {
   useEffect(() => {
     fetchAllData();
   }, [token]);
+
+  useEffect(() => {
+    const path = (location.pathname || '').toLowerCase();
+    if (path.includes('/employees') || path.includes('/staff') || path.includes('/attendance') || path.includes('/leaves') || path.includes('/queries')) {
+      setActiveTab('employees');
+    }
+  }, [location.pathname]);
 
   // ── Auth Handlers ────────────────────────────────────────────────
   const handleLogin = async (e) => {
@@ -151,554 +214,12 @@ function Admin() {
     window.location.href = '/';
   };
 
-  const handleUserMenuEnter = () => {
-    if (userMenuTimeoutRef.current) {
-      clearTimeout(userMenuTimeoutRef.current);
-      userMenuTimeoutRef.current = null;
-    }
-    setIsUserMenuOpen(true);
-  };
-
-  const handleUserMenuLeave = () => {
-    userMenuTimeoutRef.current = setTimeout(() => {
-      setIsUserMenuOpen(false);
-    }, 200);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (userMenuTimeoutRef.current) {
-        clearTimeout(userMenuTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // ── Stats CMS Operations (Inline Form) ───────────────────────────
-  const startEditStat = (stat) => {
-    setEditingId(stat.id);
-    setIsEditing(true);
-    setStatForm({
-      label: stat.label,
-      value: stat.value,
-      suffix: stat.suffix,
-      sortOrder: stat.sortOrder,
-      isActive: stat.isActive ?? true
-    });
-  };
-
-  const cancelStatEdit = () => {
-    setEditingId(null);
-    setIsEditing(false);
-    setStatForm({ label: '', value: '', suffix: '+', sortOrder: statsList.length + 1, isActive: true });
-  };
-
-  const handleStatFormSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (isEditing) {
-        const res = await statsApi.update(editingId, statForm);
-        if (res.success) {
-          setStatsList(prev => prev.map(item => item.id === editingId ? res.data : item).sort((a, b) => a.sortOrder - b.sortOrder));
-          cancelStatEdit();
-        } else {
-          alert(res.message || 'Operation failed');
-        }
-      } else {
-        const res = await statsApi.create(statForm);
-        if (res.success) {
-          setStatsList(prev => [...prev, res.data].sort((a, b) => a.sortOrder - b.sortOrder));
-          setStatForm({ label: '', value: '', suffix: '+', sortOrder: statsList.length + 2, isActive: true });
-        } else {
-          alert(res.message || 'Operation failed');
-        }
-      }
-    } catch (err) {
-      alert('Operation failed');
-    }
-  };
-
-  const handleDeleteStat = async (id) => {
-    if (!window.confirm('Delete this stat?')) return;
-    try {
-      const res = await statsApi.delete(id);
-      if (res.success) {
-        setStatsList(prev => prev.filter(item => item.id !== id));
-      } else {
-        alert(res.message || 'Deletion failed');
-      }
-    } catch (err) {
-      alert('Deletion failed');
-    }
-  };
-
-  // ── Testimonials CMS Operations (Inline Form) ─────────────────────
-  const startEditTesti = (testi) => {
-    setEditingId(testi.id);
-    setIsEditing(true);
-    setTestiForm({
-      name: testi.name,
-      text: testi.text,
-      rating: testi.rating,
-      timeAgo: testi.timeAgo,
-      initials: testi.initials,
-      isActive: testi.isActive ?? true
-    });
-  };
-
-  const cancelTestiEdit = () => {
-    setEditingId(null);
-    setIsEditing(false);
-    setTestiForm({ name: '', text: '', rating: 5, timeAgo: 'Just now', initials: '', isActive: true });
-  };
-
-  const handleTestiFormSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (isEditing) {
-        const res = await testimonialsApi.update(editingId, testiForm);
-        if (res.success) {
-          setTestimonialsList(prev => prev.map(item => item.id === editingId ? res.data : item));
-          cancelTestiEdit();
-        } else {
-          alert(res.message || 'Operation failed');
-        }
-      } else {
-        const res = await testimonialsApi.create(testiForm);
-        if (res.success) {
-          setTestimonialsList(prev => [...prev, res.data]);
-          setTestiForm({ name: '', text: '', rating: 5, timeAgo: 'Just now', initials: '', isActive: true });
-        } else {
-          alert(res.message || 'Operation failed');
-        }
-      }
-    } catch (err) {
-      alert('Operation failed');
-    }
-  };
-
-  const handleDeleteTesti = async (id) => {
-    if (!window.confirm('Delete this testimonial review?')) return;
-    try {
-      const res = await testimonialsApi.delete(id);
-      if (res.success) {
-        setTestimonialsList(prev => prev.filter(item => item.id !== id));
-      } else {
-        alert(res.message || 'Deletion failed');
-      }
-    } catch (err) {
-      alert('Deletion failed');
-    }
-  };
-
-  // ── Portfolio Projects CMS Operations (Inline Form) ───────────────
-  const startEditProj = (proj) => {
-    setEditingId(proj.id);
-    setIsEditing(true);
-    setProjForm({
-      title: proj.title,
-      category: proj.category,
-      imgUrl: proj.imgUrl,
-      link: proj.link,
-      description: proj.description,
-      isActive: proj.isActive ?? true
-    });
-  };
-
-  const cancelProjEdit = () => {
-    setEditingId(null);
-    setIsEditing(false);
-    setProjForm({ title: '', category: 'Websites', imgUrl: '/img/ecoms.webp', link: '', description: '', isActive: true });
-  };
-
-  const handleProjFormSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (isEditing) {
-        const res = await projectsApi.update(editingId, projForm);
-        if (res.success) {
-          setProjectsList(prev => prev.map(item => item.id === editingId ? res.data : item));
-          cancelProjEdit();
-        } else {
-          alert(res.message || 'Operation failed');
-        }
-      } else {
-        const res = await projectsApi.create(projForm);
-        if (res.success) {
-          setProjectsList(prev => [...prev, res.data]);
-          setProjForm({ title: '', category: 'Websites', imgUrl: '/img/ecoms.webp', link: '', description: '', isActive: true });
-        } else {
-          alert(res.message || 'Operation failed');
-        }
-      }
-    } catch (err) {
-      alert('Operation failed');
-    }
-  };
-
-  const handleDeleteProj = async (id) => {
-    if (!window.confirm('Delete this showcase project?')) return;
-    try {
-      const res = await projectsApi.delete(id);
-      if (res.success) {
-        setProjectsList(prev => prev.filter(item => item.id !== id));
-      } else {
-        alert(res.message || 'Deletion failed');
-      }
-    } catch (err) {
-      alert('Deletion failed');
-    }
-  };
-
-  // ── Lead Operations (Inbox List Update & Deletes) ───────────────
-  const handleUpdateConsultationStatus = async (id, status) => {
-    try {
-      const res = await consultationsApi.updateStatus(id, status);
-      if (res.success) {
-        setLeadsConsultations(prev => prev.map(item => item.id === id ? { ...item, status } : item));
-      } else {
-        alert(res.message || 'Status update failed');
-      }
-    } catch (err) {
-      alert('Status update failed');
-    }
-  };
-
-  const handleDeleteConsultation = async (id) => {
-    if (!window.confirm('Delete this consultation submission?')) return;
-    try {
-      const res = await consultationsApi.delete(id);
-      if (res.success) {
-        setLeadsConsultations(prev => prev.filter(item => item.id !== id));
-      } else {
-        alert(res.message || 'Deletion failed');
-      }
-    } catch (err) {
-      alert('Deletion failed');
-    }
-  };
-
-  const handleUpdateQuoteStatus = async (id, status) => {
-    try {
-      const res = await quotesApi.updateStatus(id, status);
-      if (res.success) {
-        setLeadsQuotes(prev => prev.map(item => item.id === id ? { ...item, status } : item));
-      } else {
-        alert(res.message || 'Status update failed');
-      }
-    } catch (err) {
-      alert('Status update failed');
-    }
-  };
-
-  const handleDeleteQuote = async (id) => {
-    if (!window.confirm('Delete this quote estimate request?')) return;
-    try {
-      const res = await quotesApi.delete(id);
-      if (res.success) {
-        setLeadsQuotes(prev => prev.filter(item => item.id !== id));
-      } else {
-        alert(res.message || 'Deletion failed');
-      }
-    } catch (err) {
-      alert('Deletion failed');
-    }
-  };
-
-  const startEditQuote = (quote) => {
-    setEditingId(quote.id);
-    setIsEditing(true);
-    setQuoteForm({
-      name: quote.name,
-      email: quote.email,
-      phone: quote.phone,
-      service: quote.service,
-      companyName: quote.companyName || '',
-      turnover: quote.turnover || '',
-      businessDesc: quote.businessDesc || '',
-      message: quote.message || '',
-      status: quote.status
-    });
-  };
-
-  const cancelQuoteEdit = () => {
-    setEditingId(null);
-    setIsEditing(false);
-    setQuoteForm({ name: '', email: '', phone: '', service: '', companyName: '', turnover: '', businessDesc: '', message: '', status: 'new' });
-  };
-
-  const handleQuoteFormSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (isEditing) {
-        const res = await quotesApi.update(editingId, quoteForm);
-        if (res.success) {
-          setLeadsQuotes(prev => prev.map(item => item.id === editingId ? res.data : item));
-          cancelQuoteEdit();
-        } else {
-          alert(res.message || 'Operation failed');
-        }
-      }
-    } catch (err) {
-      alert('Operation failed');
-    }
-  };
-
-  // ── Service Categories & Filings CMS (Inline Form) ────────────────
-  const startEditCategory = (cat) => {
-    setEditingId(cat.id);
-    setIsEditing(true);
-    setCatForm({
-      id: cat.id,
-      title: cat.title,
-      desc: cat.desc,
-      iconName: cat.iconName,
-      sortOrder: cat.sortOrder,
-      isActive: cat.isActive ?? true
-    });
-  };
-
-  const cancelCatEdit = () => {
-    setEditingId(null);
-    setIsEditing(false);
-    setCatForm({ id: '', title: '', desc: '', iconName: 'FiShoppingCart', sortOrder: quoteCategories.length + 1, isActive: true });
-  };
-
-  const handleCategorySubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (isEditing) {
-        const res = await categoriesApi.updateCategory(editingId, catForm);
-        if (res.success) {
-          setQuoteCategories(prev => prev.map(item => item.id === editingId ? { ...res.data, filings: item.filings } : item).sort((a, b) => a.sortOrder - b.sortOrder));
-          cancelCatEdit();
-        } else {
-          alert(res.message || 'Operation failed');
-        }
-      } else {
-        const res = await categoriesApi.createCategory(catForm);
-        if (res.success) {
-          setQuoteCategories(prev => [...prev, { ...res.data, filings: [] }].sort((a, b) => a.sortOrder - b.sortOrder));
-          setCatForm({ id: '', title: '', desc: '', iconName: 'FiShoppingCart', sortOrder: quoteCategories.length + 2, isActive: true });
-        } else {
-          alert(res.message || 'Operation failed');
-        }
-      }
-    } catch (err) {
-      alert('Operation failed. Check if Key ID is unique.');
-    }
-  };
-
-  const handleDeleteCategory = async (id) => {
-    if (!window.confirm('Delete this category and all specific filings inside it?')) return;
-    try {
-      const res = await categoriesApi.deleteCategory(id);
-      if (res.success) {
-        setQuoteCategories(prev => prev.filter(item => item.id !== id));
-      } else {
-        alert(res.message || 'Deletion failed');
-      }
-    } catch (err) {
-      alert('Deletion failed');
-    }
-  };
-
-  // ── Turnover Options CMS Operations (Inline Form) ─────────────────
-  const startEditTurnover = (opt) => {
-    setEditingTurnoverId(opt.id);
-    setTurnoverForm({ label: opt.label, sortOrder: opt.sortOrder, isActive: opt.isActive ?? true });
-  };
-
-  const cancelTurnoverEdit = () => {
-    setEditingTurnoverId(null);
-    setTurnoverForm({ label: '', sortOrder: turnoverOptions.length + 1, isActive: true });
-  };
-
-  const handleTurnoverSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (isEditingTurnover) {
-        const res = await turnoverApi.update(editingTurnoverId, turnoverForm);
-        if (res.success) {
-          setTurnoverOptions(prev => prev.map(item => item.id === editingTurnoverId ? res.data : item).sort((a, b) => a.sortOrder - b.sortOrder));
-          cancelTurnoverEdit();
-        } else {
-          alert(res.message || 'Operation failed');
-        }
-      } else {
-        const res = await turnoverApi.create(turnoverForm);
-        if (res.success) {
-          setTurnoverOptions(prev => [...prev, res.data].sort((a, b) => a.sortOrder - b.sortOrder));
-          setTurnoverForm({ label: '', sortOrder: turnoverOptions.length + 2, isActive: true });
-        } else {
-          alert(res.message || 'Operation failed');
-        }
-      }
-    } catch (err) {
-      alert('Operation failed');
-    }
-  };
-
-  const handleDeleteTurnover = async (id) => {
-    if (!window.confirm('Delete this turnover option?')) return;
-    try {
-      const res = await turnoverApi.delete(id);
-      if (res.success) {
-        setTurnoverOptions(prev => prev.filter(item => item.id !== id));
-      } else {
-        alert(res.message || 'Deletion failed');
-      }
-    } catch (err) {
-      alert('Deletion failed');
-    }
-  };
-
-  // Specific filings options list handlers
-  const handleAddFilingSubmit = async (e) => {
-    e.preventDefault();
-    if (!filingFormName.trim()) return;
-
-    try {
-      const res = await categoriesApi.createFiling({
-        categoryId: selectedCategoryId,
-        name: filingFormName,
-        sortOrder: parseInt(filingFormOrder)
-      });
-      if (res.success) {
-        setQuoteCategories(prev => prev.map(cat => {
-          if (cat.id === selectedCategoryId) {
-            return { ...cat, filings: [...(cat.filings || []), res.data].sort((a, b) => a.sortOrder - b.sortOrder) };
-          }
-          return cat;
-        }));
-        setFilingFormName('');
-        setFilingFormOrder(prev => parseInt(prev) + 1);
-      } else {
-        alert(res.message || 'Could not add service option');
-      }
-    } catch (err) {
-      alert('Could not add service option');
-    }
-  };
-
-  const handleDeleteFiling = async (id, catId) => {
-    if (!window.confirm('Delete this service option?')) return;
-    try {
-      const res = await categoriesApi.deleteFiling(id);
-      if (res.success) {
-        setQuoteCategories(prev => prev.map(cat => {
-          if (cat.id === catId) {
-            return { ...cat, filings: (cat.filings || []).filter(f => f.id !== id) };
-          }
-          return cat;
-        }));
-      } else {
-        alert(res.message || 'Could not delete option');
-      }
-    } catch (err) {
-      alert('Could not delete option');
-    }
-  };
-
-  // ── Employee Operations ───────────────────────────────────────────
-  const handlePrintEmployee = (emp) => {
-    setPrintingEmployee(emp);
-    setTimeout(() => {
-      window.print();
-      setPrintingEmployee(null);
-    }, 300);
-  };
-
-  const startEditEmployee = (emp) => {
-    setEditingId(emp.id);
-    setIsEditing(true);
-    setShowEmployeeForm(true);
-    setEmployeeForm({
-      empId: emp.empId || '',
-      name: emp.name || '',
-      email: emp.email || '',
-      phone: emp.phone || '',
-      department: emp.department || '',
-      designation: emp.designation || '',
-      joinDate: emp.joinDate ? new Date(emp.joinDate).toISOString().split('T')[0] : '',
-      salary: emp.salary || '',
-      status: emp.status || 'Active',
-      address: emp.address || ''
-    });
-  };
-
-  const cancelEmployeeEdit = () => {
-    setEditingId(null);
-    setIsEditing(false);
-    setShowEmployeeForm(false);
-    setEmployeeForm({ empId: '', name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
-  };
-
-  const handleEmployeeChange = (e) => {
-    const { name, value } = e.target;
-    setEmployeeForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleEmployeeFormSubmit = async (e) => {
-    e.preventDefault();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(employeeForm.email)) {
-      alert('Please enter a valid email address.');
-      return;
-    }
-    const numericSalary = parseFloat(employeeForm.salary);
-    if (isNaN(numericSalary) || numericSalary <= 0) {
-      alert('Salary must be a positive number.');
-      return;
-    }
-
-    setEmployeeSubmitting(true);
-    try {
-      if (isEditing) {
-        const res = await employeesApi.update(editingId, employeeForm);
-        if (res.success) {
-          setEmployeesList(prev => prev.map(item => item.id === editingId ? res.data : item));
-          cancelEmployeeEdit();
-        } else {
-          alert(res.message || 'Failed to update employee');
-        }
-      } else {
-        const res = await employeesApi.create(employeeForm);
-        if (res.success) {
-          setEmployeeForm({ empId: '', name: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '', status: 'Active', address: '' });
-          fetchAllData();
-        } else {
-          alert(res.message || 'Failed to create employee');
-        }
-      }
-    } catch (error) {
-      console.error('[EMPLOYEE FORM]', error);
-      alert('Server error');
-    } finally {
-      setEmployeeSubmitting(false);
-    }
-  };
-
-  const handleDeleteEmployee = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this employee?')) return;
-    try {
-      const res = await employeesApi.delete(id);
-      if (res.success) {
-        setEmployeesList(prev => prev.filter(item => item.id !== id));
-      } else {
-        alert(res.message || 'Deletion failed');
-      }
-    } catch (err) {
-      alert('Deletion failed');
-    }
-  };
-
-  // ── Render Login Screen if not authenticated ────────────────────
+  // Render Login Screen if not authenticated
   if (!token) {
     return (
       <div className="admin-login-screen">
         <div className="admin-login-card">
           <div className="login-header">
-            <img src="/img/logo.webp" alt="Inspiring Infosys" className="login-logo" onError={(e) => e.target.style.display = 'none'} decoding="async" />
             <h2>Admin Panel Login</h2>
             <p>Enter email and password to access dashboard</p>
           </div>
@@ -748,1333 +269,185 @@ function Admin() {
     );
   }
 
-  // Active category filings lookups
-  const activeCategoryObj = quoteCategories.find(c => c.id === selectedCategoryId);
-
   return (
-    <div className="admin-dashboard-wrapper">
+    <div className={`admin-dashboard-container ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
+      <AdminNavbar
+        adminName={adminName}
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+        handleLogout={handleLogout}
+        handleExitAdmin={handleExitAdmin}
+      />
 
-      {/* ── Full Top Navbar ── */}
-      <header className="admin-top-navbar">
-        <div className="admin-top-navbar-left">
-          {/* Mobile hamburger */}
-          <button
-            type="button"
-            className="admin-mobile-toggle"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            aria-label="Toggle navigation menu"
-          >
-            {isSidebarOpen ? <FiX size={22} /> : <FiMenu size={22} />}
-          </button>
-          <button
-            type="button"
-            className="admin-logo-btn"
-            onClick={() => {
-              const pane = document.querySelector('.admin-content-pane');
-              if (pane) pane.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            title="Back to top"
-            aria-label="Scroll to top"
-          >
-            <img
-              src="/images/logo2.webp"
-              alt="Inspiring Infosys Logo"
-              className="admin-top-logo"
-              loading="lazy"
-              decoding="async"
+      <div className="admin-body-layout">
+        <AdminSidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          empSubTab={empSubTab}
+          setEmpSubTab={setEmpSubTab}
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+          employeesList={employeesList}
+          empAttendanceList={empAttendanceList}
+          empQueriesList={empQueriesList}
+          empLeavesList={empLeavesList}
+          leadsQuotes={leadsQuotes}
+          leadsConsultations={leadsConsultations}
+          handleLogout={handleLogout}
+          handleExitAdmin={handleExitAdmin}
+        />
+
+        <main className="admin-content-pane">
+          {activeTab === 'stats' && (
+            <StatsManager statsList={statsList} setStatsList={setStatsList} />
+          )}
+
+          {activeTab === 'testimonials' && (
+            <TestimonialsManager testimonialsList={testimonialsList} setTestimonialsList={setTestimonialsList} />
+          )}
+
+          {activeTab === 'projects' && (
+            <ProjectsManager projectsList={projectsList} setProjectsList={setProjectsList} />
+          )}
+
+          {activeTab === 'employees' && (
+            <EmployeeListTab
+              employeesList={employeesList}
+              dashboardMetrics={dashboardMetrics}
+              empAttendanceList={empAttendanceList}
+              empLeavesList={empLeavesList}
+              setEmpLeavesList={setEmpLeavesList}
+              empQueriesList={empQueriesList}
+              setEmpQueriesList={setEmpQueriesList}
+              fetchAllData={fetchAllData}
+              setCredentialsModal={setCredentialsModal}
+              empSubTab={empSubTab}
+              setEmpSubTab={setEmpSubTab}
             />
-          </button>
-        </div>
-        <div className="admin-top-navbar-right">
-          {/* Hover dropdown for user menu */}
-          <div className="admin-user-menu" onMouseEnter={handleUserMenuEnter} onMouseLeave={handleUserMenuLeave}>
-            <div className="admin-user-trigger">
-              <div className="admin-top-avatar">
-                {adminName ? adminName.charAt(0).toUpperCase() : 'A'}
-              </div>
-              <span className="admin-top-name">{adminName}</span>
-            </div>
-            {/* Dropdown card */}
-            <div className={`admin-user-dropdown ${isUserMenuOpen ? 'open' : ''}`}>
-              <div className="admin-user-dropdown-header">
-                <div className="admin-user-dropdown-avatar">
-                  {adminName ? adminName.charAt(0).toUpperCase() : 'A'}
+          )}
+
+          {activeTab === 'quotes' && (
+            <QuotesInboxTab leadsQuotes={leadsQuotes} setLeadsQuotes={setLeadsQuotes} />
+          )}
+
+          {activeTab === 'consultations' && (
+            <ConsultationsInboxTab leadsConsultations={leadsConsultations} setLeadsConsultations={setLeadsConsultations} />
+          )}
+
+          {activeTab === 'quoteConfig' && (
+            <QuoteConfigTab
+              quoteCategories={quoteCategories}
+              setQuoteCategories={setQuoteCategories}
+              turnoverOptions={turnoverOptions}
+              setTurnoverOptions={setTurnoverOptions}
+              selectedCategoryId={selectedCategoryId}
+              setSelectedCategoryId={setSelectedCategoryId}
+            />
+          )}
+
+          {activeTab === 'clientServices' && (
+            <ClientServicesTab />
+          )}
+        </main>
+      </div>
+
+      {credentialsModal && (
+        <div className="admin-login-screen" style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(6px)', zIndex: 3500, padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="admin-card" style={{ maxWidth: '520px', width: '100%', background: '#ffffff', borderRadius: '20px', padding: '2rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', border: '1px solid #e2e8f0' }}>
+            <div className="admin-card-header" style={{ marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ background: '#dcfce7', color: '#16a34a', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <FiCheckCircle size={24} />
                 </div>
                 <div>
-                  <p className="admin-user-dropdown-name">{adminName}</p>
-                  <p className="admin-user-dropdown-role">Administrator</p>
+                  <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Employee Login Generated!</h2>
+                  <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>Share these credentials with {credentialsModal.name}</p>
                 </div>
               </div>
-              <div className="admin-user-dropdown-divider" />
-              <button className="admin-user-dropdown-btn logout" onClick={handleLogout}>
-                <FiLogOut size={15} />
-                Sign Out
+              <button className="btn-table-action delete" onClick={() => setCredentialsModal(null)}><FiX size={18} /></button>
+            </div>
+
+            <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '1.25rem', border: '1px solid #cbd5e1', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'grid', gap: '0.85rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem' }}>
+                  <span style={{ color: '#64748b', fontWeight: '500' }}>Employee Name:</span>
+                  <strong style={{ color: '#0f172a' }}>{credentialsModal.name} ({credentialsModal.empId})</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem' }}>
+                  <span style={{ color: '#64748b', fontWeight: '500' }}>Portal Login URL:</span>
+                  <span style={{ color: '#2563eb', fontWeight: '600', fontSize: '0.825rem' }}>{window.location.origin}/employee/login</span>
+                </div>
+                <div style={{ height: '1px', background: '#cbd5e1', margin: '0.25rem 0' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>LOGIN EMAIL</span>
+                    <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>{credentialsModal.email}</strong>
+                  </div>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(credentialsModal.email);
+                      setCopyFeedback('Email copied!');
+                      setTimeout(() => setCopyFeedback(''), 2000);
+                    }}
+                    style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.35rem 0.65rem', fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <FiCopy size={13} /> Copy
+                  </button>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>LOGIN PASSWORD</span>
+                    <strong style={{ fontSize: '1.05rem', color: '#dc2626', fontFamily: 'monospace', letterSpacing: '0.05em' }}>{credentialsModal.password}</strong>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (credentialsModal.password && !credentialsModal.password.includes('••••')) {
+                        navigator.clipboard.writeText(credentialsModal.password);
+                        setCopyFeedback('Password copied!');
+                      } else {
+                        setCopyFeedback('Password preset by Admin.');
+                      }
+                      setTimeout(() => setCopyFeedback(''), 2000);
+                    }}
+                    style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.35rem 0.65rem', fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <FiCopy size={13} /> Copy
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {copyFeedback && (
+              <div style={{ textAlign: 'center', color: '#16a34a', fontWeight: '600', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+                ✓ {copyFeedback}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                type="button"
+                className="btn-orange"
+                style={{ flex: 1, justifyContent: 'center', padding: '0.65rem' }}
+                onClick={() => {
+                  const message = `Hello ${credentialsModal.name},\n\nYour Employee Portal account has been created for Inspiring Infosys.\n\nPortal URL: ${window.location.origin}/employee/login\nEmp ID: ${credentialsModal.empId}\nLogin Email: ${credentialsModal.email}\nPassword: ${credentialsModal.password}\n\nPlease log in to punch attendance, view salary slips, and complete your ID card details.`;
+                  navigator.clipboard.writeText(message);
+                  setCopyFeedback('Full WhatsApp / Email message copied to clipboard!');
+                  setTimeout(() => setCopyFeedback(''), 2500);
+                }}
+              >
+                <FiShare2 size={16} /> Copy WhatsApp / Email Msg
+              </button>
+              <button
+                type="button"
+                className="btn-gray"
+                onClick={() => setCredentialsModal(null)}
+              >
+                Close
               </button>
             </div>
           </div>
         </div>
-      </header>
-
-      <div className={`admin-dashboard-container ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-
-        {/* Overlay backdrop to close sidebar on mobile when clicked outside */}
-        {isSidebarOpen && (
-          <div className="admin-sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />
-        )}
-
-        {/* ── Left Sidebar Panel ── */}
-        <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : 'collapsed'}`}>
-          <div className="admin-sidebar-header">
-            <h2>Admin Panel</h2>
-          </div>
-
-          <nav className="admin-sidebar-menu">
-            <button
-              className={`admin-sidebar-btn ${activeTab === 'stats' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('stats'); cancelStatEdit(); cancelQuoteEdit(); setIsSidebarOpen(false); }}
-            >
-              <FiTrendingUp size={16} /> Stats
-            </button>
-            <button
-              className={`admin-sidebar-btn ${activeTab === 'testimonials' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('testimonials'); cancelTestiEdit(); cancelQuoteEdit(); setIsSidebarOpen(false); }}
-            >
-              <FiUsers size={16} /> Testimonials
-            </button>
-            <button
-              className={`admin-sidebar-btn ${activeTab === 'projects' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('projects'); cancelProjEdit(); cancelQuoteEdit(); setIsSidebarOpen(false); }}
-            >
-              <FiFileText size={16} /> Portfolio CMS
-            </button>
-            <button
-              className={`admin-sidebar-btn ${activeTab === 'employees' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('employees'); cancelEmployeeEdit(); setIsSidebarOpen(false); }}
-            >
-              <FiUsers size={16} /> Employees
-            </button>
-            <button
-              className={`admin-sidebar-btn ${activeTab === 'quotes' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('quotes'); cancelQuoteEdit(); setIsSidebarOpen(false); }}
-            >
-              <FiMessageSquare size={16} /> Quotes
-            </button>
-            <button
-              className={`admin-sidebar-btn ${activeTab === 'consultations' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('consultations'); cancelQuoteEdit(); setIsSidebarOpen(false); }}
-            >
-              <FiMessageSquare size={16} /> Consultations
-            </button>
-            <button
-              className={`admin-sidebar-btn ${activeTab === 'quoteConfig' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('quoteConfig'); cancelCatEdit(); cancelQuoteEdit(); cancelTurnoverEdit(); setIsSidebarOpen(false); }}
-            >
-              <FiSettings size={16} /> Get Quote Config
-            </button>
-          </nav>
-
-          <div className="admin-sidebar-footer">
-            <button className="admin-exit-btn" onClick={() => { handleExitAdmin(); setIsSidebarOpen(false); }}>
-              <FiLogOut size={16} /> Exit Admin
-            </button>
-          </div>
-        </aside>
-
-        {/* ── Right Content Area ── */}
-        <main className="admin-content-pane">
-
-          {/* ─── Stats CMS Section ─── */}
-          {activeTab === 'stats' && (
-            <div className="admin-stats-tab-pane">
-              <div className="admin-content-header">
-                <h1>Manage Stats</h1>
-              </div>
-
-              {/* Inline Add/Edit Stat Form (Matches Screenshot 1 layout) */}
-              <div className="admin-card">
-                <div className="admin-card-header">
-                  <h2>{isEditing ? 'Edit Stat' : 'Add New Stat'}</h2>
-                </div>
-                <form onSubmit={handleStatFormSubmit} className="login-form">
-                  <div className="form-grid form-grid-2">
-                    <div className="admin-input-group">
-                      <label>Label</label>
-                      <input
-                        type="text"
-                        placeholder="E.g., Company Incorporations"
-                        value={statForm.label}
-                        onChange={(e) => setStatForm({ ...statForm, label: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="admin-input-group">
-                      <label>Value</label>
-                      <input
-                        type="text"
-                        placeholder="E.g., 1050"
-                        value={statForm.value}
-                        onChange={(e) => setStatForm({ ...statForm, value: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-grid form-grid-2">
-                    <div className="admin-input-group">
-                      <label>Suffix (e.g., +, %)</label>
-                      <input
-                        type="text"
-                        placeholder="+"
-                        value={statForm.suffix}
-                        onChange={(e) => setStatForm({ ...statForm, suffix: e.target.value })}
-                      />
-                    </div>
-                    <div className="admin-input-group">
-                      <label>Sort Order</label>
-                      <input
-                        type="number"
-                        value={statForm.sortOrder}
-                        onChange={(e) => setStatForm({ ...statForm, sortOrder: parseInt(e.target.value) || 0 })}
-                      />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-                    <label className="admin-input-group admin-input-checkbox">
-                      <input
-                        type="checkbox"
-                        checked={statForm.isActive}
-                        onChange={(e) => setStatForm({ ...statForm, isActive: e.target.checked })}
-                      />
-                      Is Active
-                    </label>
-
-                    <div style={{ display: 'flex', gap: '0.75rem' }}>
-                      {isEditing && (
-                        <button type="button" className="btn-gray" onClick={cancelStatEdit}>
-                          Cancel
-                        </button>
-                      )}
-                      <button type="submit" className="btn-orange">
-                        {isEditing ? 'Update Stat' : 'Create Stat'}
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-              {/* List Table of Stats */}
-              <div className="table-responsive">
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Label</th>
-                      <th>Value</th>
-                      <th>Order</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {statsList.map(stat => (
-                      <tr key={stat.id}>
-                        <td><strong>{stat.label}</strong></td>
-                        <td>{stat.value}{stat.suffix}</td>
-                        <td>{stat.sortOrder}</td>
-                        <td>
-                          <span className={`status-badge ${stat.isActive !== false ? 'status-active' : 'status-inactive'}`}>
-                            {stat.isActive !== false ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="table-actions">
-                            <button className="btn-table-action edit" onClick={() => startEditStat(stat)} title="Edit">
-                              <FiEdit2 />
-                            </button>
-                            <button className="btn-table-action delete" onClick={() => handleDeleteStat(stat.id)} title="Delete">
-                              <FiTrash2 />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* ─── Testimonials CMS Section ─── */}
-          {activeTab === 'testimonials' && (
-            <div className="admin-testimonials-tab-pane">
-              <div className="admin-content-header">
-                <h1>Manage Testimonials</h1>
-              </div>
-
-              {/* Inline Add/Edit Testimonial Form */}
-              <div className="admin-card">
-                <div className="admin-card-header">
-                  <h2>{isEditing ? 'Edit Testimonial' : 'Add New Testimonial'}</h2>
-                </div>
-                <form onSubmit={handleTestiFormSubmit} className="login-form">
-                  <div className="form-grid form-grid-2">
-                    <div className="admin-input-group">
-                      <label>Client Name</label>
-                      <input
-                        type="text"
-                        placeholder="E.g., Neha Kapoor"
-                        value={testiForm.name}
-                        onChange={(e) => setTestiForm({ ...testiForm, name: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="admin-input-group">
-                      <label>Initials (Avatar)</label>
-                      <input
-                        type="text"
-                        placeholder="E.g., NK"
-                        value={testiForm.initials}
-                        onChange={(e) => setTestiForm({ ...testiForm, initials: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="admin-input-group">
-                    <label>Comment Text</label>
-                    <textarea
-                      placeholder="Write client comment..."
-                      rows={3}
-                      value={testiForm.text}
-                      onChange={(e) => setTestiForm({ ...testiForm, text: e.target.value })}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-grid form-grid-2">
-                    <div className="admin-input-group">
-                      <label>Rating (1 to 5 Stars)</label>
-                      <select
-                        value={testiForm.rating}
-                        onChange={(e) => setTestiForm({ ...testiForm, rating: parseInt(e.target.value) || 5 })}
-                      >
-                        <option value="5">5 Stars</option>
-                        <option value="4">4 Stars</option>
-                        <option value="3">3 Stars</option>
-                      </select>
-                    </div>
-                    <div className="admin-input-group">
-                      <label>Relative Time Info</label>
-                      <input
-                        type="text"
-                        placeholder="E.g., 2 months ago"
-                        value={testiForm.timeAgo}
-                        onChange={(e) => setTestiForm({ ...testiForm, timeAgo: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-                    <label className="admin-input-group admin-input-checkbox">
-                      <input
-                        type="checkbox"
-                        checked={testiForm.isActive}
-                        onChange={(e) => setTestiForm({ ...testiForm, isActive: e.target.checked })}
-                      />
-                      Is Active
-                    </label>
-
-                    <div style={{ display: 'flex', gap: '0.75rem' }}>
-                      {isEditing && (
-                        <button type="button" className="btn-gray" onClick={cancelTestiEdit}>
-                          Cancel
-                        </button>
-                      )}
-                      <button type="submit" className="btn-orange">
-                        {isEditing ? 'Update Review' : 'Create Review'}
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-              {/* List Table of Testimonials */}
-              <div className="table-responsive">
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Client Name</th>
-                      <th>Initials</th>
-                      <th>Rating</th>
-                      <th>Review Content</th>
-                      <th>Relative Time</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {testimonialsList.map(testi => (
-                      <tr key={testi.id}>
-                        <td><strong>{testi.name}</strong></td>
-                        <td><span className="filing-tag-pill">{testi.initials}</span></td>
-                        <td style={{ color: '#fbbf24', fontWeight: '800' }}>{'★'.repeat(testi.rating)}</td>
-                        <td style={{ maxWidth: '300px', whiteSpace: 'normal', fontSize: '0.82rem' }}>{testi.text}</td>
-                        <td>{testi.timeAgo}</td>
-                        <td>
-                          <span className={`status-badge ${testi.isActive !== false ? 'status-active' : 'status-inactive'}`}>
-                            {testi.isActive !== false ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="table-actions">
-                            <button className="btn-table-action edit" onClick={() => startEditTesti(testi)} title="Edit">
-                              <FiEdit2 />
-                            </button>
-                            <button className="btn-table-action delete" onClick={() => handleDeleteTesti(testi.id)} title="Delete">
-                              <FiTrash2 />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* ─── Portfolio Projects CMS Section ─── */}
-          {activeTab === 'projects' && (
-            <div className="admin-projects-tab-pane">
-              <div className="admin-content-header">
-                <h1>Portfolio Showcase Projects</h1>
-              </div>
-
-              {/* Inline Add/Edit Project Form */}
-              <div className="admin-card">
-                <div className="admin-card-header">
-                  <h2>{isEditing ? 'Edit Project' : 'Add New Showcase Project'}</h2>
-                </div>
-                <form onSubmit={handleProjFormSubmit} className="login-form">
-                  <div className="form-grid form-grid-2">
-                    <div className="admin-input-group">
-                      <label>Project Title</label>
-                      <input
-                        type="text"
-                        placeholder="E.g., Spartan Nutrition"
-                        value={projForm.title}
-                        onChange={(e) => setProjForm({ ...projForm, title: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="admin-input-group">
-                      <label>Category</label>
-                      <select
-                        value={projForm.category}
-                        onChange={(e) => setProjForm({ ...projForm, category: e.target.value })}
-                      >
-                        <option value="Websites">Websites</option>
-                        <option value="E-Commerce">E-Commerce</option>
-                        <option value="Software">Software</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="form-grid form-grid-2">
-                    <div className="admin-input-group">
-                      <label>Image URL Path</label>
-                      <input
-                        type="text"
-                        placeholder="E.g., /img/web-spartan.webp"
-                        value={projForm.imgUrl}
-                        onChange={(e) => setProjForm({ ...projForm, imgUrl: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="admin-input-group">
-                      <label>External Website Link</label>
-                      <input
-                        type="url"
-                        placeholder="https://example.com"
-                        value={projForm.link}
-                        onChange={(e) => setProjForm({ ...projForm, link: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="admin-input-group">
-                    <label>Showcase Description</label>
-                    <textarea
-                      placeholder="Provide short explanation of project concept..."
-                      rows={2}
-                      value={projForm.description}
-                      onChange={(e) => setProjForm({ ...projForm, description: e.target.value })}
-                      required
-                    />
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-                    <label className="admin-input-group admin-input-checkbox">
-                      <input
-                        type="checkbox"
-                        checked={projForm.isActive}
-                        onChange={(e) => setProjForm({ ...projForm, isActive: e.target.checked })}
-                      />
-                      Is Active
-                    </label>
-
-                    <div style={{ display: 'flex', gap: '0.75rem' }}>
-                      {isEditing && (
-                        <button type="button" className="btn-gray" onClick={cancelProjEdit}>
-                          Cancel
-                        </button>
-                      )}
-                      <button type="submit" className="btn-orange">
-                        {isEditing ? 'Update Project' : 'Create Project'}
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-              {/* List Table of Projects */}
-              <div className="table-responsive">
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Project Name</th>
-                      <th>Category</th>
-                      <th>Image Source</th>
-                      <th>Link</th>
-                      <th>Description</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {projectsList.map(proj => (
-                      <tr key={proj.id}>
-                        <td><strong>{proj.title}</strong></td>
-                        <td><span className="status-badge status-progress">{proj.category}</span></td>
-                        <td style={{ fontSize: '0.8rem', color: '#64748b' }}>{proj.imgUrl}</td>
-                        <td>{proj.link ? <a href={proj.link} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontWeight: '700' }}>Visit Link</a> : 'None'}</td>
-                        <td style={{ maxWidth: '300px', whiteSpace: 'normal', fontSize: '0.82rem' }}>{proj.description}</td>
-                        <td>
-                          <div className="table-actions">
-                            <button className="btn-table-action edit" onClick={() => startEditProj(proj)} title="Edit">
-                              <FiEdit2 />
-                            </button>
-                            <button className="btn-table-action delete" onClick={() => handleDeleteProj(proj.id)} title="Delete">
-                              <FiTrash2 />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* ─── Employees Management Section ─── */}
-          {activeTab === 'employees' && (
-            <div className="admin-employees-tab-pane">
-              <div className="admin-content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                <div>
-                  <h1>Manage Employees</h1>
-                </div>
-                <button
-                  type="button"
-                  className="btn-orange"
-                  onClick={() => {
-                    if (showEmployeeForm || isEditing) {
-                      cancelEmployeeEdit();
-                    } else {
-                      cancelEmployeeEdit();
-                      setShowEmployeeForm(true);
-                    }
-                  }}
-                >
-                  {showEmployeeForm || isEditing ? (
-                    <><FiX size={16} /> Close Form</>
-                  ) : (
-                    <><FiPlus size={16} /> Add Employee</>
-                  )}
-                </button>
-              </div>
-
-              {/* If Form is Open (Add or Edit) -> Render ONLY Form Card */}
-              {(showEmployeeForm || isEditing) ? (
-                <div className="admin-card">
-                  <div className="admin-card-header">
-                    <h2>{isEditing ? 'Edit Employee' : 'Add New Employee'}</h2>
-                  </div>
-                  <form onSubmit={handleEmployeeFormSubmit} className="login-form">
-                    <div className="form-grid form-grid-2">
-                      <div className="admin-input-group">
-                        <label>Emp ID</label>
-                        <input type="text" name="empId" placeholder="E.g., EMP001" value={employeeForm.empId} onChange={handleEmployeeChange} />
-                      </div>
-                      <div className="admin-input-group">
-                        <label>Emp Name</label>
-                        <input type="text" name="name" placeholder="E.g., Rahul Sharma" value={employeeForm.name} onChange={handleEmployeeChange} required />
-                      </div>
-                    </div>
-                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
-                      <div className="admin-input-group">
-                        <label>Email</label>
-                        <input type="email" name="email" placeholder="E.g., rahul@company.com" value={employeeForm.email} onChange={handleEmployeeChange} required />
-                      </div>
-                      <div className="admin-input-group">
-                        <label>Phone</label>
-                        <input type="tel" name="phone" placeholder="E.g., 9876543210" value={employeeForm.phone} onChange={handleEmployeeChange} required />
-                      </div>
-                    </div>
-                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
-                      <div className="admin-input-group">
-                        <label>Department</label>
-                        <input type="text" name="department" placeholder="E.g., IT" value={employeeForm.department} onChange={handleEmployeeChange} required />
-                      </div>
-                      <div className="admin-input-group">
-                        <label>Designation</label>
-                        <input type="text" name="designation" placeholder="E.g., Software Engineer" value={employeeForm.designation} onChange={handleEmployeeChange} required />
-                      </div>
-                    </div>
-                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
-                      <div className="admin-input-group">
-                        <label>Join Date</label>
-                        <input type="date" name="joinDate" value={employeeForm.joinDate} onChange={handleEmployeeChange} required />
-                      </div>
-                      <div className="admin-input-group">
-                        <label>Salary</label>
-                        <input type="number" step="0.01" name="salary" placeholder="E.g., 50000.00" value={employeeForm.salary} onChange={handleEmployeeChange} required />
-                      </div>
-                    </div>
-                    <div className="form-grid form-grid-2" style={{ marginTop: '1.25rem' }}>
-                      <div className="admin-input-group">
-                        <label>Status</label>
-                        <select name="status" value={employeeForm.status} onChange={handleEmployeeChange} required>
-                          <option value="Active">Active</option>
-                          <option value="Inactive">Inactive</option>
-                        </select>
-                      </div>
-                      <div className="admin-input-group">
-                        <label>Address (Optional)</label>
-                        <textarea name="address" rows="2" placeholder="E.g., 123 Main St..." value={employeeForm.address} onChange={handleEmployeeChange} />
-                      </div>
-                    </div>
-
-
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem', marginBottom: '0.5rem', gap: '0.75rem' }}>
-                      {isEditing && (
-                        <button type="button" className="btn-gray" onClick={cancelEmployeeEdit} disabled={employeeSubmitting}>
-                          Cancel Edit
-                        </button>
-                      )}
-                      <button type="submit" className="btn-orange" disabled={employeeSubmitting}>
-                        {employeeSubmitting
-                          ? (isEditing ? 'Updating...' : 'Creating...')
-                          : (isEditing ? 'Update Employee' : 'Create Employee')
-                        }
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              ) : (
-                /* Otherwise -> Render ONLY Employee List Table Card */
-                <div className="admin-card employee-list-card">
-                  <div className="admin-card-header">
-                    <h2>Employee List</h2>
-                  </div>
-                  <div className="employee-table-wrapper table-responsive">
-                    <table className="admin-table employee-table">
-                      <thead>
-                        <tr>
-                          <th>SR NO</th>
-                          <th>EMP ID</th>
-                          <th>EMP NAME</th>
-                          <th>EMAIL</th>
-                          <th>PHONE</th>
-                          <th>DEPARTMENT</th>
-                          <th>DESIGNATION</th>
-                          <th>JOIN DATE</th>
-                          <th>SALARY</th>
-                          <th>STATUS</th>
-                          <th>ACTIONS</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {employeesList.length === 0 ? (
-                          <tr>
-                            <td colSpan="11" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                              No employees found.
-                            </td>
-                          </tr>
-                        ) : (
-                          employeesList.map((employee, index) => (
-                            <tr key={employee.id}>
-                              <td>{index + 1}</td>
-                              <td><strong>{employee.empId || employee.id}</strong></td>
-                              <td><strong>{employee.name}</strong></td>
-                              <td>{employee.email}</td>
-                              <td>{employee.phone}</td>
-                              <td>{employee.department}</td>
-                              <td>{employee.designation}</td>
-                              <td>{employee.joinDate ? new Date(employee.joinDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</td>
-                              <td>₹{Number(employee.salary).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                              <td>
-                                <span className={`status-badge status-${employee.status === 'Active' ? 'active' : 'inactive'}`}>
-                                  {employee.status}
-                                </span>
-                              </td>
-                              <td>
-                                <div className="table-actions" style={{ flexWrap: 'nowrap', gap: '0.3rem' }}>
-                                  <button
-                                    className="btn-table-action edit"
-                                    onClick={() => startEditEmployee(employee)}
-                                    title="Edit Employee"
-                                  >
-                                    <FiEdit2 size={14} />
-                                  </button>
-                                  <button
-                                    className="btn-table-action delete"
-                                    onClick={() => handleDeleteEmployee(employee.id)}
-                                    title="Delete Employee"
-                                  >
-                                    <FiTrash2 size={14} />
-                                  </button>
-                                  <button
-                                    className="btn-offer-letter-action"
-                                    onClick={() => setSelectedOfferLetterEmployee(employee)}
-                                    title="Generate Offer Letter"
-                                    style={{
-                                      padding: '0.25rem 0.45rem',
-                                      fontSize: '0.72rem',
-                                      fontWeight: '700',
-                                      borderRadius: '5px',
-                                      background: '#eff6ff',
-                                      color: '#2563eb',
-                                      border: '1px solid #bfdbfe',
-                                      cursor: 'pointer',
-                                      whiteSpace: 'nowrap',
-                                      display: 'inline-flex',
-                                      alignItems: 'center',
-                                      gap: '0.25rem'
-                                    }}
-                                  >
-                                    <FiFileText size={12} /> Offer Letter
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ─── Quotes Leads Inbox Section ─── */}
-          {activeTab === 'quotes' && (
-            <div className="admin-quotes-tab-pane">
-              <div className="admin-content-header">
-                <h1>Get a Quote Inquiries</h1>
-              </div>
-
-              {/* Edit Quote Form (when isEditing is true) */}
-              {isEditing && (
-                <div className="admin-card">
-                  <div className="admin-card-header">
-                    <h2>Edit Quote Inquiry Details</h2>
-                  </div>
-                  <form onSubmit={handleQuoteFormSubmit} className="login-form">
-                    <div className="form-grid form-grid-2">
-                      <div className="admin-input-group">
-                        <label>Client Name</label>
-                        <input
-                          type="text"
-                          value={quoteForm.name}
-                          onChange={(e) => setQuoteForm({ ...quoteForm, name: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div className="admin-input-group">
-                        <label>Requested Services</label>
-                        <input
-                          type="text"
-                          value={quoteForm.service}
-                          onChange={(e) => setQuoteForm({ ...quoteForm, service: e.target.value })}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-grid form-grid-2">
-                      <div className="admin-input-group">
-                        <label>Email Address</label>
-                        <input
-                          type="email"
-                          value={quoteForm.email}
-                          onChange={(e) => setQuoteForm({ ...quoteForm, email: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div className="admin-input-group">
-                        <label>Phone Number</label>
-                        <input
-                          type="text"
-                          value={quoteForm.phone}
-                          onChange={(e) => setQuoteForm({ ...quoteForm, phone: e.target.value })}
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-grid form-grid-3">
-                      <div className="admin-input-group">
-                        <label>Company / Brand Name</label>
-                        <input
-                          type="text"
-                          value={quoteForm.companyName}
-                          onChange={(e) => setQuoteForm({ ...quoteForm, companyName: e.target.value })}
-                        />
-                      </div>
-                      <div className="admin-input-group">
-                        <label>Estimated Annual Turnover</label>
-                        <select
-                          value={quoteForm.turnover}
-                          onChange={(e) => setQuoteForm({ ...quoteForm, turnover: e.target.value })}
-                        >
-                          <option value="">Select Turnover...</option>
-                          <option value="Below ₹10 Lakhs">Below ₹10 Lakhs</option>
-                          <option value="₹10L to ₹40 Lakhs">₹10L to ₹40 Lakhs</option>
-                          <option value="Above ₹40 Lakhs">Above ₹40 Lakhs</option>
-                        </select>
-                      </div>
-                      <div className="admin-input-group">
-                        <label>Lead Status</label>
-                        <select
-                          value={quoteForm.status}
-                          onChange={(e) => setQuoteForm({ ...quoteForm, status: e.target.value })}
-                        >
-                          <option value="new">New</option>
-                          <option value="in-progress">In Progress</option>
-                          <option value="done">Done</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="admin-input-group">
-                      <label>Business Description / Concept</label>
-                      <textarea
-                        rows={3}
-                        value={quoteForm.businessDesc}
-                        onChange={(e) => setQuoteForm({ ...quoteForm, businessDesc: e.target.value })}
-                      />
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
-                      <button type="button" className="btn-gray" onClick={cancelQuoteEdit}>
-                        Cancel
-                      </button>
-                      <button type="submit" className="btn-orange">
-                        Update Inquiry Details
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              )}
-
-              <div className="table-responsive">
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Contact Info</th>
-                      <th>Requested Services</th>
-                      <th>Business Profile Details</th>
-                      <th>Submit Date</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {leadsQuotes.length === 0 ? (
-                      <tr>
-                        <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                          No quote inquiries found.
-                        </td>
-                      </tr>
-                    ) : (
-                      leadsQuotes.map(lead => (
-                        <tr key={lead.id}>
-                          <td><strong>{lead.name}</strong></td>
-                          <td>
-                            <div style={{ fontSize: '0.82rem' }}>
-                              <div><a href={`mailto:${lead.email}`} style={{ color: 'var(--primary)', fontWeight: '700' }}>{lead.email}</a></div>
-                              <div style={{ color: '#64748b', marginTop: '0.2rem' }}>{lead.phone}</div>
-                            </div>
-                          </td>
-                          <td>
-                            <span className="status-badge status-done" style={{ fontSize: '0.72rem' }}>
-                              {lead.service}
-                            </span>
-                          </td>
-                          <td style={{ maxWidth: '280px', whiteSpace: 'normal', fontSize: '0.82rem', lineHeight: '1.4' }}>
-                            {lead.companyName && <div><strong>Company:</strong> {lead.companyName}</div>}
-                            {lead.turnover && <div><strong>Turnover:</strong> {lead.turnover}</div>}
-                            {lead.businessDesc && <div style={{ marginTop: '0.2rem' }}><strong>Description:</strong> {lead.businessDesc}</div>}
-                            {!lead.companyName && !lead.turnover && !lead.businessDesc && (
-                              <div style={{ color: '#64748b', fontSize: '0.78rem' }}>{lead.message}</div>
-                            )}
-                          </td>
-                          <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
-                          <td>
-                            <select
-                              value={lead.status}
-                              onChange={(e) => handleUpdateQuoteStatus(lead.id, e.target.value)}
-                              className={`status-badge status-${lead.status}`}
-                              style={{ border: 'none', cursor: 'pointer', outline: 'none' }}
-                            >
-                              <option value="new">New</option>
-                              <option value="in-progress">In Progress</option>
-                              <option value="done">Done</option>
-                            </select>
-                          </td>
-                          <td>
-                            <div className="table-actions">
-                              <button className="btn-table-action edit" onClick={() => startEditQuote(lead)} title="Edit">
-                                <FiEdit2 />
-                              </button>
-                              <button className="btn-table-action delete" onClick={() => handleDeleteQuote(lead.id)} title="Delete">
-                                <FiTrash2 />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* ─── Consultations Leads Inbox Section ─── */}
-          {activeTab === 'consultations' && (
-            <div className="admin-consultations-tab-pane">
-              <div className="admin-content-header">
-                <h1>Contact Form Consultations</h1>
-              </div>
-
-              <div className="table-responsive">
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Email Address</th>
-                      <th>Subject / Company</th>
-                      <th>Message</th>
-                      <th>Submit Date</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {leadsConsultations.length === 0 ? (
-                      <tr>
-                        <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                          No consultation inquiries found.
-                        </td>
-                      </tr>
-                    ) : (
-                      leadsConsultations.map(lead => (
-                        <tr key={lead.id}>
-                          <td><strong>{lead.name}</strong></td>
-                          <td><a href={`mailto:${lead.email}`} style={{ color: 'var(--primary)', fontWeight: '700' }}>{lead.email}</a></td>
-                          <td>{lead.company || lead.phone || 'General Inquiry'}</td>
-                          <td style={{ maxWidth: '300px', whiteSpace: 'normal', fontSize: '0.82rem' }}>{lead.message}</td>
-                          <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
-                          <td>
-                            <select
-                              value={lead.status}
-                              onChange={(e) => handleUpdateConsultationStatus(lead.id, e.target.value)}
-                              className={`status-badge status-${lead.status}`}
-                              style={{ border: 'none', cursor: 'pointer', outline: 'none' }}
-                            >
-                              <option value="new">New</option>
-                              <option value="in-progress">In Progress</option>
-                              <option value="done">Done</option>
-                            </select>
-                          </td>
-                          <td>
-                            <button className="btn-table-action delete" onClick={() => handleDeleteConsultation(lead.id)} title="Delete">
-                              <FiTrash2 />
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* ─── Get Quote Config Section ─── */}
-          {activeTab === 'quoteConfig' && (
-            <div className="admin-quote-config-tab-pane">
-              <div className="admin-content-header">
-                <h1>Get Quote Config</h1>
-              </div>
-
-              {/* Category Add/Edit Inline Form */}
-              <div className="admin-card">
-                <div className="admin-card-header">
-                  <h2>{isEditing ? 'Edit Services Category' : 'Add New Category (Step 1)'}</h2>
-                </div>
-                <form onSubmit={handleCategorySubmit} className="login-form">
-                  <div className="form-grid form-grid-2">
-                    <div className="admin-input-group">
-                      <label>Unique Key ID (No spaces)</label>
-                      <input
-                        type="text"
-                        placeholder="E.g., ecommerce"
-                        value={catForm.id}
-                        onChange={(e) => setCatForm({ ...catForm, id: e.target.value.toLowerCase().trim() })}
-                        required
-                        disabled={isEditing}
-                      />
-                    </div>
-                    <div className="admin-input-group">
-                      <label>Display Title</label>
-                      <input
-                        type="text"
-                        placeholder="E.g., E-Commerce & Marketplaces"
-                        value={catForm.title}
-                        onChange={(e) => setCatForm({ ...catForm, title: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-grid form-grid-2">
-                    <div className="admin-input-group">
-                      <label>Feather Icon Component Name</label>
-                      <select
-                        value={catForm.iconName}
-                        onChange={(e) => setCatForm({ ...catForm, iconName: e.target.value })}
-                      >
-                        <option value="FiShoppingCart">FiShoppingCart (Cart Icon)</option>
-                        <option value="FiMessageCircle">FiMessageCircle (Chat Icon)</option>
-                        <option value="FiCode">FiCode (Coding Tag Icon)</option>
-                        <option value="FiDatabase">FiDatabase (Database Server)</option>
-                        <option value="FiTrendingUp">FiTrendingUp (Trend Chart)</option>
-                        <option value="FiSettings">FiSettings (Cog Gear)</option>
-                      </select>
-                    </div>
-                    <div className="admin-input-group">
-                      <label>Sort Order Index</label>
-                      <input
-                        type="number"
-                        value={catForm.sortOrder}
-                        onChange={(e) => setCatForm({ ...catForm, sortOrder: parseInt(e.target.value) || 0 })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="admin-input-group">
-                    <label>Description Subtitle</label>
-                    <textarea
-                      placeholder="Short description displayed under category card..."
-                      rows={2}
-                      value={catForm.desc}
-                      onChange={(e) => setCatForm({ ...catForm, desc: e.target.value })}
-                      required
-                    />
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-                    <label className="admin-input-group admin-input-checkbox">
-                      <input
-                        type="checkbox"
-                        checked={catForm.isActive}
-                        onChange={(e) => setCatForm({ ...catForm, isActive: e.target.checked })}
-                      />
-                      Is Active
-                    </label>
-
-                    <div style={{ display: 'flex', gap: '0.75rem' }}>
-                      {isEditing && (
-                        <button type="button" className="btn-gray" onClick={cancelCatEdit}>
-                          Cancel
-                        </button>
-                      )}
-                      <button type="submit" className="btn-orange">
-                        Save Category
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-              {/* List Table of Categories */}
-              <div className="admin-card">
-                <div className="admin-card-header">
-                  <h2>Services Categories</h2>
-                </div>
-                <div className="table-responsive">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Key ID</th>
-                        <th>Category Title</th>
-                        <th>Icon Class</th>
-                        <th>Order</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {quoteCategories.map(cat => (
-                        <tr key={cat.id}>
-                          <td><code>{cat.id}</code></td>
-                          <td><strong>{cat.title}</strong></td>
-                          <td><code>{cat.iconName}</code></td>
-                          <td>{cat.sortOrder}</td>
-                          <td>
-                            <span className={`status-badge ${cat.isActive !== false ? 'status-active' : 'status-inactive'}`}>
-                              {cat.isActive !== false ? 'Active' : 'Inactive'}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="table-actions">
-                              <button className="btn-table-action edit" onClick={() => startEditCategory(cat)} title="Edit">
-                                <FiEdit2 />
-                              </button>
-                              <button className="btn-table-action delete" onClick={() => handleDeleteCategory(cat.id)} title="Delete">
-                                <FiTrash2 />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Filings Checklist Options Editor (Matches reference screen split options layout) */}
-              <div className="admin-card" style={{ marginTop: '3rem' }}>
-                <div className="admin-card-header">
-                  <h2>Manage Service Filing Checkboxes (Step 2)</h2>
-                </div>
-
-                <div className="form-grid form-grid-2" style={{ gap: '2rem', alignItems: 'start' }}>
-
-                  {/* 1. Category selector & Add Option */}
-                  <div>
-                    <div className="admin-card" style={{ background: '#f8fafc', padding: '1.25rem' }}>
-                      <h3 style={{ fontSize: '1rem', fontWeight: '800', marginBottom: '1rem' }}>
-                        Add Checklist Item
-                      </h3>
-                      <form onSubmit={handleAddFilingSubmit} className="login-form">
-                        <div className="admin-input-group">
-                          <label>Select Category</label>
-                          <select
-                            value={selectedCategoryId}
-                            onChange={(e) => setSelectedCategoryId(e.target.value)}
-                          >
-                            {quoteCategories.map(cat => (
-                              <option key={cat.id} value={cat.id}>{cat.title}</option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <div className="admin-input-group">
-                          <label>Filing Service Name</label>
-                          <input
-                            type="text"
-                            placeholder="E.g., Connect WhatsApp API"
-                            value={filingFormName}
-                            onChange={(e) => setFilingFormName(e.target.value)}
-                            required
-                          />
-                        </div>
-
-                        <div className="admin-input-group">
-                          <label>Order Index</label>
-                          <input
-                            type="number"
-                            value={filingFormOrder}
-                            onChange={(e) => setFilingFormOrder(parseInt(e.target.value) || 1)}
-                          />
-                        </div>
-
-                        <button type="submit" className="btn-orange" style={{ width: '100%', justifyContent: 'center' }}>
-                          <FiPlus /> Add Filing Option
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-
-                  {/* 2. Visual Checkbox Options List Tag Pills */}
-                  <div>
-                    <div className="admin-card" style={{ padding: '1.25rem' }}>
-                      <h3 style={{ fontSize: '1rem', fontWeight: '800', marginBottom: '1rem' }}>
-                        {activeCategoryObj ? `${activeCategoryObj.title} Checklist` : 'Filings Options'}
-                      </h3>
-
-                      <div className="filings-list-editor">
-                        {!activeCategoryObj || !activeCategoryObj.filings || activeCategoryObj.filings.length === 0 ? (
-                          <p style={{ fontStyle: 'italic', fontSize: '0.85rem', color: '#64748b' }}>
-                            No services added yet for this category.
-                          </p>
-                        ) : (
-                          activeCategoryObj.filings.map(filing => (
-                            <div key={filing.id} className="filing-tag-pill">
-                              <span>{filing.name}</span>
-                              <button
-                                className="btn-remove-tag"
-                                onClick={() => handleDeleteFiling(filing.id, selectedCategoryId)}
-                                title="Delete Option"
-                              >
-                                <FiX />
-                              </button>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-              {/* Turnover Options Editor (Step 3 — Business Profile setup) */}
-              <div className="admin-card" style={{ marginTop: '3rem' }}>
-                <div className="admin-card-header">
-                  <h2>{isEditingTurnover ? 'Edit Turnover Option' : 'Add New Turnover Option (Step 3)'}</h2>
-                </div>
-                <form onSubmit={handleTurnoverSubmit} className="login-form">
-                  <div className="form-grid form-grid-2">
-                    <div className="admin-input-group">
-                      <label>Bracket Label</label>
-                      <input
-                        type="text"
-                        placeholder="E.g., ₹40L to ₹1 Crore"
-                        value={turnoverForm.label}
-                        onChange={(e) => setTurnoverForm({ ...turnoverForm, label: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="admin-input-group">
-                      <label>Sort Order</label>
-                      <input
-                        type="number"
-                        value={turnoverForm.sortOrder}
-                        onChange={(e) => setTurnoverForm({ ...turnoverForm, sortOrder: parseInt(e.target.value) || 0 })}
-                      />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-                    <label className="admin-input-group admin-input-checkbox">
-                      <input
-                        type="checkbox"
-                        checked={turnoverForm.isActive}
-                        onChange={(e) => setTurnoverForm({ ...turnoverForm, isActive: e.target.checked })}
-                      />
-                      Is Active
-                    </label>
-
-                    <div style={{ display: 'flex', gap: '0.75rem' }}>
-                      {isEditingTurnover && (
-                        <button type="button" className="btn-gray" onClick={cancelTurnoverEdit}>
-                          Cancel
-                        </button>
-                      )}
-                      <button type="submit" className="btn-orange">
-                        {isEditingTurnover ? 'Update Option' : 'Save Option'}
-                      </button>
-                    </div>
-                  </div>
-                </form>
-
-                <div className="table-responsive" style={{ marginTop: '1.5rem' }}>
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Bracket Label</th>
-                        <th>Order</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {turnoverOptions.map(opt => (
-                        <tr key={opt.id}>
-                          <td><strong>{opt.label}</strong></td>
-                          <td>{opt.sortOrder}</td>
-                          <td>
-                            <span className={`status-badge ${opt.isActive !== false ? 'status-active' : 'status-inactive'}`}>
-                              {opt.isActive !== false ? 'Active' : 'Inactive'}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="table-actions">
-                              <button className="btn-table-action edit" onClick={() => startEditTurnover(opt)} title="Edit">
-                                <FiEdit2 />
-                              </button>
-                              <button className="btn-table-action delete" onClick={() => handleDeleteTurnover(opt.id)} title="Delete">
-                                <FiTrash2 />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-            {/* End Sidebar tabs */}
-
-          {/* ─── Hidden Print Layout (Only visible in @media print) ─── */}
-          {printingEmployee && (
-            <div className="print-employee-container">
-              <div className="print-header">
-                <h1>INSPIRING INFOSYS</h1>
-                <h2>EMPLOYEE DETAILS</h2>
-              </div>
-              <div className="print-details">
-                <div className="print-row"><strong>Employee ID:</strong> <span>{printingEmployee.id}</span></div>
-                <div className="print-row"><strong>Name:</strong> <span>{printingEmployee.name}</span></div>
-                <div className="print-row"><strong>Email:</strong> <span>{printingEmployee.email}</span></div>
-                <div className="print-row"><strong>Phone:</strong> <span>{printingEmployee.phone}</span></div>
-                <div className="print-row"><strong>Department:</strong> <span>{printingEmployee.department}</span></div>
-                <div className="print-row"><strong>Designation:</strong> <span>{printingEmployee.designation}</span></div>
-                <div className="print-row"><strong>Join Date:</strong> <span>{printingEmployee.joinDate ? new Date(printingEmployee.joinDate).toLocaleDateString() : '-'}</span></div>
-                <div className="print-row"><strong>Salary:</strong> <span>₹{Number(printingEmployee.salary).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
-                <div className="print-row"><strong>Status:</strong> <span>{printingEmployee.status}</span></div>
-                <div className="print-row" style={{ gridColumn: 'span 2' }}><strong>Address:</strong> <span>{printingEmployee.address}</span></div>
-              </div>
-            </div>
-          )}
-
-            </div>
-          )}
-
-        </main>
-
-      {selectedOfferLetterEmployee && (
-        <OfferLetter
-          employee={selectedOfferLetterEmployee}
-          onClose={() => setSelectedOfferLetterEmployee(null)}
-        />
       )}
-      </div>
     </div>
   );
 }

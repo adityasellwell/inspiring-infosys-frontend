@@ -280,6 +280,9 @@ function Navbar() {
           >
             {theme === 'light' ? <FiMoon size={20} /> : <FiSun size={20} />}
           </button>
+          <Link to="/employee/login" style={{ fontSize: '0.85rem', fontWeight: '600', color: '#0284c7', textDecoration: 'none', background: '#f0f9ff', padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #bae6fd', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            Employee Portal
+          </Link>
           <Link to="/get-quote" className="btn-primary-small" style={{ background: 'linear-gradient(135deg, #0d62a9 0%, #0a8fd4 40%, #06b6d4 70%)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
             Get a Quote <FiArrowRight />
           </Link>

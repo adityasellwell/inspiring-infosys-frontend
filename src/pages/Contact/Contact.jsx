@@ -4,9 +4,11 @@ import { FiPhoneCall, FiMail, FiMapPin, FiClock, FiSend, FiCheckCircle } from 'r
 import { FaWhatsapp } from 'react-icons/fa';
 import { consultationsApi } from '../../api/api';
 import TextCaptcha from '../../components/common/TextCaptcha/TextCaptcha';
+import { useToast } from '../../components/common/ToastContext';
 import './Contact.css';
 
 function Contact() {
+  const toast = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -42,11 +44,11 @@ function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
-      alert('Please fill out all required fields.');
+      toast.warning('Please fill out all required fields.');
       return;
     }
     if (!captchaInput) {
-      alert('Please enter the verification code shown below.');
+      toast.warning('Please enter the verification code shown below.');
       return;
     }
     setLoading(true);
@@ -67,13 +69,14 @@ function Contact() {
         setSubmitted(true);
         setFormData({ name: '', email: '', subject: '', message: '' });
         captchaRef.current?.refresh();
+        toast.success('Inquiry submitted successfully!');
       } else {
-        alert(res.message || 'Submission failed. Please try again.');
+        toast.error(res.message || 'Submission failed. Please try again.');
         setLoading(false);
         captchaRef.current?.refresh();
       }
     } catch (error) {
-      alert('An error occurred. Please check your connection and try again.');
+      toast.error('An error occurred. Please check your connection and try again.');
       setLoading(false);
       captchaRef.current?.refresh();
     }
