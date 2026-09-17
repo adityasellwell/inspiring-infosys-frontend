@@ -30,8 +30,9 @@
   RewriteRule ^voice-call-service-provider-in-mumbai\.php$ /more-services/voice-call-service-provider-in-mumbai [R=301,L,NC]
   RewriteRule ^shopify-website-build-in-mumbai\.php$ /more-services/shopify-website-build-in-mumbai [R=301,L,NC]
 
-  # SPA Routing
+  # SPA Routing (Exclude /api/ requests)
   RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_URI} !^/api/ [NC]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
