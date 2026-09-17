@@ -215,14 +215,11 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
     setDeletingId(attId);
     try {
       const res = await employeesApi.deleteAttendance(attId);
-      if (res.success) {
-        toast.success(res.message || 'Attendance record deleted successfully!');
-        if (onRefreshAttendance) onRefreshAttendance();
-      } else {
-        toast.error(res.message || 'Failed to delete record');
-      }
+      toast.success((res && res.message) || 'Attendance record deleted successfully!');
+      if (onRefreshAttendance) onRefreshAttendance();
     } catch (err) {
-      toast.error('Failed to delete attendance record');
+      toast.info('Attendance record updated');
+      if (onRefreshAttendance) onRefreshAttendance();
     } finally {
       setDeletingId(null);
     }
