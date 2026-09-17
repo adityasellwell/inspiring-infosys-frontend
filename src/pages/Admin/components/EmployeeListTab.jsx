@@ -27,6 +27,7 @@ export default function EmployeeListTab({
 }) {
   const toast = useToast();
   const [selectedEmployeeDetailId, setSelectedEmployeeDetailId] = useState(null);
+  const [selectedEmployeeObj, setSelectedEmployeeObj] = useState(null);
   const [selectedEmployeeDetailTab, setSelectedEmployeeDetailTab] = useState('overview');
   const [localEmpSubTab, setLocalEmpSubTab] = useState('all'); // 'all' | 'add' | 'requests' | 'attendance' | 'leave' | 'queries' | 'payroll'
 
@@ -89,6 +90,7 @@ export default function EmployeeListTab({
 
   React.useEffect(() => {
     setSelectedEmployeeDetailId(null);
+    setSelectedEmployeeObj(null);
   }, [empSubTabProp]);
 
   const handleExportEmployeesCSV = () => {
@@ -161,9 +163,9 @@ export default function EmployeeListTab({
       {selectedEmployeeDetailId ? (
         <EmployeeDetail
           employeeId={selectedEmployeeDetailId}
-          initialEmployee={(employeesList || []).find(e => String(e.id) === String(selectedEmployeeDetailId) || String(e.empId) === String(selectedEmployeeDetailId))}
+          initialEmployee={selectedEmployeeObj || (employeesList || []).find(e => String(e.id) === String(selectedEmployeeDetailId) || String(e.empId) === String(selectedEmployeeDetailId))}
           initialTab={selectedEmployeeDetailTab || 'overview'}
-          onBack={() => setSelectedEmployeeDetailId(null)}
+          onBack={() => { setSelectedEmployeeDetailId(null); setSelectedEmployeeObj(null); }}
           onUpdate={fetchAllData}
           setCredentialsModal={setCredentialsModal}
         />
@@ -300,7 +302,7 @@ export default function EmployeeListTab({
                           return matchesSearch && matchesDept && matchesDesig && matchesType && matchesStatus;
                         })
                         .map((employee) => (
-                          <tr key={employee.id} style={{ cursor: 'pointer' }} onClick={() => { setSelectedEmployeeDetailTab('overview'); setSelectedEmployeeDetailId(employee.id); }}>
+                          <tr key={employee.id} style={{ cursor: 'pointer' }} onClick={() => { setSelectedEmployeeDetailTab('overview'); setSelectedEmployeeDetailId(employee.id); setSelectedEmployeeObj(employee); }}>
                             <td style={{ textAlign: 'left', fontWeight: '700', color: '#1e293b', whiteSpace: 'nowrap' }}>{formatEmpId(employee.empId, employee.id)}</td>
                             <td style={{ textAlign: 'left' }}>
                               <strong style={{ color: '#0284c7', display: 'block', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>{employee.name}</strong>
@@ -322,12 +324,12 @@ export default function EmployeeListTab({
                             </td>
                             <td style={{ textAlign: 'center', verticalAlign: 'middle' }} onClick={e => e.stopPropagation()}>
                               <div style={{ display: 'inline-flex', flexDirection: 'column', gap: '4px', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                                <button
-                                  type="button"
-                                  className="btn-secondary"
-                                  style={{ padding: '0.18rem 0.55rem', fontSize: '0.75rem', width: '100%', maxWidth: '95px', textAlign: 'center' }}
-                                  onClick={() => { setSelectedEmployeeDetailTab('overview'); setSelectedEmployeeDetailId(employee.id); }}
-                                >
+                                  <button
+                                    type="button"
+                                    className="btn-secondary"
+                                    style={{ padding: '0.18rem 0.55rem', fontSize: '0.75rem', width: '100%', maxWidth: '95px', textAlign: 'center' }}
+                                    onClick={() => { setSelectedEmployeeDetailTab('overview'); setSelectedEmployeeDetailId(employee.id); setSelectedEmployeeObj(employee); }}
+                                  >
                                   View
                                 </button>
                                 <button
