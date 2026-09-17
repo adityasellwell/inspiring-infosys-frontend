@@ -134,23 +134,15 @@ function Admin() {
       .catch(() => setEmployeesList(DEFAULT_EMPLOYEES));
 
     employeesApi.getAllQueries()
-      .then(res => setEmpQueriesList(res && res.success && Array.isArray(res.data) && res.data.length > 0 ? res.data : [
-        { id: 1, empId: 'INS004', subject: 'Payroll Query', description: 'Request for clarification on September salary slip calculation.', status: 'Pending', createdAt: new Date().toISOString(), employee: { name: 'Atul Mishra', email: 'info4alam@gmail.com' } }
-      ]))
+      .then(res => setEmpQueriesList(res && res.success && Array.isArray(res.data) ? res.data : []))
       .catch(err => console.error(err));
 
     employeesApi.getAllLeaves()
-      .then(res => setEmpLeavesList(res && res.success && Array.isArray(res.data) && res.data.length > 0 ? res.data : [
-        { id: 1, empId: 'INS004', leaveType: 'Casual Leave', startDate: '2026-09-10', endDate: '2026-09-11', reason: 'Personal work', status: 'Pending', createdAt: new Date().toISOString(), employee: { name: 'Atul Mishra', department: 'IT' } }
-      ]))
+      .then(res => setEmpLeavesList(res && res.success && Array.isArray(res.data) ? res.data : []))
       .catch(err => console.error(err));
 
     employeesApi.getAllAttendance()
-      .then(res => setEmpAttendanceList(res && res.success && Array.isArray(res.data) && res.data.length > 0 ? res.data : [
-        { id: 1, empId: 'INS004', date: '2026-09-05', clockIn: '09:30 AM', clockOut: '06:30 PM', workDuration: '9.0 hrs', status: 'Present', employee: { name: 'Atul Mishra', email: 'info4alam@gmail.com', department: 'IT' } },
-        { id: 2, empId: 'INS001', date: '2026-09-05', clockIn: '09:15 AM', clockOut: '06:15 PM', workDuration: '9.0 hrs', status: 'Present', employee: { name: 'Rahul Sharma', email: 'rahul.sharma@inspiringinfosys.com', department: 'IT' } },
-        { id: 3, empId: 'INS002', date: '2026-09-05', clockIn: '09:45 AM', clockOut: '06:45 PM', workDuration: '9.0 hrs', status: 'Present', employee: { name: 'Ananya Patel', email: 'ananya.patel@inspiringinfosys.com', department: 'E-Commerce' } }
-      ]))
+      .then(res => setEmpAttendanceList(res && res.success && Array.isArray(res.data) ? res.data : []))
       .catch(err => console.error(err));
 
     categoriesApi.getAllAdmin()

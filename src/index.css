@@ -581,3 +581,10 @@ button:focus-visible {
   border-color: rgba(236, 72, 153, 0.35) !important;
   box-shadow: 0 12px 30px rgba(236, 72, 153, 0.12) !important;
 }
+
+input[type="date"] {
+  cursor: pointer !important;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer !important;
+}

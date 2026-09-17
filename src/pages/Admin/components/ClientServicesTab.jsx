@@ -156,6 +156,13 @@ export default function ClientServicesTab() {
       if (res && res.success) {
         toast.success(res.message || 'Client service saved successfully!');
         setShowModal(false);
+        if (res.data) {
+          const newRec = {
+            ...res.data,
+            renewalAmount: Number(res.data.renewalAmount || 0)
+          };
+          setServices(prev => [newRec, ...prev.filter(s => s.id !== newRec.id)]);
+        }
         resetForm();
         fetchServices();
       } else {
@@ -623,9 +630,12 @@ export default function ClientServicesTab() {
                     <input
                       type="date"
                       className="form-control"
+                      style={{ cursor: 'pointer' }}
                       required
                       value={form.expiryDate}
                       onChange={e => setForm({ ...form, expiryDate: e.target.value })}
+                      onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+                      onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
                     />
                   </div>
 

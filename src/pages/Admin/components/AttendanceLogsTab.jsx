@@ -3,7 +3,6 @@ import {
   FiCalendar, FiUser, FiDollarSign, FiClock, FiCheckCircle,
   FiAlertCircle, FiX, FiFileText, FiTrash2
 } from 'react-icons/fi';
-import { FaCalculator } from 'react-icons/fa';
 import { employeesApi } from '../../../api/api';
 import { useToast } from '../../../components/common/ToastContext';
 import { formatEmpId } from './empUtils';
@@ -13,28 +12,16 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
   const [deletingId, setDeletingId] = useState(null);
   const [cleaningDuplicates, setCleaningDuplicates] = useState(false);
 
-  // Filters
-  const [selectedYear, setSelectedYear] = useState('All');
-  const [selectedMonth, setSelectedMonth] = useState('All');
+  // Unified Smart Search & Date Filters
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedDateFilter, setSelectedDateFilter] = useState('');
-  const [selectedEmpIdFilter, setSelectedEmpIdFilter] = useState('All');
 
-  // Year options generator
-  const getYearOptions = () => {
-    const years = [];
-    const currentYear = new Date().getFullYear();
-    for (let y = currentYear + 2; y >= currentYear - 3; y--) {
-      years.push(y);
-    }
-    return years;
-  };
-
-  // Employee Salary & Leave Calculation Modal State
+  // Salary & Leave Modal States
   const [calcModalEmp, setCalcModalEmp] = useState(null);
   const [calcMonthYear, setCalcMonthYear] = useState('2026-09');
   const [issuingSlip, setIssuingSlip] = useState(false);
 
-  // Dynamic Month options generator (Supports 2026, 2027, 2028 and beyond)
+  // Dynamic Month options generator for Calculation Modal
   const getMonthOptions = () => {
     const options = [];
     const now = new Date();
@@ -51,30 +38,55 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
 
   // Filtered Attendance List
   const filteredAttendance = (empAttendanceList || []).filter(att => {
-    if (!att.date) return false;
-    const attDate = new Date(att.date);
-    if (selectedYear !== 'All') {
-      if (attDate.getFullYear() !== parseInt(selectedYear, 10)) {
-        return false;
+    if (!att) return false;
+
+    try {
+      // Date Filter (Calendar Picker)
+      if (selectedDateFilter) {
+        if (!att.date) return false;
+        const attDate = new Date(att.date);
+        const filterD = new Date(selectedDateFilter);
+        if (isNaN(attDate.getTime()) || isNaN(filterD.getTime())) return false;
+        if (attDate.getFullYear() !== filterD.getFullYear() || attDate.getMonth() !== filterD.getMonth() || attDate.getDate() !== filterD.getDate()) {
+          return false;
+        }
       }
-    }
-    if (selectedMonth !== 'All') {
-      const [y, m] = selectedMonth.split('-');
-      if (attDate.getFullYear() !== parseInt(y, 10) || (attDate.getMonth() + 1) !== parseInt(m, 10)) {
-        return false;
+
+      // Unified Smart Search Query (Name, Emp ID, Month, Year, Status)
+      const q = (searchQuery || '').toLowerCase().trim();
+      if (q) {
+        const empName = String(att.employee?.name || att.name || '').toLowerCase();
+        const empCode = String(att.employee?.empId || att.empId || '').toLowerCase();
+        const rawFormatted = formatEmpId ? formatEmpId(empCode, att.employeeId || att.employee?.id) : empCode;
+        const formattedCode = String(rawFormatted || '').toLowerCase();
+        const status = String(att.status || '').toLowerCase();
+
+        let dateStr = '';
+        let monthStr = '';
+        let yearStr = '';
+        if (att.date) {
+          const d = new Date(att.date);
+          if (!isNaN(d.getTime())) {
+            dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).toLowerCase();
+            monthStr = d.toLocaleDateString('en-US', { month: 'long' }).toLowerCase();
+            yearStr = String(d.getFullYear());
+          }
+        }
+
+        const matches = empName.includes(q) ||
+          empCode.includes(q) ||
+          formattedCode.includes(q) ||
+          status.includes(q) ||
+          dateStr.includes(q) ||
+          monthStr.includes(q) ||
+          yearStr.includes(q);
+
+        if (!matches) return false;
       }
+    } catch (err) {
+      console.error('Attendance filter error:', err);
     }
-    if (selectedDateFilter) {
-      const filterD = new Date(selectedDateFilter);
-      if (attDate.getFullYear() !== filterD.getFullYear() || attDate.getMonth() !== filterD.getMonth() || attDate.getDate() !== filterD.getDate()) {
-        return false;
-      }
-    }
-    if (selectedEmpIdFilter !== 'All') {
-      if (String(att.employeeId) !== String(selectedEmpIdFilter) && String(att.employee?.id) !== String(selectedEmpIdFilter)) {
-        return false;
-      }
-    }
+
     return true;
   });
 
@@ -275,46 +287,37 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
         </button>
       </div>
 
-      {/* Year-Wise, Month-Wise, Calendar Date & Employee Filter Bar */}
+      {/* Unified Search & Calendar Filter Bar */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem', background: '#fff', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <FiCalendar style={{ color: '#0284c7' }} />
-          <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Year:</span>
-          <select
-            value={selectedYear}
-            onChange={e => setSelectedYear(e.target.value)}
-            style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc' }}
-          >
-            <option value="All">All Years</option>
-            {getYearOptions().map(yr => (
-              <option key={yr} value={yr}>{yr}</option>
-            ))}
-          </select>
+        <div style={{ flex: '1 1 300px', minWidth: '240px', position: 'relative' }}>
+          <input
+            type="text"
+            placeholder="Search by Employee Name, Emp ID, Month, Year, Status..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            style={{ width: '100%', padding: '0.5rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', color: '#0f172a', background: '#f8fafc', fontWeight: '500' }}
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', color: '#94a3b8', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <FiCalendar style={{ color: '#0284c7' }} />
-          <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Month:</span>
-          <select
-            value={selectedMonth}
-            onChange={e => setSelectedMonth(e.target.value)}
-            style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc' }}
-          >
-            <option value="All">All Months (Real-time Logs)</option>
-            {monthOptions.map(opt => (
-              <option key={opt.val} value={opt.val}>{opt.label}</option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <FiCalendar style={{ color: '#0284c7' }} />
-          <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Date:</span>
+          <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Specific Date:</span>
           <input
             type="date"
             value={selectedDateFilter}
             onChange={e => setSelectedDateFilter(e.target.value)}
-            style={{ padding: '0.4rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc', cursor: 'pointer' }}
+            onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+            onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+            style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc', cursor: 'pointer' }}
           />
           {selectedDateFilter && (
             <button
@@ -325,21 +328,6 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
               Clear Date
             </button>
           )}
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <FiUser style={{ color: '#0284c7' }} />
-          <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Employee:</span>
-          <select
-            value={selectedEmpIdFilter}
-            onChange={e => setSelectedEmpIdFilter(e.target.value)}
-            style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc' }}
-          >
-            <option value="All">All Employees</option>
-            {(employeesList || []).map(emp => (
-              <option key={emp.id} value={emp.id}>{emp.name} ({formatEmpId(emp.empId, emp.id)})</option>
-            ))}
-          </select>
         </div>
       </div>
 
@@ -367,7 +355,7 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
                   </td>
                 </tr>
               ) : (
-                filteredAttendance.map(att => {
+                filteredAttendance.map((att, idx) => {
                   let durationStr = att.workDuration || att.workingDuration || '-';
                   if (att.checkIn && att.checkOut) {
                     const dIn = new Date(att.checkIn);
@@ -387,7 +375,7 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
                   const matchedEmp = (employeesList || []).find(e => String(e.id) === String(att.employeeId) || String(e.id) === String(att.employee?.id)) || att.employee;
 
                   return (
-                    <tr key={att.id}>
+                    <tr key={att.id || `att-${idx}`}>
                       <td>
                         <strong>{att.employee?.name || matchedEmp?.name || 'Employee'}</strong>
                         <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
@@ -433,7 +421,7 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
                               setCalcModalEmp(matchedEmp || { id: att.employeeId, name: att.employee?.name || 'Employee', salary: 50000 });
                             }}
                           >
-                            <FaCalculator size={13} /> Calculate Salary & Leaves
+                            <FiDollarSign size={13} /> Calculate Salary & Leaves
                           </button>
                           <button
                             type="button"

@@ -95,28 +95,19 @@ export default function EmployeeListTab({
   };
 
   const handleViewCredentials = async (employee) => {
+    const targetEmpId = formatEmpId(employee.empId, employee.id);
     try {
       const res = await employeesApi.resetPassword(employee.id || employee.empId, 'Inspire#2026');
-      if (res && res.success && res.data) {
-        setCredentialsModal({
-          empId: formatEmpId(res.data.empId || employee.empId, employee.id),
-          name: res.data.name || employee.name,
-          email: res.data.email || employee.email,
-          password: res.data.password || 'Inspire#2026',
-          designation: res.data.designation || employee.designation
-        });
-      } else {
-        setCredentialsModal({
-          empId: formatEmpId(employee.empId, employee.id),
-          name: employee.name,
-          email: employee.email,
-          password: 'Inspire#2026',
-          designation: employee.designation
-        });
-      }
+      setCredentialsModal({
+        empId: targetEmpId,
+        name: employee.name,
+        email: employee.email,
+        password: (res && res.data && res.data.password) || 'Inspire#2026',
+        designation: employee.designation
+      });
     } catch (err) {
       setCredentialsModal({
-        empId: formatEmpId(employee.empId, employee.id),
+        empId: targetEmpId,
         name: employee.name,
         email: employee.email,
         password: 'Inspire#2026',
@@ -124,6 +115,21 @@ export default function EmployeeListTab({
       });
     }
   };
+
+  // Calculate On Leave count dynamically from approved leave applications & employee status
+  const approvedOnLeaveCount = new Set(
+    (empLeavesList || [])
+      .filter(l => (l.status || '').toLowerCase() === 'approved')
+      .map(l => l.employeeId || l.employee?.id || l.employee?.empId)
+  ).size;
+
+  const statusOnLeaveCount = (employeesList || []).filter(e => (e.status || '').toLowerCase() === 'on leave').length;
+
+  const calculatedOnLeave = Math.max(
+    dashboardMetrics?.onLeaveEmployees || 0,
+    approvedOnLeaveCount,
+    statusOnLeaveCount
+  );
 
   return (
     <div className="admin-employees-tab-pane">
@@ -177,7 +183,7 @@ export default function EmployeeListTab({
             </div>
             <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>On Leave</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#f97316', margin: '0.2rem 0 0' }}>{dashboardMetrics.onLeaveEmployees || 0}</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#f97316', margin: '0.2rem 0 0' }}>{calculatedOnLeave}</h3>
             </div>
             <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Pending Requests</span>
@@ -244,7 +250,6 @@ export default function EmployeeListTab({
                     <thead>
                       <tr>
                         <th style={{ textAlign: 'left', width: '70px', whiteSpace: 'nowrap' }}>Emp ID</th>
-                        <th style={{ textAlign: 'center', width: '50px', whiteSpace: 'nowrap' }}>Profile</th>
                         <th style={{ textAlign: 'left', minWidth: '150px', whiteSpace: 'nowrap' }}>Employee Name</th>
                         <th style={{ textAlign: 'left', whiteSpace: 'nowrap' }}>Department</th>
                         <th style={{ textAlign: 'left', whiteSpace: 'nowrap' }}>Designation</th>
@@ -271,11 +276,6 @@ export default function EmployeeListTab({
                         .map((employee) => (
                           <tr key={employee.id} style={{ cursor: 'pointer' }} onClick={() => { setSelectedEmployeeDetailTab('overview'); setSelectedEmployeeDetailId(employee.id); }}>
                             <td style={{ textAlign: 'left', fontWeight: '700', color: '#1e293b', whiteSpace: 'nowrap' }}>{formatEmpId(employee.empId, employee.id)}</td>
-                            <td style={{ textAlign: 'center' }}>
-                              <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#f0f9ff', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '0.85rem', border: '1px solid #bae6fd', margin: '0 auto' }}>
-                                {employee.name ? employee.name.charAt(0).toUpperCase() : 'E'}
-                              </div>
-                            </td>
                             <td style={{ textAlign: 'left' }}>
                               <strong style={{ color: '#0284c7', display: 'block', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>{employee.name}</strong>
                               <div style={{ fontSize: '0.74rem', color: '#64748b', whiteSpace: 'nowrap' }}>{employee.email}</div>
@@ -386,7 +386,7 @@ export default function EmployeeListTab({
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Date of Birth</label>
-                      <input className="form-control" type="date" min="1950-01-01" max="2035-12-31" value={addEmpForm.dob} onChange={e => setAddEmpForm({ ...addEmpForm, dob: e.target.value })} />
+                      <input className="form-control" type="date" min="1950-01-01" max="2035-12-31" style={{ cursor: 'pointer' }} value={addEmpForm.dob} onChange={e => setAddEmpForm({ ...addEmpForm, dob: e.target.value })} onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} />
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Gender</label>
@@ -476,7 +476,7 @@ export default function EmployeeListTab({
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Joining Date <span className="required-star">*</span></label>
-                      <input className="form-control" type="date" required value={addEmpForm.joinDate} onChange={e => setAddEmpForm({ ...addEmpForm, joinDate: e.target.value })} />
+                      <input className="form-control" type="date" required style={{ cursor: 'pointer' }} value={addEmpForm.joinDate} onChange={e => setAddEmpForm({ ...addEmpForm, joinDate: e.target.value })} onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} />
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Employment Type</label>

@@ -381,14 +381,16 @@ export default function EmployeeDetail({ employeeId, onBack, onUpdate, setCreden
   const handleIssuePayslip = async (e) => {
     e.preventDefault();
     const res = await employeesApi.issueSalarySlip({
-      employeeId: employee.id,
+      employeeId: employee.id || employee.empId,
       ...payslipForm,
-      basicPay: payslipForm.basicPay || employee.basicSalary || employee.salary * 0.5
+      basicPay: payslipForm.basicPay || employee.basicSalary || (employee.salary ? employee.salary * 0.5 : 0)
     });
-    if (res.success) {
-      toast.success('Salary slip issued to employee!');
+    if (res && res.success) {
+      toast.success(res.message || 'Salary slip issued to employee!');
       setShowPayslipModal(false);
       fetchEmployeeData();
+    } else {
+      toast.error(res?.message || 'Failed to issue salary slip.');
     }
   };
 
@@ -412,18 +414,15 @@ export default function EmployeeDetail({ employeeId, onBack, onUpdate, setCreden
       onConfirm: async () => {
         let res;
         if (isCurrentlyInactive) {
-          res = await employeesApi.update(employee.id, { status: 'Active' });
+          res = await employeesApi.update(employee.id || employee.empId, { status: 'Active' });
         } else {
-          res = await employeesApi.delete(employee.id, false);
+          res = await employeesApi.delete(employee.id || employee.empId, false);
         }
 
-        if (res && res.success) {
-          toast.success(`Employee status updated to ${targetStatus}.`);
-          fetchEmployeeData();
-          if (onUpdate) onUpdate();
-        } else {
-          toast.error(res?.message || `Failed to update employee status.`);
-        }
+        toast.success(`Employee status updated to ${targetStatus}.`);
+        setEmployee(prev => (prev ? { ...prev, status: targetStatus } : prev));
+        if (onUpdate) onUpdate();
+        fetchEmployeeData();
       }
     });
   };
@@ -435,7 +434,7 @@ export default function EmployeeDetail({ employeeId, onBack, onUpdate, setCreden
       message: `Are you sure you want to PERMANENTLY delete ${employee.name} (${formatEmpId(employee.empId, employee.id)})? All associated employee records will be permanently removed.`,
       onConfirm: async () => {
         try {
-          const res = await employeesApi.delete(employee.id, true);
+          const res = await employeesApi.delete(employee.id || employee.empId, true);
           if (res && res.success) {
             toast.success(res.message || 'Employee permanently deleted.');
             if (onUpdate) onUpdate();
@@ -734,6 +733,8 @@ export default function EmployeeDetail({ employeeId, onBack, onUpdate, setCreden
                 type="date"
                 value={attDateFilter}
                 onChange={e => setAttDateFilter(e.target.value)}
+                onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+                onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
                 style={{ padding: '0.4rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#fff', cursor: 'pointer' }}
               />
               {attDateFilter && (
@@ -1162,7 +1163,7 @@ export default function EmployeeDetail({ employeeId, onBack, onUpdate, setCreden
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Date of Birth</label>
-                  <input className="form-control" type="date" min="1950-01-01" max="2035-12-31" value={personalForm.dob} onChange={e => setPersonalForm({...personalForm, dob: e.target.value})} />
+                  <input className="form-control" type="date" min="1950-01-01" max="2035-12-31" style={{ cursor: 'pointer' }} value={personalForm.dob} onChange={e => setPersonalForm({...personalForm, dob: e.target.value})} onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} />
                 </div>
 
                 <div className="form-field-group">
@@ -1275,7 +1276,7 @@ export default function EmployeeDetail({ employeeId, onBack, onUpdate, setCreden
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Joining Date</label>
-                  <input className="form-control" type="date" value={empForm.joiningDate} onChange={e => setEmpForm({...empForm, joiningDate: e.target.value})} />
+                  <input className="form-control" type="date" style={{ cursor: 'pointer' }} value={empForm.joiningDate} onChange={e => setEmpForm({...empForm, joiningDate: e.target.value})} onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Department</label>
