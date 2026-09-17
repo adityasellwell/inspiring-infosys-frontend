@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiDownload, FiPlus, FiKey } from 'react-icons/fi';
+import { FiDownload, FiPlus, FiKey, FiTrash2 } from 'react-icons/fi';
 import EmployeeDetail from './EmployeeDetail';
 import EmployeeRequestsHub from './EmployeeRequestsHub';
 import QueriesManagerTab from './QueriesManagerTab';
@@ -7,6 +7,7 @@ import LeavesManagerTab from './LeavesManagerTab';
 import AttendanceLogsTab from './AttendanceLogsTab';
 import { employeesApi } from '../../../api/api';
 import { useToast } from '../../../components/common/ToastContext';
+import Modal from '../../../components/common/Modal';
 
 import { formatEmpId, generateNextEmpId } from './empUtils';
 export { formatEmpId, generateNextEmpId };
@@ -39,6 +40,30 @@ export default function EmployeeListTab({
   const [empTypeFilter, setEmpTypeFilter] = useState('All');
   const [empStatusFilter, setEmpStatusFilter] = useState('All');
   const [employeeSubmitting, setEmployeeSubmitting] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+
+  const handleDeleteEmployeeRow = (employee) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Staff Member',
+      message: `Are you sure you want to PERMANENTLY delete ${employee.name} (${formatEmpId(employee.empId, employee.id)})? All associated employee records will be permanently removed.`,
+      onConfirm: async () => {
+        try {
+          const res = await employeesApi.delete(employee.id || employee.empId, true);
+          if (res && res.success) {
+            toast.success(res.message || 'Employee permanently deleted.');
+            if (fetchAllData) fetchAllData();
+          } else {
+            toast.error(res?.message || 'Failed to delete employee.');
+          }
+        } catch (err) {
+          toast.error('Failed to delete employee.');
+        } finally {
+          setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null });
+        }
+      }
+    });
+  };
 
   // Structured Add Employee Form State
   const [addEmpForm, setAddEmpForm] = useState({
@@ -311,6 +336,14 @@ export default function EmployeeListTab({
                                   onClick={() => handleViewCredentials(employee)}
                                 >
                                   <FiKey size={11} /> Credentials
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn-secondary"
+                                  style={{ padding: '0.18rem 0.55rem', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', width: '100%', maxWidth: '95px', whiteSpace: 'nowrap' }}
+                                  onClick={() => handleDeleteEmployeeRow(employee)}
+                                >
+                                  <FiTrash2 size={11} /> Delete
                                 </button>
                               </div>
                             </td>
@@ -614,6 +647,17 @@ export default function EmployeeListTab({
           )}
         </div>
       )}
+
+      <Modal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false })}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        type="confirm"
+        confirmText="Yes, Delete Permanently"
+        cancelText="Cancel"
+        onConfirm={confirmModal.onConfirm}
+      />
     </div>
   );
 }
