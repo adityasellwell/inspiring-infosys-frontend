@@ -176,6 +176,10 @@ function EmployeeDashboard() {
       }
     } catch (err) {
       console.error("Dashboard fetch error:", err);
+      localStorage.removeItem('employee_token');
+      localStorage.removeItem('employee_name');
+      setToken(null);
+      setData(null);
     } finally {
       setLoading(false);
     }
