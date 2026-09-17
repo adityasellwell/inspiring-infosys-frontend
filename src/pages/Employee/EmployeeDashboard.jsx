@@ -175,8 +175,7 @@ function EmployeeDashboard() {
         setData(null);
       }
     } catch (err) {
-      console.error(err);
-      setData(DEFAULT_EMPLOYEE_DATA);
+      console.error("Dashboard fetch error:", err);
     } finally {
       setLoading(false);
     }
@@ -202,22 +201,11 @@ function EmployeeDashboard() {
         localStorage.setItem('employee_name', res.employee.name);
         setToken(res.token);
       } else {
-        if (loginEmail.trim().toLowerCase() === 'info4alam@gmail.com' || loginEmail.trim().toLowerCase().includes('rahul')) {
-          const fakeToken = 'demo_token_' + Date.now();
-          localStorage.setItem('employee_token', fakeToken);
-          localStorage.setItem('employee_name', 'Atul Mishra');
-          setToken(fakeToken);
-          setData(DEFAULT_EMPLOYEE_DATA);
-        } else {
-          setLoginError(res?.message || 'Invalid email or password.');
-        }
+        setLoginError(res?.message || 'Invalid employee email or password.');
       }
     } catch (err) {
-      const fakeToken = 'demo_token_' + Date.now();
-      localStorage.setItem('employee_token', fakeToken);
-      localStorage.setItem('employee_name', 'Atul Mishra');
-      setToken(fakeToken);
-      setData(DEFAULT_EMPLOYEE_DATA);
+      console.error("Login request failed:", err);
+      setLoginError(err?.message || 'Unable to connect to login server. Please try again.');
     } finally {
       setLoginLoading(false);
     }
