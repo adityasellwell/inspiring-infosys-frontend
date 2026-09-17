@@ -200,11 +200,35 @@ export default function EmployeeDetail({ employeeId, onBack, onUpdate, setCreden
     if (employeeId) fetchEmployeeData();
   }, [employeeId]);
 
-  if (loading || !employee) {
+  if (loading) {
     return (
       <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
         <FiClock style={{ fontSize: '2rem', animation: 'spin 1s linear infinite' }} />
         <p style={{ marginTop: '0.75rem', fontWeight: '600' }}>Loading employee master record...</p>
+      </div>
+    );
+  }
+
+  if (!employee) {
+    return (
+      <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
+        <FiAlertCircle style={{ fontSize: '2.5rem', color: '#ef4444', marginBottom: '0.75rem' }} />
+        <h3 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#0f172a', marginBottom: '0.5rem' }}>Employee Record Not Found</h3>
+        <p style={{ marginBottom: '1.5rem', color: '#64748b' }}>Could not load employee details. Your session may have expired or the record does not exist on the server.</p>
+        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+          <button
+            onClick={onBack}
+            style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', background: '#3b82f6', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}
+          >
+            ← Back to Employees
+          </button>
+          <button
+            onClick={() => { localStorage.removeItem('admin_token'); window.location.href = '/admin'; }}
+            style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', background: '#e2e8f0', color: '#334155', border: 'none', fontWeight: '600', cursor: 'pointer' }}
+          >
+            Re-Login
+          </button>
+        </div>
       </div>
     );
   }
