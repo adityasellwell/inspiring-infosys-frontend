@@ -44,10 +44,10 @@ const DEFAULT_PROJECTS = [
 ];
 
 const DEFAULT_EMPLOYEES = [
-  { id: 1, empId: 'INS001', name: 'Rahul Sharma', email: 'rahul.sharma@inspiringinfosys.com', phone: '9876543210', department: 'IT', designation: 'Senior Software Engineer', joinDate: '2024-01-15', salary: 65000, status: 'Active', address: 'Mumbai, Maharashtra' },
-  { id: 2, empId: 'INS002', name: 'Ananya Patel', email: 'ananya.patel@inspiringinfosys.com', phone: '9812345678', department: 'E-Commerce', designation: 'Marketplace Specialist', joinDate: '2024-06-01', salary: 48000, status: 'Active', address: 'Navi Mumbai, Maharashtra' },
-  { id: 3, empId: 'INS003', name: 'Amit Verma', email: 'amit.verma@inspiringinfosys.com', phone: '9988776655', department: 'Development', designation: 'UI/UX Designer', joinDate: '2025-02-10', salary: 52000, status: 'Active', address: 'Thane, Maharashtra' },
-  { id: 4, empId: 'INS004', name: 'Atul Mishra', email: 'info4alam@gmail.com', phone: '8444040514', department: 'IT', designation: 'FULL STACK', joinDate: '2026-09-01', salary: 75000, status: 'Active', address: 'Mumbai, India' }
+  { id: 3, empId: 'INS001', name: 'sahil mehta', email: 'sahilmehta2324@gmail.com', phone: '8444040514', department: 'IT', designation: 'FULL STACK', joinDate: '2026-09-05', salary: 2222, status: 'Active', address: 'R N B, ADARSH NIWAS, 408, 4th, Palghar' },
+  { id: 4, empId: 'INS003', name: 'yogi', email: 'inspiringinfos@gmail.com', phone: '08444040514', department: 'IT', designation: 'Founder', joinDate: '2026-09-05', salary: 20000, status: 'Active', address: 'OPP JK TOWER, NALASOPARA EAST' },
+  { id: 7, empId: 'INS004', name: 'Alam Ansari', email: 'hello@sellwell.co.in', phone: '8422953384', department: 'IT', designation: 'Software Engineer', joinDate: '2026-09-15', salary: 20000, status: 'Active', address: 'R N B, ADARSH NIWAS, 408, 4th, Palghar' },
+  { id: 8, empId: 'INS005', name: 'Aditya  Jadhav', email: 'adityajadhav7123@gmail.com', phone: '9833379781', department: 'IT', designation: 'Full Stack Developer', joinDate: '2026-09-15', salary: 10000, status: 'Active', address: 'Andheri West' }
 ];
 
 function Admin() {
