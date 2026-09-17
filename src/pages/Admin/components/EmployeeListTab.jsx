@@ -203,11 +203,11 @@ export default function EmployeeListTab({
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
             <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Total Employees</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: '0.2rem 0 0' }}>{dashboardMetrics.totalEmployees || (employeesList || []).length}</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: '0.2rem 0 0' }}>{(employeesList || []).length}</h3>
             </div>
             <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Active Employees</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#10b981', margin: '0.2rem 0 0' }}>{dashboardMetrics.activeEmployees || (employeesList || []).filter(e => e.status === 'Active').length}</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#10b981', margin: '0.2rem 0 0' }}>{(employeesList || []).filter(e => (e.status || 'Active').toLowerCase() === 'active').length}</h3>
             </div>
             <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>On Leave</span>
@@ -215,11 +215,11 @@ export default function EmployeeListTab({
             </div>
             <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Pending Requests</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#6366f1', margin: '0.2rem 0 0' }}>{dashboardMetrics.pendingRequests || 2}</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#6366f1', margin: '0.2rem 0 0' }}>{dashboardMetrics.pendingRequests || 0}</h3>
             </div>
             <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>New Joiners</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0284c7', margin: '0.2rem 0 0' }}>{dashboardMetrics.newJoiners || 1}</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0284c7', margin: '0.2rem 0 0' }}>{(employeesList || []).filter(e => e.joinDate && new Date(e.joinDate) >= new Date(Date.now() - 30 * 86400000)).length}</h3>
             </div>
             <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Documents Pending</span>
