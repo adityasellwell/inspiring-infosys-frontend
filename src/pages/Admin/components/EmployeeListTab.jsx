@@ -161,6 +161,7 @@ export default function EmployeeListTab({
       {selectedEmployeeDetailId ? (
         <EmployeeDetail
           employeeId={selectedEmployeeDetailId}
+          initialEmployee={(employeesList || []).find(e => String(e.id) === String(selectedEmployeeDetailId) || String(e.empId) === String(selectedEmployeeDetailId))}
           initialTab={selectedEmployeeDetailTab || 'overview'}
           onBack={() => setSelectedEmployeeDetailId(null)}
           onUpdate={fetchAllData}

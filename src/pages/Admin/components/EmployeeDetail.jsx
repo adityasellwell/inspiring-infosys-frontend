@@ -13,11 +13,11 @@ import Modal from '../../../components/common/Modal';
 import { useToast } from '../../../components/common/ToastContext';
 import { formatEmpId } from './empUtils';
 
-export default function EmployeeDetail({ employeeId, onBack, onUpdate, setCredentialsModal, initialTab = 'overview' }) {
+export default function EmployeeDetail({ employeeId, initialEmployee, onBack, onUpdate, setCredentialsModal, initialTab = 'overview' }) {
   const toast = useToast();
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
-  const [employee, setEmployee] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [employee, setEmployee] = useState(initialEmployee || null);
+  const [loading, setLoading] = useState(!initialEmployee);
   const [activeTab, setActiveTab] = useState(initialTab || 'overview');
 
   useEffect(() => {
@@ -127,95 +127,85 @@ export default function EmployeeDetail({ employeeId, onBack, onUpdate, setCreden
     };
   }, [showEditPersonalModal, showEditEmpModal, showPayslipModal, letterViewerType]);
 
+  const populateForms = (data) => {
+    if (!data) return;
+    const fullName = data.name || '';
+    const nameParts = fullName.trim().split(' ');
+    const defaultFirstName = data.firstName || nameParts[0] || '';
+    const defaultLastName = data.lastName || (nameParts.length > 1 ? nameParts.slice(1).join(' ') : '');
+
+    setPersonalForm({
+      firstName: defaultFirstName,
+      middleName: data.middleName || '',
+      lastName: defaultLastName,
+      phone: data.phone || '',
+      personalEmail: data.personalEmail || '',
+      altPhone: data.altPhone || '',
+      dob: data.dob ? String(data.dob).split('T')[0] : '',
+      gender: data.gender || 'Male',
+      currentAddress: data.currentAddress || data.address || '',
+      permanentAddress: data.permanentAddress || data.address || '',
+      city: data.city || '',
+      state: data.state || '',
+      pincode: data.pincode || '',
+      emergencyContactName: data.emergencyContactName || '',
+      emergencyRelationship: data.emergencyRelationship || '',
+      emergencyPhone: data.emergencyPhone || '',
+      bankName: data.bankName || '',
+      accountNumber: data.accountNumber || '',
+      ifsc: data.ifsc || '',
+      panNumber: data.panNumber || '',
+      uanNumber: data.uanNumber || '',
+      taxInfo: data.taxInfo || 'New Tax Regime'
+    });
+
+    setEmpForm({
+      empId: formatEmpId(data.empId, data.id) || '',
+      joiningDate: data.joiningDate ? String(data.joiningDate).split('T')[0] : (data.joinDate ? String(data.joinDate).split('T')[0] : ''),
+      department: data.department || '',
+      designation: data.designation || '',
+      reportingManager: data.reportingManager || 'HR Manager',
+      employmentType: data.employmentType || 'Full-Time',
+      workLocation: data.workLocation || 'Mumbai Office',
+      workMode: data.workMode || 'On-site',
+      shift: data.shift || 'Standard Shift (10:00 AM - 7:00 PM)',
+      status: data.status || 'Active'
+    });
+
+    setPayrollForm({
+      salary: data.salary || 0,
+      salaryStructure: data.salaryStructure || 'Standard Corporate',
+      basicSalary: data.basicSalary || 0,
+      hra: data.hra || 0,
+      allowances: data.allowances || 0,
+      deductions: data.deductions || 0,
+      bankName: data.bankName || '',
+      accountNumber: data.accountNumber || '',
+      ifsc: data.ifsc || '',
+      panNumber: data.panNumber || '',
+      uanNumber: data.uanNumber || '',
+      taxInfo: data.taxInfo || 'New Tax Regime'
+    });
+  };
+
   const fetchEmployeeData = async () => {
-    setLoading(true);
+    let data = initialEmployee || employee || null;
+    if (data) {
+      setEmployee(data);
+      populateForms(data);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
     try {
-      let data = null;
-      try {
-        const res = await employeesApi.getById(employeeId);
-        if (res && res.success && res.data) {
-          data = res.data;
-        }
-      } catch (err) {
-        console.warn('API getById failed, using local fallback:', err);
-      }
-
-      if (!data) {
-        const LOCAL_FALLBACKS = {
-          '3': { id: 3, empId: 'INS001', name: 'sahil mehta', email: 'sahilmehta2324@gmail.com', phone: '8444040514', department: 'IT', designation: 'FULL STACK', joinDate: '2026-09-05', salary: 2222, status: 'Active', address: 'R N B, ADARSH NIWAS, 408, 4th, Palghar' },
-          '4': { id: 4, empId: 'INS003', name: 'yogi', email: 'inspiringinfos@gmail.com', phone: '08444040514', department: 'IT', designation: 'Founder', joinDate: '2026-09-05', salary: 20000, status: 'Active', address: 'OPP JK TOWER, NALASOPARA EAST' },
-          '7': { id: 7, empId: 'INS004', name: 'Alam Ansari', email: 'hello@sellwell.co.in', phone: '8422953384', department: 'IT', designation: 'Software Engineer', joinDate: '2026-09-15', salary: 20000, status: 'Active', address: 'R N B, ADARSH NIWAS, 408, 4th, Palghar' },
-          '8': { id: 8, empId: 'INS005', name: 'Aditya  Jadhav', email: 'adityajadhav7123@gmail.com', phone: '9833379781', department: 'IT', designation: 'Full Stack Developer', joinDate: '2026-09-15', salary: 10000, status: 'Active', address: 'Andheri West' },
-          '1': { id: 3, empId: 'INS001', name: 'sahil mehta', email: 'sahilmehta2324@gmail.com', phone: '8444040514', department: 'IT', designation: 'FULL STACK', joinDate: '2026-09-05', salary: 2222, status: 'Active', address: 'R N B, ADARSH NIWAS, 408, 4th, Palghar' },
-          '2': { id: 4, empId: 'INS003', name: 'yogi', email: 'inspiringinfos@gmail.com', phone: '08444040514', department: 'IT', designation: 'Founder', joinDate: '2026-09-05', salary: 20000, status: 'Active', address: 'OPP JK TOWER, NALASOPARA EAST' },
-          'INS001': { id: 3, empId: 'INS001', name: 'sahil mehta', email: 'sahilmehta2324@gmail.com', phone: '8444040514', department: 'IT', designation: 'FULL STACK', joinDate: '2026-09-05', salary: 2222, status: 'Active', address: 'R N B, ADARSH NIWAS, 408, 4th, Palghar' },
-          'INS003': { id: 4, empId: 'INS003', name: 'yogi', email: 'inspiringinfos@gmail.com', phone: '08444040514', department: 'IT', designation: 'Founder', joinDate: '2026-09-05', salary: 20000, status: 'Active', address: 'OPP JK TOWER, NALASOPARA EAST' },
-          'INS004': { id: 7, empId: 'INS004', name: 'Alam Ansari', email: 'hello@sellwell.co.in', phone: '8422953384', department: 'IT', designation: 'Software Engineer', joinDate: '2026-09-15', salary: 20000, status: 'Active', address: 'R N B, ADARSH NIWAS, 408, 4th, Palghar' },
-          'INS005': { id: 8, empId: 'INS005', name: 'Aditya  Jadhav', email: 'adityajadhav7123@gmail.com', phone: '9833379781', department: 'IT', designation: 'Full Stack Developer', joinDate: '2026-09-15', salary: 10000, status: 'Active', address: 'Andheri West' },
-        };
-        data = LOCAL_FALLBACKS[String(employeeId)] || LOCAL_FALLBACKS['8'];
-      }
-
-      if (data) {
+      const res = await employeesApi.getById(employeeId);
+      if (res && res.success && res.data) {
+        data = res.data;
         setEmployee(data);
-        const fullName = data.name || '';
-        const nameParts = fullName.trim().split(' ');
-        const defaultFirstName = data.firstName || nameParts[0] || '';
-        const defaultLastName = data.lastName || (nameParts.length > 1 ? nameParts.slice(1).join(' ') : '');
-
-        setPersonalForm({
-          firstName: defaultFirstName,
-          middleName: data.middleName || '',
-          lastName: defaultLastName,
-          phone: data.phone || '',
-          personalEmail: data.personalEmail || '',
-          altPhone: data.altPhone || '',
-          dob: data.dob ? String(data.dob).split('T')[0] : '',
-          gender: data.gender || 'Male',
-          currentAddress: data.currentAddress || data.address || '',
-          permanentAddress: data.permanentAddress || data.address || '',
-          city: data.city || '',
-          state: data.state || '',
-          pincode: data.pincode || '',
-          emergencyContactName: data.emergencyContactName || '',
-          emergencyRelationship: data.emergencyRelationship || '',
-          emergencyPhone: data.emergencyPhone || '',
-          bankName: data.bankName || '',
-          accountNumber: data.accountNumber || '',
-          ifsc: data.ifsc || '',
-          panNumber: data.panNumber || '',
-          uanNumber: data.uanNumber || '',
-          taxInfo: data.taxInfo || 'New Tax Regime'
-        });
-        setEmpForm({
-          empId: formatEmpId(data.empId, data.id) || '',
-          joiningDate: data.joiningDate ? String(data.joiningDate).split('T')[0] : (data.joinDate ? String(data.joinDate).split('T')[0] : ''),
-          department: data.department || '',
-          designation: data.designation || '',
-          reportingManager: data.reportingManager || 'HR Manager',
-          employmentType: data.employmentType || 'Full-Time',
-          workLocation: data.workLocation || 'Mumbai Office',
-          workMode: data.workMode || 'On-site',
-          shift: data.shift || 'Standard Shift (10:00 AM - 7:00 PM)',
-          status: data.status || 'Active'
-        });
-        setPayrollForm({
-          salary: data.salary || 0,
-          salaryStructure: data.salaryStructure || 'Standard Corporate',
-          basicSalary: data.basicSalary || 0,
-          hra: data.hra || 0,
-          allowances: data.allowances || 0,
-          deductions: data.deductions || 0,
-          bankName: data.bankName || '',
-          accountNumber: data.accountNumber || '',
-          ifsc: data.ifsc || '',
-          panNumber: data.panNumber || '',
-          uanNumber: data.uanNumber || '',
-          taxInfo: data.taxInfo || 'New Tax Regime'
-        });
+        populateForms(data);
       }
     } catch (err) {
-      console.error(err);
+      console.warn('API getById failed, using initial employee:', err);
     } finally {
       setLoading(false);
     }
@@ -223,7 +213,7 @@ export default function EmployeeDetail({ employeeId, onBack, onUpdate, setCreden
 
   useEffect(() => {
     if (employeeId) fetchEmployeeData();
-  }, [employeeId]);
+  }, [employeeId, initialEmployee]);
 
   if (loading) {
     return (
