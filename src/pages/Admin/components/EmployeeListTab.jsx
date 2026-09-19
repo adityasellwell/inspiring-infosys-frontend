@@ -559,6 +559,9 @@ export default function EmployeeListTab({
                   } else {
                     toast.error(res.message || 'Failed to add employee');
                   }
+                } catch (err) {
+                  console.error('Failed to create employee:', err);
+                  toast.error(err.message || 'Network connection error while adding employee. Please try again.');
                 } finally {
                   setEmployeeSubmitting(false);
                 }
