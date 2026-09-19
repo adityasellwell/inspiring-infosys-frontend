@@ -203,10 +203,7 @@ function RelievingLetter({ employee, onClose }) {
                 type="date"
                 value={resignationDate}
                 onChange={(e) => setResignationDate(e.target.value)}
-                onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
-                onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
                 className="date-picker-input"
-                style={{ cursor: 'pointer' }}
               />
             </div>
 
@@ -216,10 +213,7 @@ function RelievingLetter({ employee, onClose }) {
                 type="date"
                 value={relievingDate}
                 onChange={(e) => setRelievingDate(e.target.value)}
-                onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
-                onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
                 className="date-picker-input"
-                style={{ cursor: 'pointer' }}
               />
             </div>
 

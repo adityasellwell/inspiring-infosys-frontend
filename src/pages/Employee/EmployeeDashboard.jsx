@@ -1627,9 +1627,7 @@ function EmployeeDashboard() {
                     type="date"
                     value={attDateFilter}
                     onChange={e => setAttDateFilter(e.target.value)}
-                    onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
-                    onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
-                    style={{ padding: '0.4rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc', cursor: 'pointer' }}
+                    style={{ padding: '0.4rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc' }}
                   />
                   {attDateFilter && (
                     <button
@@ -1804,11 +1802,11 @@ function EmployeeDashboard() {
                     <div className="form-grid form-grid-2">
                       <div className="admin-input-group">
                         <label>Start Date</label>
-                        <input type="date" value={leaveForm.startDate} onChange={(e) => setLeaveForm({ ...leaveForm, startDate: e.target.value })} onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} style={{ cursor: 'pointer' }} required />
+                        <input type="date" value={leaveForm.startDate} onChange={(e) => setLeaveForm({ ...leaveForm, startDate: e.target.value })} required />
                       </div>
                       <div className="admin-input-group">
                         <label>End Date</label>
-                        <input type="date" value={leaveForm.endDate} onChange={(e) => setLeaveForm({ ...leaveForm, endDate: e.target.value })} onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} style={{ cursor: 'pointer' }} required />
+                        <input type="date" value={leaveForm.endDate} onChange={(e) => setLeaveForm({ ...leaveForm, endDate: e.target.value })} required />
                       </div>
                     </div>
 

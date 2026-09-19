@@ -722,9 +722,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 type="date"
                 value={attDateFilter}
                 onChange={e => setAttDateFilter(e.target.value)}
-                onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
-                onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
-                style={{ padding: '0.4rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#fff', cursor: 'pointer' }}
+                style={{ padding: '0.4rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#fff' }}
               />
               {attDateFilter && (
                 <button
@@ -1151,7 +1149,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Date of Birth</label>
-                  <input className="form-control" type="date" min="1950-01-01" max="2035-12-31" style={{ cursor: 'pointer' }} value={personalForm.dob} onChange={e => setPersonalForm({...personalForm, dob: e.target.value})} onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} />
+                  <input className="form-control" type="date" min="1950-01-01" max="2035-12-31" value={personalForm.dob} onChange={e => setPersonalForm({...personalForm, dob: e.target.value})} />
                 </div>
 
                 <div className="form-field-group">
@@ -1255,7 +1253,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Joining Date</label>
-                  <input className="form-control" type="date" style={{ cursor: 'pointer' }} value={empForm.joiningDate} onChange={e => setEmpForm({...empForm, joiningDate: e.target.value})} onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} />
+                  <input className="form-control" type="date" value={empForm.joiningDate} onChange={e => setEmpForm({...empForm, joiningDate: e.target.value})} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Department</label>

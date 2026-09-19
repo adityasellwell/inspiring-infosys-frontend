@@ -315,9 +315,7 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
             type="date"
             value={selectedDateFilter}
             onChange={e => setSelectedDateFilter(e.target.value)}
-            onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
-            onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
-            style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc', cursor: 'pointer' }}
+            style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc' }}
           />
           {selectedDateFilter && (
             <button

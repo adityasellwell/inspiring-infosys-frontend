@@ -597,7 +597,7 @@ export default function EmployeeListTab({
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Date of Birth</label>
-                      <input className="form-control" type="date" min="1950-01-01" max="2035-12-31" style={{ cursor: 'pointer' }} value={addEmpForm.dob} onChange={e => setAddEmpForm({ ...addEmpForm, dob: e.target.value })} onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} />
+                      <input className="form-control" type="date" min="1950-01-01" max="2035-12-31" value={addEmpForm.dob} onChange={e => setAddEmpForm({ ...addEmpForm, dob: e.target.value })} />
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Gender</label>
@@ -784,7 +784,7 @@ export default function EmployeeListTab({
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Joining Date <span className="required-star">*</span></label>
-                      <input className="form-control" type="date" required style={{ cursor: 'pointer' }} value={addEmpForm.joinDate} onChange={e => setAddEmpForm({ ...addEmpForm, joinDate: e.target.value })} onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }} />
+                      <input className="form-control" type="date" required value={addEmpForm.joinDate} onChange={e => setAddEmpForm({ ...addEmpForm, joinDate: e.target.value })} />
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Employment Type</label>

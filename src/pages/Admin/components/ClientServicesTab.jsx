@@ -630,12 +630,9 @@ export default function ClientServicesTab() {
                     <input
                       type="date"
                       className="form-control"
-                      style={{ cursor: 'pointer' }}
                       required
                       value={form.expiryDate}
                       onChange={e => setForm({ ...form, expiryDate: e.target.value })}
-                      onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
-                      onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
                     />
                   </div>
 
