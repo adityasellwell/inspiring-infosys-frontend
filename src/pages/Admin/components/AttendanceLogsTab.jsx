@@ -288,14 +288,14 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
       </div>
 
       {/* Unified Search & Calendar Filter Bar */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem', background: '#fff', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', alignItems: 'center' }}>
-        <div style={{ flex: '1 1 300px', minWidth: '240px', position: 'relative' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem', background: '#fff', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ width: '320px', maxWidth: '100%', position: 'relative' }}>
           <input
             type="text"
-            placeholder="Search by Employee Name, Emp ID, Month, Year, Status..."
+            placeholder="Search Name, Emp ID, Month, Year, Status..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            style={{ width: '100%', padding: '0.5rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', color: '#0f172a', background: '#f8fafc', fontWeight: '500' }}
+            style={{ width: '100%', padding: '0.48rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', color: '#0f172a', background: '#f8fafc', fontWeight: '500' }}
           />
           {searchQuery && (
             <button
@@ -308,24 +308,48 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <FiCalendar style={{ color: '#0284c7' }} />
-          <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Specific Date:</span>
-          <input
-            type="date"
-            value={selectedDateFilter}
-            onChange={e => setSelectedDateFilter(e.target.value)}
-            style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc' }}
-          />
-          {selectedDateFilter && (
-            <button
-              type="button"
-              onClick={() => setSelectedDateFilter('')}
-              style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#f1f5f9', color: '#64748b', cursor: 'pointer', fontWeight: '600' }}
-            >
-              Clear Date
-            </button>
-          )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          <select
+            style={{ padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', fontWeight: '600', color: '#0284c7', background: '#f0f9ff', cursor: 'pointer' }}
+            value={selectedDateFilter ? selectedDateFilter.split('-')[0] : ''}
+            onChange={e => {
+              const yr = e.target.value;
+              if (!yr) {
+                setSelectedDateFilter('');
+                return;
+              }
+              const parts = (selectedDateFilter || '').split('-');
+              const month = parts[1] || '01';
+              const day = parts[2] || '01';
+              setSelectedDateFilter(`${yr}-${month}-${day}`);
+            }}
+          >
+            <option value="">Quick Year...</option>
+            {Array.from({ length: 15 }, (_, i) => 2026 - i).map(y => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <FiCalendar style={{ color: '#0284c7' }} />
+            <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Specific Date:</span>
+            <input
+              type="date"
+              value={selectedDateFilter}
+              onChange={e => setSelectedDateFilter(e.target.value)}
+              onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+              style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc', cursor: 'pointer' }}
+            />
+            {selectedDateFilter && (
+              <button
+                type="button"
+                onClick={() => setSelectedDateFilter('')}
+                style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#f1f5f9', color: '#64748b', cursor: 'pointer', fontWeight: '600' }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
