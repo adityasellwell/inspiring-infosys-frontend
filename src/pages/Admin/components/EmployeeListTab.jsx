@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiDownload, FiPlus, FiKey, FiTrash2, FiUsers, FiUserCheck, FiCalendar, FiClock, FiUserPlus, FiFileText } from 'react-icons/fi';
+import { FiDownload, FiPlus, FiKey, FiTrash2, FiUsers, FiUserCheck, FiCalendar, FiClock, FiUserPlus, FiFileText, FiX } from 'react-icons/fi';
 import EmployeeDetail from './EmployeeDetail';
 import EmployeeRequestsHub from './EmployeeRequestsHub';
 import QueriesManagerTab from './QueriesManagerTab';
@@ -42,9 +42,22 @@ export default function EmployeeListTab({
   const [empStatusFilter, setEmpStatusFilter] = useState('All');
   const [employeeSubmitting, setEmployeeSubmitting] = useState(false);
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+  const [manageListModal, setManageListModal] = useState({ isOpen: false, type: null }); // 'department' | 'designation'
 
-  const [customDepts, setCustomDepts] = useState([]);
-  const [customDesigs, setCustomDesigs] = useState([]);
+  const [customDepts, setCustomDepts] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('customDepts') || '[]'); } catch { return []; }
+  });
+  const [deletedDepts, setDeletedDepts] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('deletedDepts') || '[]'); } catch { return []; }
+  });
+
+  const [customDesigs, setCustomDesigs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('customDesigs') || '[]'); } catch { return []; }
+  });
+  const [deletedDesigs, setDeletedDesigs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('deletedDesigs') || '[]'); } catch { return []; }
+  });
+
   const [isCustomDept, setIsCustomDept] = useState(false);
   const [isCustomDesig, setIsCustomDesig] = useState(false);
 
@@ -52,8 +65,9 @@ export default function EmployeeListTab({
   const availableDepartments = React.useMemo(() => {
     const defaults = ['IT', 'E-Commerce', 'Development', 'Sales', 'HR', 'Finance', 'Marketing', 'Operations'];
     const empDepts = (employeesList || []).map(e => (e.department || '').trim()).filter(Boolean);
-    return Array.from(new Set([...defaults, ...empDepts, ...customDepts])).sort();
-  }, [employeesList, customDepts]);
+    const all = Array.from(new Set([...defaults, ...empDepts, ...customDepts]));
+    return all.filter(d => !deletedDepts.includes(d)).sort();
+  }, [employeesList, customDepts, deletedDepts]);
 
   const availableDesignations = React.useMemo(() => {
     const defaults = [
@@ -69,8 +83,77 @@ export default function EmployeeListTab({
       'Team Lead'
     ];
     const empDesigs = (employeesList || []).map(e => (e.designation || '').trim()).filter(Boolean);
-    return Array.from(new Set([...defaults, ...empDesigs, ...customDesigs])).sort();
-  }, [employeesList, customDesigs]);
+    const all = Array.from(new Set([...defaults, ...empDesigs, ...customDesigs]));
+    return all.filter(d => !deletedDesigs.includes(d)).sort();
+  }, [employeesList, customDesigs, deletedDesigs]);
+
+  const [newItemInput, setNewItemInput] = useState('');
+
+  // Add New Department Handler
+  const handleAddNewDepartmentItem = (nameStr) => {
+    const val = (typeof nameStr === 'string' ? nameStr : newItemInput).trim();
+    if (!val) {
+      toast.warning('Please enter a department name.');
+      return;
+    }
+    const newDeleted = deletedDepts.filter(d => d.toLowerCase() !== val.toLowerCase());
+    const newCustom = Array.from(new Set([...customDepts, val]));
+    setDeletedDepts(newDeleted);
+    setCustomDepts(newCustom);
+    localStorage.setItem('deletedDepts', JSON.stringify(newDeleted));
+    localStorage.setItem('customDepts', JSON.stringify(newCustom));
+    setNewItemInput('');
+    toast.success(`Department "${val}" added successfully!`);
+  };
+
+  // Add New Designation Handler
+  const handleAddNewDesignationItem = (nameStr) => {
+    const val = (typeof nameStr === 'string' ? nameStr : newItemInput).trim();
+    if (!val) {
+      toast.warning('Please enter a designation title.');
+      return;
+    }
+    const newDeleted = deletedDesigs.filter(d => d.toLowerCase() !== val.toLowerCase());
+    const newCustom = Array.from(new Set([...customDesigs, val]));
+    setDeletedDesigs(newDeleted);
+    setCustomDesigs(newCustom);
+    localStorage.setItem('deletedDesigs', JSON.stringify(newDeleted));
+    localStorage.setItem('customDesigs', JSON.stringify(newCustom));
+    setNewItemInput('');
+    toast.success(`Designation "${val}" added successfully!`);
+  };
+
+  // Delete Department Handler
+  const handleDeleteDepartmentItem = (deptToDelete) => {
+    const newDeleted = Array.from(new Set([...deletedDepts, deptToDelete]));
+    const newCustom = customDepts.filter(d => d !== deptToDelete);
+    setDeletedDepts(newDeleted);
+    setCustomDepts(newCustom);
+    localStorage.setItem('deletedDepts', JSON.stringify(newDeleted));
+    localStorage.setItem('customDepts', JSON.stringify(newCustom));
+    toast.success(`Department "${deptToDelete}" deleted successfully.`);
+
+    if (addEmpForm.department === deptToDelete) {
+      const remaining = availableDepartments.filter(d => d !== deptToDelete);
+      setAddEmpForm(prev => ({ ...prev, department: remaining[0] || 'IT' }));
+    }
+  };
+
+  // Delete Designation Handler
+  const handleDeleteDesignationItem = (desigToDelete) => {
+    const newDeleted = Array.from(new Set([...deletedDesigs, desigToDelete]));
+    const newCustom = customDesigs.filter(d => d !== desigToDelete);
+    setDeletedDesigs(newDeleted);
+    setCustomDesigs(newCustom);
+    localStorage.setItem('deletedDesigs', JSON.stringify(newDeleted));
+    localStorage.setItem('customDesigs', JSON.stringify(newCustom));
+    toast.success(`Designation "${desigToDelete}" deleted successfully.`);
+
+    if (addEmpForm.designation === desigToDelete) {
+      const remaining = availableDesignations.filter(d => d !== desigToDelete);
+      setAddEmpForm(prev => ({ ...prev, designation: remaining[0] || 'Software Engineer' }));
+    }
+  };
 
   const handleDeleteEmployeeRow = (employee) => {
     setConfirmModal({
@@ -107,7 +190,7 @@ export default function EmployeeListTab({
     reportingManager: 'HR Manager', joinDate: new Date().toISOString().split('T')[0], confirmationDate: '',
     employmentType: 'Full-Time', workLocation: 'Mumbai Office', workMode: 'On-site',
     shift: 'Standard Shift (10:00 AM - 7:00 PM)', probationPeriod: '3 Months', status: 'Active',
-    salary: '', salaryStructure: 'Standard Corporate', basicSalary: '', hra: '', allowances: '0', deductions: '0',
+    salary: '', salaryStructure: 'Standard Corporate', basicSalary: '', allowances: '0', deductions: '0',
     bankName: '', accountNumber: '', ifsc: '', panNumber: '', uanNumber: '', taxInfo: 'New Tax Regime', password: ''
   });
 
@@ -273,16 +356,6 @@ export default function EmployeeListTab({
 
               <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>On Leave</span>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#f97316', margin: '0.2rem 0 0' }}>{calculatedOnLeave}</h3>
-                </div>
-                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#fff7ed', color: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <FiCalendar size={19} />
-                </div>
-              </div>
-
-              <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
                   <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Pending Requests</span>
                   <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#6366f1', margin: '0.2rem 0 0' }}>{calculatedPendingRequests}</h3>
                 </div>
@@ -315,17 +388,41 @@ export default function EmployeeListTab({
                   onChange={e => setEmpSearch(e.target.value)}
                   style={{ flex: '2 1 180px', minWidth: '160px', padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
                 />
-                <select value={empDeptFilter} onChange={e => setEmpDeptFilter(e.target.value)} style={{ flex: '1 1 120px', minWidth: '110px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}>
+                <select
+                  value={empDeptFilter}
+                  onChange={e => {
+                    if (e.target.value === '__ADD_NEW__' || e.target.value === '__MANAGE_DELETE__') {
+                      setManageListModal({ isOpen: true, type: 'department' });
+                    } else {
+                      setEmpDeptFilter(e.target.value);
+                    }
+                  }}
+                  style={{ flex: '1 1 120px', minWidth: '110px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                >
                   <option value="All">All Departments</option>
                   {availableDepartments.map(dept => (
                     <option key={dept} value={dept}>{dept}</option>
                   ))}
+                  <option value="__ADD_NEW__" style={{ fontWeight: '700', color: '#2563eb' }}>+ Add New Department...</option>
+                  <option value="__MANAGE_DELETE__" style={{ fontWeight: '700', color: '#dc2626' }}>🗑️ Delete / Manage Departments...</option>
                 </select>
-                <select value={empDesigFilter} onChange={e => setEmpDesigFilter(e.target.value)} style={{ flex: '1 1 120px', minWidth: '110px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}>
+                <select
+                  value={empDesigFilter}
+                  onChange={e => {
+                    if (e.target.value === '__ADD_NEW__' || e.target.value === '__MANAGE_DELETE__') {
+                      setManageListModal({ isOpen: true, type: 'designation' });
+                    } else {
+                      setEmpDesigFilter(e.target.value);
+                    }
+                  }}
+                  style={{ flex: '1 1 120px', minWidth: '110px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                >
                   <option value="All">All Designations</option>
                   {availableDesignations.map(desig => (
                     <option key={desig} value={desig}>{desig}</option>
                   ))}
+                  <option value="__ADD_NEW__" style={{ fontWeight: '700', color: '#2563eb' }}>+ Add New Designation...</option>
+                  <option value="__MANAGE_DELETE__" style={{ fontWeight: '700', color: '#dc2626' }}>🗑️ Delete / Manage Designations...</option>
                 </select>
                 <select value={empTypeFilter} onChange={e => setEmpTypeFilter(e.target.value)} style={{ flex: '1 1 120px', minWidth: '110px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}>
                   <option value="All">All Employment Types</option>
@@ -530,10 +627,14 @@ export default function EmployeeListTab({
                   if (res.success) {
                     toast.success('Employee added successfully to Master Database!');
                     if (addEmpForm.department && !customDepts.includes(addEmpForm.department.trim())) {
-                      setCustomDepts(prev => [...prev, addEmpForm.department.trim()]);
+                      const updated = [...customDepts, addEmpForm.department.trim()];
+                      setCustomDepts(updated);
+                      localStorage.setItem('customDepts', JSON.stringify(updated));
                     }
                     if (addEmpForm.designation && !customDesigs.includes(addEmpForm.designation.trim())) {
-                      setCustomDesigs(prev => [...prev, addEmpForm.designation.trim()]);
+                      const updated = [...customDesigs, addEmpForm.designation.trim()];
+                      setCustomDesigs(updated);
+                      localStorage.setItem('customDesigs', JSON.stringify(updated));
                     }
                     setIsCustomDept(false);
                     setIsCustomDesig(false);
@@ -589,26 +690,7 @@ export default function EmployeeListTab({
                       <input className="form-control" placeholder="10-Digit Alternate Phone" type="tel" maxLength={10} value={addEmpForm.altPhone} onChange={e => setAddEmpForm({ ...addEmpForm, altPhone: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
                     </div>
                     <div className="form-field-group">
-                      <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>Date of Birth</span>
-                        <select
-                          style={{ fontSize: '0.75rem', padding: '1px 6px', borderRadius: '4px', border: '1px solid #cbd5e1', cursor: 'pointer', background: '#f0f9ff', color: '#0284c7', fontWeight: '600' }}
-                          value={addEmpForm.dob ? addEmpForm.dob.split('-')[0] : ''}
-                          onChange={e => {
-                            const yr = e.target.value;
-                            if (!yr) return;
-                            const parts = (addEmpForm.dob || '').split('-');
-                            const month = parts[1] || '01';
-                            const day = parts[2] || '01';
-                            setAddEmpForm({ ...addEmpForm, dob: `${yr}-${month}-${day}` });
-                          }}
-                        >
-                          <option value="">Quick Year Select...</option>
-                          {Array.from({ length: 77 }, (_, i) => 2026 - i).map(y => (
-                            <option key={y} value={y}>{y}</option>
-                          ))}
-                        </select>
-                      </label>
+                      <label className="form-label">Date of Birth</label>
                       <input
                         className="form-control"
                         type="date"
@@ -698,7 +780,16 @@ export default function EmployeeListTab({
                       <span style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px', display: 'block' }}>Auto-generated. You can edit this if needed.</span>
                     </div>
                     <div className="form-field-group">
-                      <label className="form-label">Department <span className="required-star">*</span></label>
+                      <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Department <span className="required-star">*</span></span>
+                        <button
+                          type="button"
+                          onClick={() => setManageListModal({ isOpen: true, type: 'department' })}
+                          style={{ border: 'none', background: 'none', color: '#dc2626', fontSize: '0.74rem', cursor: 'pointer', fontWeight: '600', padding: 0 }}
+                        >
+                          🗑️ Delete / Manage
+                        </button>
+                      </label>
                       {!isCustomDept ? (
                         <select
                           id="input-department"
@@ -710,6 +801,8 @@ export default function EmployeeListTab({
                             if (e.target.value === '__ADD_NEW__') {
                               setIsCustomDept(true);
                               setAddEmpForm({ ...addEmpForm, department: '' });
+                            } else if (e.target.value === '__MANAGE_DELETE__') {
+                              setManageListModal({ isOpen: true, type: 'department' });
                             } else {
                               setAddEmpForm({ ...addEmpForm, department: e.target.value });
                             }
@@ -719,6 +812,7 @@ export default function EmployeeListTab({
                             <option key={dept} value={dept}>{dept}</option>
                           ))}
                           <option value="__ADD_NEW__" style={{ fontWeight: '700', color: '#2563eb' }}>+ Add New Department...</option>
+                          <option value="__MANAGE_DELETE__" style={{ fontWeight: '700', color: '#dc2626' }}>🗑️ Delete / Manage Departments...</option>
                         </select>
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -749,7 +843,16 @@ export default function EmployeeListTab({
                       {formErrors.department && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.department}</span>}
                     </div>
                     <div className="form-field-group">
-                      <label className="form-label">Designation <span className="required-star">*</span></label>
+                      <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Designation <span className="required-star">*</span></span>
+                        <button
+                          type="button"
+                          onClick={() => setManageListModal({ isOpen: true, type: 'designation' })}
+                          style={{ border: 'none', background: 'none', color: '#dc2626', fontSize: '0.74rem', cursor: 'pointer', fontWeight: '600', padding: 0 }}
+                        >
+                          🗑️ Delete / Manage
+                        </button>
+                      </label>
                       {!isCustomDesig ? (
                         <select
                           id="input-designation"
@@ -761,6 +864,8 @@ export default function EmployeeListTab({
                             if (e.target.value === '__ADD_NEW__') {
                               setIsCustomDesig(true);
                               setAddEmpForm({ ...addEmpForm, designation: '' });
+                            } else if (e.target.value === '__MANAGE_DELETE__') {
+                              setManageListModal({ isOpen: true, type: 'designation' });
                             } else {
                               setAddEmpForm({ ...addEmpForm, designation: e.target.value });
                             }
@@ -770,6 +875,7 @@ export default function EmployeeListTab({
                             <option key={desig} value={desig}>{desig}</option>
                           ))}
                           <option value="__ADD_NEW__" style={{ fontWeight: '700', color: '#2563eb' }}>+ Add New Designation...</option>
+                          <option value="__MANAGE_DELETE__" style={{ fontWeight: '700', color: '#dc2626' }}>🗑️ Delete / Manage Designations...</option>
                         </select>
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -960,6 +1066,127 @@ export default function EmployeeListTab({
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* MANAGE DEPARTMENTS / DESIGNATIONS MODAL */}
+      {manageListModal.isOpen && (
+        <div className="admin-modal-overlay">
+          <div className="admin-modal" style={{ maxWidth: '480px', borderRadius: '16px', padding: '1.5rem' }}>
+            <div className="admin-modal-header" style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h3 className="admin-modal-title" style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                  {manageListModal.type === 'department' ? '🏢 Manage & Delete Departments' : '💼 Manage & Delete Designations'}
+                </h3>
+                <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                  Remove unwanted {manageListModal.type === 'department' ? 'departments' : 'designations'} from dropdown options.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="admin-modal-close-btn"
+                onClick={() => setManageListModal({ isOpen: false, type: null })}
+              >
+                <FiX size={18} />
+              </button>
+            </div>
+
+            <div className="admin-modal-body" style={{ maxHeight: '420px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.65rem', paddingRight: '4px' }}>
+              {/* Add New Item Input Bar */}
+              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', background: '#f1f5f9', padding: '0.65rem 0.75rem', borderRadius: '10px' }}>
+                <input
+                  type="text"
+                  placeholder={manageListModal.type === 'department' ? "Enter New Department Name..." : "Enter New Designation Title..."}
+                  value={newItemInput}
+                  onChange={e => setNewItemInput(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (manageListModal.type === 'department') handleAddNewDepartmentItem();
+                      else handleAddNewDesignationItem();
+                    }
+                  }}
+                  style={{ flex: 1, padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', background: '#fff', color: '#0f172a', fontWeight: '600' }}
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (manageListModal.type === 'department') handleAddNewDepartmentItem();
+                    else handleAddNewDesignationItem();
+                  }}
+                  style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: 'none', background: '#0284c7', color: '#fff', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <FiPlus size={15} /> Add
+                </button>
+              </div>
+              {(manageListModal.type === 'department' ? availableDepartments : availableDesignations).length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '1.5rem', color: '#64748b', fontSize: '0.88rem' }}>
+                  No {manageListModal.type === 'department' ? 'departments' : 'designations'} available.
+                </div>
+              ) : (
+                (manageListModal.type === 'department' ? availableDepartments : availableDesignations).map(item => (
+                  <div
+                    key={item}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.6rem 0.85rem',
+                      background: '#f8fafc',
+                      borderRadius: '8px',
+                      border: '1px solid #e2e8f0'
+                    }}
+                  >
+                    <span style={{ fontWeight: '600', fontSize: '0.88rem', color: '#1e293b' }}>{item}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setConfirmModal({
+                          isOpen: true,
+                          title: `Delete ${manageListModal.type === 'department' ? 'Department' : 'Designation'}`,
+                          message: `Are you sure you want to delete "${item}" from the ${manageListModal.type === 'department' ? 'department' : 'designation'} list?`,
+                          confirmText: 'Yes, Delete',
+                          onConfirm: () => {
+                            if (manageListModal.type === 'department') {
+                              handleDeleteDepartmentItem(item);
+                            } else {
+                              handleDeleteDesignationItem(item);
+                            }
+                          }
+                        });
+                      }}
+                      style={{
+                        padding: '0.28rem 0.6rem',
+                        fontSize: '0.78rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        borderRadius: '6px',
+                        border: '1px solid #fca5a5',
+                        background: '#fef2f2',
+                        color: '#dc2626',
+                        fontWeight: '600',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <FiTrash2 size={13} /> Delete
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="admin-modal-footer" style={{ marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setManageListModal({ isOpen: false, type: null })}
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

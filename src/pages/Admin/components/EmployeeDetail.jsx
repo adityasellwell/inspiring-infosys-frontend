@@ -83,7 +83,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
 
   // Payslip Modal
   const [showPayslipModal, setShowPayslipModal] = useState(false);
-  const [payslipForm, setPayslipForm] = useState({ month: 'September', year: 2026, basicPay: '', hra: '0', allowances: '0', deductions: '0' });
+  const [payslipForm, setPayslipForm] = useState({ month: 'September', year: 2026, basicPay: '', allowances: '0', deductions: '0' });
 
   // Letter Generator Viewer Modal
   const [letterViewerType, setLetterViewerType] = useState(null); // 'Offer' | 'Relieving' | 'Experience'
@@ -576,41 +576,135 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
       {/* ── TAB 1: OVERVIEW ── */}
       {activeTab === 'overview' && (
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-            <div className="stat-card" style={{ padding: '1.25rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600' }}>Leave Balance</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#f97316', margin: '0.5rem 0 0' }}>18 / 24 Days</h3>
+          {/* Top Metric Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div className="stat-card" style={{ padding: '1.1rem 1.25rem', background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Leave Balance</span>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#f97316', margin: '0.2rem 0 0' }}>18 / 24 Days</h3>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: '500' }}>Annual Paid Entitlement</span>
+              </div>
+              <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#fff7ed', color: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <FiCalendar size={20} />
+              </div>
             </div>
-            <div className="stat-card" style={{ padding: '1.25rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600' }}>Attendance Logs</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#10b981', margin: '0.5rem 0 0' }}>{presentCount} Days Present</h3>
+
+            <div className="stat-card" style={{ padding: '1.1rem 1.25rem', background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Attendance Logs</span>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#10b981', margin: '0.2rem 0 0' }}>{presentCount} {presentCount === 1 ? 'Day' : 'Days'} Present</h3>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: '500' }}>Total Clocked-In Days</span>
+              </div>
+              <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <FiClock size={20} />
+              </div>
             </div>
-            <div className="stat-card" style={{ padding: '1.25rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600' }}>Verification Documents</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0284c7', margin: '0.5rem 0 0' }}>
-                {[employee.photoUrl, employee.aadharUrl, employee.panUrl].filter(Boolean).length} / 3 Uploaded
-              </h3>
+
+            <div className="stat-card" style={{ padding: '1.1rem 1.25rem', background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Verification Documents</span>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0284c7', margin: '0.2rem 0 0' }}>
+                  {[employee.photoUrl, employee.aadharUrl, employee.panUrl].filter(Boolean).length} / 3 Uploaded
+                </h3>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: '500' }}>ID & Address Verification</span>
+              </div>
+              <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <FiFileText size={20} />
+              </div>
             </div>
-            <div className="stat-card" style={{ padding: '1.25rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600' }}>Pending Requests</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#6366f1', margin: '0.5rem 0 0' }}>{employeeRequests.filter(r => r.status === 'Pending').length} Action Items</h3>
+
+            <div className="stat-card" style={{ padding: '1.1rem 1.25rem', background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Pending Requests</span>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#6366f1', margin: '0.2rem 0 0' }}>
+                  {employeeRequests.filter(r => r.status === 'Pending').length} {employeeRequests.filter(r => r.status === 'Pending').length === 1 ? 'Action Item' : 'Action Items'}
+                </h3>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: '500' }}>Awaiting Admin Action</span>
+              </div>
+              <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#eef2ff', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <FiAlertCircle size={20} />
+              </div>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-            <div style={{ background: '#fff', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <h4 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: '#0f172a' }}>Employment Summary</h4>
-              <p><strong>Reporting Manager:</strong> {employee.reportingManager || 'HR Manager'}</p>
-              <p><strong>Employment Type:</strong> {employee.employmentType || 'Full-Time'}</p>
-              <p><strong>Work Mode:</strong> {employee.workMode || 'On-site'} ({employee.workLocation || 'Mumbai Office'})</p>
-              <p><strong>Shift:</strong> {employee.shift || 'General (9:30 AM - 6:30 PM)'}</p>
+          {/* Section Grids */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+            {/* Employment Summary Card */}
+            <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+                <FiBriefcase style={{ color: '#f97316', fontSize: '1.2rem' }} />
+                <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}>Employment Summary</h4>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Reporting Manager</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FiUser style={{ color: '#0284c7' }} /> {employee.reportingManager || 'HR Manager'}
+                  </div>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Employment Type</span>
+                  <div>
+                    <span className="status-badge" style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: '700', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.8rem' }}>
+                      {employee.employmentType || 'Full-Time'}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Work Mode & Location</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FiMapPin style={{ color: '#f97316' }} /> {employee.workMode || 'On-site'} ({employee.workLocation || 'Mumbai Office'})
+                  </div>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Shift Timings</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FiClock style={{ color: '#10b981' }} /> {employee.shift || 'General (10:00 AM - 7:00 PM)'}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div style={{ background: '#fff', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <h4 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: '#0f172a' }}>Payroll Overview</h4>
-              <p><strong>Monthly Gross Salary:</strong> ₹{Number(employee.salary || 0).toLocaleString('en-IN')}</p>
-              <p><strong>Basic Salary:</strong> ₹{Number(employee.basicSalary || 0).toLocaleString('en-IN')}</p>
-              <p><strong>Bank Account:</strong> {employee.bankName ? `${employee.bankName} (A/C: ${employee.accountNumber})` : 'Not Configured'}</p>
-              <p><strong>PAN Card:</strong> {employee.panNumber || 'N/A'}</p>
+
+            {/* Payroll Overview Card */}
+            <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+                <FiDollarSign style={{ color: '#10b981', fontSize: '1.2rem' }} />
+                <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}>Payroll & Financial Overview</h4>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Monthly Gross Salary</span>
+                  <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#16a34a' }}>
+                    ₹{Number(employee.salary || 0).toLocaleString('en-IN')}
+                  </div>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Basic Salary</span>
+                  <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0284c7' }}>
+                    ₹{Number(employee.basicSalary || (employee.salary ? Math.round(employee.salary * 0.5) : 0)).toLocaleString('en-IN')}
+                  </div>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Bank Account Info</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: employee.accountNumber ? '#0f172a' : '#ef4444' }}>
+                    {employee.bankName ? `${employee.bankName} (A/C: ${employee.accountNumber})` : 'Not Configured'}
+                  </div>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>PAN Card Number</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: employee.panNumber ? '#0f172a' : '#ef4444' }}>
+                    {employee.panNumber || 'Not Uploaded'}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -618,34 +712,114 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
 
       {/* ── TAB 2: PERSONAL INFO ── */}
       {activeTab === 'personal' && (
-        <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <h3 style={{ margin: 0, color: '#0f172a' }}>Personal Details</h3>
-            <button className="btn-secondary" onClick={() => setShowEditPersonalModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '1.25rem 1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiUser style={{ color: '#f97316' }} /> Personal & Contact Details
+              </h3>
+              <p style={{ margin: '0.2rem 0 0', fontSize: '0.84rem', color: '#64748b' }}>Primary identity, emergency contacts, and bank information.</p>
+            </div>
+            <button className="btn-secondary" onClick={() => setShowEditPersonalModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.5rem 1rem', fontSize: '0.86rem' }}>
               <FiEdit2 /> Edit Personal & Bank Info
             </button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.95rem' }}>
-            <p><strong>Full Name:</strong> {employee.name}</p>
-            <p><strong>Personal Email:</strong> {employee.personalEmail || employee.email}</p>
-            <p><strong>Official Phone:</strong> {employee.phone}</p>
-            <p><strong>Alternate Phone:</strong> {employee.altPhone || 'N/A'}</p>
-            <p><strong>Date of Birth:</strong> {employee.dob ? new Date(employee.dob).toLocaleDateString() : 'N/A'}</p>
-            <p><strong>Gender:</strong> {employee.gender || 'Male'}</p>
-            <p style={{ gridColumn: 'span 2' }}><strong>Current Address:</strong> {employee.currentAddress || employee.address || 'N/A'}</p>
-            <p style={{ gridColumn: 'span 2' }}><strong>Permanent Address:</strong> {employee.permanentAddress || employee.address || 'N/A'}</p>
-            <p><strong>Emergency Contact Name:</strong> {employee.emergencyContactName || 'N/A'}</p>
-            <p><strong>Emergency Contact Phone:</strong> {employee.emergencyPhone || 'N/A'}</p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+            {/* Primary Contact Info Card */}
+            <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <h4 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: '800', color: '#0f172a', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <FiMail style={{ color: '#0284c7' }} /> Primary Identity & Contact
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Full Name</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.name}</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Gender</span>
+                  <div>
+                    <span className="status-badge" style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: '700', padding: '0.15rem 0.5rem', borderRadius: '6px', fontSize: '0.8rem' }}>
+                      {employee.gender || 'Male'}
+                    </span>
+                  </div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Personal Email</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0284c7' }}>{employee.personalEmail || employee.email}</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Primary Phone</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.phone || 'N/A'}</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Alternate Phone</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.altPhone || 'N/A'}</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Date of Birth</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FiCalendar style={{ color: '#f97316' }} /> {employee.dob ? new Date(employee.dob).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Not Provided'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Address & Emergency Contact Card */}
+            <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <h4 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: '800', color: '#0f172a', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <FiMapPin style={{ color: '#10b981' }} /> Residential & Emergency
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Current Address</span>
+                  <div style={{ fontSize: '0.9rem', fontWeight: '600', color: '#334155' }}>{employee.currentAddress || employee.address || 'N/A'}</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Permanent Address</span>
+                  <div style={{ fontSize: '0.9rem', fontWeight: '600', color: '#334155' }}>{employee.permanentAddress || employee.address || 'N/A'}</div>
+                </div>
+                <div style={{ background: '#fff7ed', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #ffedd5' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#c2410c', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Emergency Contact</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#9a3412', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>{employee.emergencyContactName || 'Not Set'} {employee.emergencyRelationship ? `(${employee.emergencyRelationship})` : ''}</span>
+                    <span style={{ fontWeight: '800' }}>{employee.emergencyPhone || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #e2e8f0' }}>
-            <h4 style={{ margin: '0 0 1rem', color: '#0284c7', fontSize: '1.05rem', fontWeight: '800' }}>🏦 Bank Account & Statutory Details</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.95rem', background: '#f8fafc', padding: '1.25rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-              <p style={{ margin: 0 }}><strong>Bank Name:</strong> <strong style={{ color: employee.bankName ? '#0f172a' : '#ef4444' }}>{employee.bankName || 'Not Provided'}</strong></p>
-              <p style={{ margin: 0 }}><strong>Account Number:</strong> <strong style={{ color: employee.accountNumber ? '#0f172a' : '#ef4444' }}>{employee.accountNumber || 'Not Provided'}</strong></p>
-              <p style={{ margin: 0 }}><strong>IFSC Code:</strong> <strong style={{ color: employee.ifsc ? '#0f172a' : '#ef4444' }}>{employee.ifsc || 'Not Provided'}</strong></p>
-              <p style={{ margin: 0 }}><strong>PAN Card Number:</strong> <strong style={{ color: employee.panNumber ? '#0f172a' : '#ef4444' }}>{employee.panNumber || 'Not Provided'}</strong></p>
-
+          {/* Bank & Statutory Details Card */}
+          <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <h4 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: '800', color: '#0f172a', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <FiDollarSign style={{ color: '#10b981' }} /> Bank Account & Statutory Information
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+              <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Bank Name</span>
+                <div style={{ fontSize: '0.95rem', fontWeight: '800', color: employee.bankName ? '#0f172a' : '#ef4444' }}>
+                  {employee.bankName || 'Not Provided'}
+                </div>
+              </div>
+              <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Account Number</span>
+                <div style={{ fontSize: '0.95rem', fontWeight: '800', color: employee.accountNumber ? '#0f172a' : '#ef4444' }}>
+                  {employee.accountNumber || 'Not Provided'}
+                </div>
+              </div>
+              <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>IFSC Code</span>
+                <div style={{ fontSize: '0.95rem', fontWeight: '800', color: employee.ifsc ? '#0284c7' : '#ef4444', textTransform: 'uppercase' }}>
+                  {employee.ifsc || 'Not Provided'}
+                </div>
+              </div>
+              <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>PAN Card Number</span>
+                <div style={{ fontSize: '0.95rem', fontWeight: '800', color: employee.panNumber ? '#0f172a' : '#ef4444', textTransform: 'uppercase' }}>
+                  {employee.panNumber || 'Not Uploaded'}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -653,76 +827,127 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
 
       {/* ── TAB 3: EMPLOYMENT ── */}
       {activeTab === 'employment' && (
-        <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <h3 style={{ margin: 0, color: '#0f172a' }}>Employment Information</h3>
-            <button className="btn-secondary" onClick={() => setShowEditEmpModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '1.25rem 1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiBriefcase style={{ color: '#0284c7' }} /> Employment Information
+              </h3>
+              <p style={{ margin: '0.2rem 0 0', fontSize: '0.84rem', color: '#64748b' }}>Role details, organization structure, work mode, and probation status.</p>
+            </div>
+            <button className="btn-secondary" onClick={() => setShowEditEmpModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.5rem 1rem', fontSize: '0.86rem' }}>
               <FiEdit2 /> Edit Employment Info
             </button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <p><strong>Employee ID:</strong> {formatEmpId(employee.empId, employee.id)}</p>
-            <p><strong>Department:</strong> {employee.department}</p>
-            <p><strong>Designation:</strong> {employee.designation}</p>
-            <p><strong>Reporting Manager:</strong> {employee.reportingManager}</p>
-            <p><strong>Joining Date:</strong> {new Date(employee.joinDate).toLocaleDateString()}</p>
-            <p><strong>Confirmation Date:</strong> {employee.confirmationDate ? new Date(employee.confirmationDate).toLocaleDateString() : 'Pending Confirmation'}</p>
-            <p><strong>Employment Type:</strong> {employee.employmentType}</p>
-            <p><strong>Work Location:</strong> {employee.workLocation}</p>
-            <p><strong>Work Mode:</strong> {employee.workMode}</p>
-            <p><strong>Probation Period:</strong> {employee.probationPeriod}</p>
-            <p><strong>Status:</strong> <span className={`status-badge status-${(employee.status || 'Active').toLowerCase()}`}>{employee.status}</span></p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+            {/* Role & Org Card */}
+            <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <h4 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: '800', color: '#0f172a', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <FiUser style={{ color: '#f97316' }} /> Organization & Role
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Employee ID</span>
+                  <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0284c7' }}>{formatEmpId(employee.empId, employee.id)}</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Employment Type</span>
+                  <div>
+                    <span className="status-badge" style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: '700', padding: '0.15rem 0.5rem', borderRadius: '6px', fontSize: '0.8rem' }}>
+                      {employee.employmentType || 'Full-Time'}
+                    </span>
+                  </div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Department</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.department || 'N/A'}</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Designation</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.designation || 'N/A'}</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Reporting Manager</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FiUser style={{ color: '#0284c7' }} /> {employee.reportingManager || 'HR Manager'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Schedule & Status Card */}
+            <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <h4 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: '800', color: '#0f172a', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <FiClock style={{ color: '#10b981' }} /> Work Setup & Status
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Work Mode</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.workMode || 'On-site'}</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Work Location</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.workLocation || 'Mumbai Office'}</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Joining Date</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FiCalendar style={{ color: '#f97316' }} /> {new Date(employee.joinDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}
+                  </div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Current Status</span>
+                  <div>
+                    <span className={`status-badge status-${(employee.status || 'Active').toLowerCase()}`}>
+                      {employee.status || 'Active'}
+                    </span>
+                  </div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Probation Status</span>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#64748b' }}>
+                    {employee.probationPeriod || 'Standard (6 Months)'}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       {/* ── TAB 4: ATTENDANCE ── */}
       {activeTab === 'attendance' && (
-        <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <h3 style={{ margin: '0 0 1rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <FiClock style={{ color: '#0284c7' }} /> Attendance Logs & History
-          </h3>
-
-          {/* Year-Wise, Month-Wise, Calendar Date & Status Filter Bar */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem', background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <FiCalendar style={{ color: '#0284c7' }} />
-              <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Year:</span>
-              <select
-                value={attYearFilter}
-                onChange={e => setAttYearFilter(e.target.value)}
-                style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#fff' }}
-              >
-                <option value="All">All Years</option>
-                {getYearOptions().map(yr => (
-                  <option key={yr} value={yr}>{yr}</option>
-                ))}
-              </select>
+        <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <h3 style={{ margin: 0, color: '#0f172a', fontSize: '1.2rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FiClock style={{ color: '#0284c7' }} /> Attendance Logs & History
+            </h3>
+            <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.8rem', fontWeight: '700' }}>
+              <span style={{ background: '#dcfce7', color: '#15803d', padding: '0.3rem 0.75rem', borderRadius: '20px' }}>
+                Present: {attendances.filter(a => (a.status || '').toLowerCase() === 'present' || a.checkIn).length}
+              </span>
+              <span style={{ background: '#fef3c7', color: '#d97706', padding: '0.3rem 0.75rem', borderRadius: '20px' }}>
+                Late: {attendances.filter(a => (a.status || '').toLowerCase() === 'late').length}
+              </span>
+              <span style={{ background: '#fee2e2', color: '#dc2626', padding: '0.3rem 0.75rem', borderRadius: '20px' }}>
+                Absent: {attendances.filter(a => (a.status || '').toLowerCase() === 'absent').length}
+              </span>
             </div>
+          </div>
 
+          {/* Unified Date & Status Filter Bar */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '1.25rem', background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <FiCalendar style={{ color: '#0284c7' }} />
-              <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Month:</span>
-              <select
-                value={attMonthFilter}
-                onChange={e => setAttMonthFilter(e.target.value)}
-                style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#fff' }}
-              >
-                <option value="All">All Months (Real-time Logs)</option>
-                {getMonthOptions().map(opt => (
-                  <option key={opt.val} value={opt.val}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <FiCalendar style={{ color: '#0284c7' }} />
-              <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Date:</span>
+              <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Date Filter:</span>
               <input
                 type="date"
                 value={attDateFilter}
                 onChange={e => setAttDateFilter(e.target.value)}
-                style={{ padding: '0.4rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#fff' }}
+                onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+                onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+                style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#fff', cursor: 'pointer' }}
               />
               {attDateFilter && (
                 <button
@@ -766,17 +991,6 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 const filtered = (attendances || []).filter(att => {
                   if (!att.date) return false;
                   const d = new Date(att.date);
-                  if (attYearFilter !== 'All') {
-                    if (d.getFullYear() !== parseInt(attYearFilter, 10)) {
-                      return false;
-                    }
-                  }
-                  if (attMonthFilter !== 'All') {
-                    const [y, m] = attMonthFilter.split('-');
-                    if (d.getFullYear() !== parseInt(y, 10) || (d.getMonth() + 1) !== parseInt(m, 10)) {
-                      return false;
-                    }
-                  }
                   if (attDateFilter) {
                     const filterD = new Date(attDateFilter);
                     if (d.getFullYear() !== filterD.getFullYear() || d.getMonth() !== filterD.getMonth() || d.getDate() !== filterD.getDate()) {
@@ -795,8 +1009,8 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 if (filtered.length === 0) {
                   return (
                     <tr>
-                      <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-                        No attendance records match the selected month / filters.
+                      <td colSpan={5} style={{ textAlign: 'center', padding: '2.5rem', color: '#94a3b8' }}>
+                        No attendance records match the selected date / status filter.
                       </td>
                     </tr>
                   );
@@ -829,200 +1043,258 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
 
       {/* ── TAB 5: LEAVE ── */}
       {activeTab === 'leave' && (
-        <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <h3 style={{ margin: '0 0 1rem', color: '#0f172a' }}>Leave Applications & Balances</h3>
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Leave Type</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Reason</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leaveRequests.length > 0 ? (
-                leaveRequests.map((leave) => (
-                  <tr key={leave.id}>
-                    <td><strong>{leave.leaveType}</strong></td>
-                    <td>{new Date(leave.startDate).toLocaleDateString()}</td>
-                    <td>{new Date(leave.endDate).toLocaleDateString()}</td>
-                    <td>{leave.reason}</td>
-                    <td>
-                      <span className={`status-badge status-${leave.status.toLowerCase()}`}>
-                        {leave.status}
-                      </span>
-                    </td>
-                    <td>
-                      {leave.status === 'Pending' && (
-                        <div style={{ display: 'flex', gap: '4px' }}>
-                          <button className="btn-secondary" style={{ color: '#10b981', padding: '0.25rem 0.5rem' }} onClick={() => handleLeaveAction(leave.id, 'Approved')}>Approve</button>
-                          <button className="btn-secondary" style={{ color: '#ef4444', padding: '0.25rem 0.5rem' }} onClick={() => handleLeaveAction(leave.id, 'Rejected')}>Reject</button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Leave Entitlement Metric Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            <div style={{ background: '#fff', padding: '1.25rem', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block' }}>Casual Leave</span>
+              <h4 style={{ margin: '0.2rem 0 0', fontSize: '1.3rem', fontWeight: '800', color: '#0284c7' }}>8 / 12 Days</h4>
+              <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Available Balance</span>
+            </div>
+            <div style={{ background: '#fff', padding: '1.25rem', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block' }}>Sick Leave</span>
+              <h4 style={{ margin: '0.2rem 0 0', fontSize: '1.3rem', fontWeight: '800', color: '#10b981' }}>6 / 6 Days</h4>
+              <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Available Balance</span>
+            </div>
+            <div style={{ background: '#fff', padding: '1.25rem', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block' }}>Earned / Paid Leave</span>
+              <h4 style={{ margin: '0.2rem 0 0', fontSize: '1.3rem', fontWeight: '800', color: '#f97316' }}>4 / 6 Days</h4>
+              <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Available Balance</span>
+            </div>
+          </div>
+
+          <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <h3 style={{ margin: '0 0 1.25rem', color: '#0f172a', fontSize: '1.2rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FiCalendar style={{ color: '#f97316' }} /> Leave Requests & History
+            </h3>
+            <table className="admin-table">
+              <thead>
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', color: '#94a3b8' }}>No leave requests submitted.</td>
+                  <th>Leave Type</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {leaveRequests.length > 0 ? (
+                  leaveRequests.map((leave) => (
+                    <tr key={leave.id}>
+                      <td><strong>{leave.leaveType}</strong></td>
+                      <td>{new Date(leave.startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                      <td>{new Date(leave.endDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                      <td>{leave.reason}</td>
+                      <td>
+                        <span className={`status-badge status-${leave.status.toLowerCase()}`}>
+                          {leave.status}
+                        </span>
+                      </td>
+                      <td>
+                        {leave.status === 'Pending' && (
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button className="btn-secondary" style={{ color: '#10b981', borderColor: '#a7f3d0', background: '#ecfdf5', padding: '0.3rem 0.65rem', fontSize: '0.8rem' }} onClick={() => handleLeaveAction(leave.id, 'Approved')}>Approve</button>
+                            <button className="btn-secondary" style={{ color: '#ef4444', borderColor: '#fca5a5', background: '#fef2f2', padding: '0.3rem 0.65rem', fontSize: '0.8rem' }} onClick={() => handleLeaveAction(leave.id, 'Rejected')}>Reject</button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: 'center', padding: '2.5rem', color: '#94a3b8' }}>No leave requests submitted yet.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {/* ── TAB 6: PAYROLL ── */}
       {activeTab === 'payroll' && (
-        <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <h3 style={{ margin: 0, color: '#0f172a' }}>Salary & Payslips</h3>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button className="btn-secondary" onClick={() => setShowEditPayrollModal(true)}><FiEdit2 /> Edit Structure</button>
-              <button className="btn-orange" onClick={() => setShowPayslipModal(true)}><FiPlus /> Issue Payslip</button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '1.25rem 1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiDollarSign style={{ color: '#10b981' }} /> Salary Structure & Compensation
+              </h3>
+              <p style={{ margin: '0.2rem 0 0', fontSize: '0.84rem', color: '#64748b' }}>Monthly breakdowns, statutory deductions, and issued payslip records.</p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button className="btn-secondary" onClick={() => setShowEditPayrollModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.5rem 1rem', fontSize: '0.86rem' }}>
+                <FiEdit2 /> Edit Structure
+              </button>
+              <button className="btn-orange" onClick={() => setShowPayslipModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.5rem 1rem', fontSize: '0.86rem' }}>
+                <FiPlus /> Issue Payslip
+              </button>
             </div>
           </div>
 
-          <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid #e2e8f0' }}>
-            <p style={{ margin: '0 0 0.5rem', fontSize: '1.1rem' }}><strong>Gross Monthly Salary:</strong> ₹{Number(employee.salary || 0).toLocaleString('en-IN')}</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', fontSize: '0.9rem' }}>
-              <div><span>Basic:</span> <strong>₹{Number(employee.basicSalary || 0).toLocaleString('en-IN')}</strong></div>
-              <div><span>HRA:</span> <strong>₹{Number(employee.hra || 0).toLocaleString('en-IN')}</strong></div>
-              <div><span>Allowances:</span> <strong>₹{Number(employee.allowances || 0).toLocaleString('en-IN')}</strong></div>
-              <div><span>Deductions:</span> <strong>₹{Number(employee.deductions || 0).toLocaleString('en-IN')}</strong></div>
+          <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', background: '#f0fdf4', padding: '1rem 1.25rem', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+              <div>
+                <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: '700', textTransform: 'uppercase' }}>Gross Monthly Compensation</span>
+                <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#15803d', margin: '0.1rem 0 0' }}>
+                  ₹{Number(employee.salary || 0).toLocaleString('en-IN')} / month
+                </div>
+              </div>
+              <span className="status-badge" style={{ background: '#dcfce7', color: '#15803d', fontWeight: '700', fontSize: '0.85rem' }}>
+                Standard Corporate Structure
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+              <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Basic Pay</span>
+                <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0284c7' }}>₹{Number(employee.basicSalary || (employee.salary ? Math.round(employee.salary * 0.5) : 0)).toLocaleString('en-IN')}</div>
+              </div>
+              <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Special Allowances</span>
+                <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}>₹{Number(employee.allowances || 0).toLocaleString('en-IN')}</div>
+              </div>
+              <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Deductions</span>
+                <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#ef4444' }}>- ₹{Number(employee.deductions || 0).toLocaleString('en-IN')}</div>
+              </div>
             </div>
           </div>
 
-          <div style={{ background: '#f0f9ff', padding: '1rem', borderRadius: '10px', marginBottom: '1.5rem', border: '1px solid #bae6fd' }}>
-            <h4 style={{ margin: '0 0 0.75rem', color: '#0369a1', fontSize: '1rem' }}>🏦 Bank Account & Statutory Info (From Employee Portal)</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', fontSize: '0.9rem' }}>
-              <div><span style={{ color: '#64748b' }}>Bank Name:</span> <strong style={{ color: '#0f172a' }}>{employee.bankName || 'Not Provided'}</strong></div>
-              <div><span style={{ color: '#64748b' }}>Account Number:</span> <strong style={{ color: '#0f172a' }}>{employee.accountNumber || 'Not Provided'}</strong></div>
-              <div><span style={{ color: '#64748b' }}>IFSC Code:</span> <strong style={{ color: '#0f172a' }}>{employee.ifsc || 'Not Provided'}</strong></div>
-              <div><span style={{ color: '#64748b' }}>PAN Number:</span> <strong style={{ color: '#0f172a' }}>{employee.panNumber || 'Not Provided'}</strong></div>
-
-            </div>
-          </div>
-
-          <h4 style={{ margin: '1rem 0 0.5rem' }}>Historical Issued Payslips</h4>
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Month/Year</th>
-                <th>Basic Pay</th>
-                <th>HRA</th>
-                <th>Net Salary</th>
-                <th>Issued On</th>
-              </tr>
-            </thead>
-            <tbody>
-              {salarySlips.length > 0 ? (
-                salarySlips.map((slip) => (
-                  <tr key={slip.id}>
-                    <td><strong>{slip.month} {slip.year}</strong></td>
-                    <td>₹{Number(slip.basicPay).toLocaleString('en-IN')}</td>
-                    <td>₹{Number(slip.hra).toLocaleString('en-IN')}</td>
-                    <td><strong style={{ color: '#10b981' }}>₹{Number(slip.netSalary).toLocaleString('en-IN')}</strong></td>
-                    <td>{new Date(slip.issuedAt).toLocaleDateString()}</td>
-                  </tr>
-                ))
-              ) : (
+          {/* Historical Issued Payslips Table */}
+          <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <h4 style={{ margin: '0 0 1.25rem', color: '#0f172a', fontSize: '1.1rem', fontWeight: '800' }}>Historical Issued Payslips</h4>
+            <table className="admin-table">
+              <thead>
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', color: '#94a3b8' }}>No salary slips issued yet.</td>
+                  <th>Month / Year</th>
+                  <th>Basic Pay</th>
+                  <th>Net Salary</th>
+                  <th>Issued Date</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {salarySlips.length > 0 ? (
+                  salarySlips.map((slip) => (
+                    <tr key={slip.id}>
+                      <td><strong>{slip.month} {slip.year}</strong></td>
+                      <td>₹{Number(slip.basicPay).toLocaleString('en-IN')}</td>
+                      <td><strong style={{ color: '#16a34a', fontWeight: '800' }}>₹{Number(slip.netSalary).toLocaleString('en-IN')}</strong></td>
+                      <td>{new Date(slip.issuedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} style={{ textAlign: 'center', padding: '2.5rem', color: '#94a3b8' }}>No salary slips issued yet.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {/* ── TAB 7: DOCUMENTS ── */}
       {activeTab === 'documents' && (
-        <div style={{ background: '#fff', padding: '1.75rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
-            <h3 style={{ margin: 0, color: '#0f172a', fontSize: '1.2rem', fontWeight: '800' }}>
-              Employee Verification Documents
-            </h3>
-            <p style={{ margin: '0.25rem 0 0', color: '#64748b', fontSize: '0.86rem' }}>
-              Identity proofs and profile photo uploaded by the employee.
-            </p>
+        <div style={{ background: '#fff', padding: '1.75rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h3 style={{ margin: 0, color: '#0f172a', fontSize: '1.2rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiFileText style={{ color: '#0284c7' }} /> Verification Documents & ID Proofs
+              </h3>
+              <p style={{ margin: '0.25rem 0 0', color: '#64748b', fontSize: '0.86rem' }}>
+                Official identity cards and profile avatar provided during onboarding.
+              </p>
+            </div>
+            <span className="status-badge" style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: '800', padding: '0.35rem 0.85rem', borderRadius: '20px' }}>
+              {[employee.photoUrl, employee.aadharUrl, employee.panUrl].filter(Boolean).length} / 3 Uploaded
+            </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
-            {/* Profile Photo */}
-            <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-              <span style={{ fontSize: '0.9rem', fontWeight: '700', color: '#0f172a', display: 'block', marginBottom: '0.85rem' }}>1. Profile Photo</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+            {/* Profile Photo Card */}
+            <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '14px', border: '1px solid #e2e8f0', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '1rem' }}>1. Profile Photo</span>
+                {employee.photoUrl ? (
+                  <img src={employee.photoUrl} alt="Profile Photo" style={{ width: '96px', height: '96px', objectFit: 'cover', borderRadius: '50%', margin: '0 auto 1.25rem', border: '3px solid #0284c7', display: 'block', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} />
+                ) : (
+                  <div style={{ width: '96px', height: '96px', borderRadius: '50%', background: '#e2e8f0', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', fontSize: '1.5rem', fontWeight: '700' }}>
+                    <FiUser />
+                  </div>
+                )}
+              </div>
               {employee.photoUrl ? (
-                <div>
-                  <img src={employee.photoUrl} alt="Profile Photo" style={{ width: '90px', height: '90px', objectFit: 'cover', borderRadius: '50%', margin: '0 auto 1rem', border: '3px solid #0284c7', display: 'block' }} />
-                  <button
-                    type="button"
-                    onClick={() => setPreviewDoc({ title: `Profile Photo — ${employee.name}`, url: employee.photoUrl, category: 'Identity Documents' })}
-                    className="btn-secondary"
-                    style={{ fontSize: '0.82rem', padding: '0.4rem 0.85rem', display: 'inline-flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}
-                  >
-                    <FiEye /> View Photo
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setPreviewDoc({ title: `Profile Photo — ${employee.name}`, url: employee.photoUrl, category: 'Identity Documents' })}
+                  className="btn-secondary"
+                  style={{ fontSize: '0.84rem', padding: '0.45rem 0.85rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', width: '100%' }}
+                >
+                  <FiEye /> View Profile Photo
+                </button>
               ) : (
-                <div style={{ padding: '1.5rem 0' }}>
-                  <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0 }}>Not Uploaded</p>
-                </div>
+                <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>Not Uploaded</span>
               )}
             </div>
 
-            {/* Aadhar Card */}
-            <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-              <span style={{ fontSize: '0.9rem', fontWeight: '700', color: '#0f172a', display: 'block', marginBottom: '0.85rem' }}>2. Aadhar Card</span>
+            {/* Aadhar Card Card */}
+            <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '14px', border: '1px solid #e2e8f0', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '1rem' }}>2. Aadhar Card</span>
+                {employee.aadharUrl ? (
+                  isImageDoc(employee.aadharUrl) ? (
+                    <img src={employee.aadharUrl} alt="Aadhar Card" style={{ width: '140px', height: '85px', objectFit: 'cover', borderRadius: '8px', margin: '0 auto 1.25rem', border: '1px solid #cbd5e1', display: 'block' }} />
+                  ) : (
+                    <div style={{ padding: '1.25rem', color: '#0284c7', fontWeight: '700', fontSize: '0.9rem', margin: '0 auto 1rem' }}>📄 Aadhar Document</div>
+                  )
+                ) : (
+                  <div style={{ height: '85px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '0.85rem', fontWeight: '600' }}>
+                    Not Uploaded
+                  </div>
+                )}
+              </div>
               {employee.aadharUrl ? (
-                <div>
-                  {isImageDoc(employee.aadharUrl) ? (
-                    <img src={employee.aadharUrl} alt="Aadhar Card" style={{ width: '120px', height: '70px', objectFit: 'cover', borderRadius: '8px', margin: '0 auto 1rem', border: '1px solid #cbd5e1', display: 'block' }} />
-                  ) : (
-                    <div style={{ padding: '0.85rem', color: '#0284c7', fontWeight: '700', fontSize: '0.9rem', margin: '0 auto 1rem' }}>📄 Aadhar Document</div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => setPreviewDoc({ title: `Aadhar Card — ${employee.name}`, url: employee.aadharUrl, category: 'Identity Documents' })}
-                    className="btn-secondary"
-                    style={{ fontSize: '0.82rem', padding: '0.4rem 0.85rem', display: 'inline-flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}
-                  >
-                    <FiEye /> View Aadhar Card
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setPreviewDoc({ title: `Aadhar Card — ${employee.name}`, url: employee.aadharUrl, category: 'Identity Documents' })}
+                  className="btn-secondary"
+                  style={{ fontSize: '0.84rem', padding: '0.45rem 0.85rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', width: '100%' }}
+                >
+                  <FiEye /> View Aadhar Card
+                </button>
               ) : (
-                <div style={{ padding: '1.5rem 0' }}>
-                  <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0 }}>Not Uploaded</p>
-                </div>
+                <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>Not Uploaded</span>
               )}
             </div>
 
-            {/* PAN Card */}
-            <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-              <span style={{ fontSize: '0.9rem', fontWeight: '700', color: '#0f172a', display: 'block', marginBottom: '0.85rem' }}>3. PAN Card</span>
-              {employee.panUrl ? (
-                <div>
-                  {isImageDoc(employee.panUrl) ? (
-                    <img src={employee.panUrl} alt="PAN Card" style={{ width: '120px', height: '70px', objectFit: 'cover', borderRadius: '8px', margin: '0 auto 1rem', border: '1px solid #cbd5e1', display: 'block' }} />
+            {/* PAN Card Card */}
+            <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '14px', border: '1px solid #e2e8f0', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '1rem' }}>3. PAN Card</span>
+                {employee.panUrl ? (
+                  isImageDoc(employee.panUrl) ? (
+                    <img src={employee.panUrl} alt="PAN Card" style={{ width: '140px', height: '85px', objectFit: 'cover', borderRadius: '8px', margin: '0 auto 1.25rem', border: '1px solid #cbd5e1', display: 'block' }} />
                   ) : (
-                    <div style={{ padding: '0.85rem', color: '#0284c7', fontWeight: '700', fontSize: '0.9rem', margin: '0 auto 1rem' }}>📄 PAN Document</div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => setPreviewDoc({ title: `PAN Card — ${employee.name}`, url: employee.panUrl, category: 'Identity Documents' })}
-                    className="btn-secondary"
-                    style={{ fontSize: '0.82rem', padding: '0.4rem 0.85rem', display: 'inline-flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}
-                  >
-                    <FiEye /> View PAN Card
-                  </button>
-                </div>
+                    <div style={{ padding: '1.25rem', color: '#0284c7', fontWeight: '700', fontSize: '0.9rem', margin: '0 auto 1rem' }}>📄 PAN Document</div>
+                  )
+                ) : (
+                  <div style={{ height: '85px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '0.85rem', fontWeight: '600' }}>
+                    Not Uploaded
+                  </div>
+                )}
+              </div>
+              {employee.panUrl ? (
+                <button
+                  type="button"
+                  onClick={() => setPreviewDoc({ title: `PAN Card — ${employee.name}`, url: employee.panUrl, category: 'Identity Documents' })}
+                  className="btn-secondary"
+                  style={{ fontSize: '0.84rem', padding: '0.45rem 0.85rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', width: '100%' }}
+                >
+                  <FiEye /> View PAN Card
+                </button>
               ) : (
-                <div style={{ padding: '1.5rem 0' }}>
-                  <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0 }}>Not Uploaded</p>
-                </div>
+                <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>Not Uploaded</span>
               )}
             </div>
           </div>
@@ -1031,17 +1303,12 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
 
       {/* ── TAB 8: HR LETTERS ── */}
       {activeTab === 'letters' && (
-        <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
-            <div>
-              <h3 style={{ margin: 0, color: '#0f172a' }}>HR Letters & Authorizations</h3>
-              <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#64748b' }}>Generate official letters & grant direct access for the employee to view & download from their portal.</p>
-            </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button className="btn-secondary" onClick={() => setLetterViewerType('Offer')}>Offer Letter</button>
-              <button className="btn-secondary" onClick={() => setLetterViewerType('Relieving')}>Relieving Letter</button>
-              <button className="btn-secondary" onClick={() => setLetterViewerType('Experience')}>Experience Letter</button>
-            </div>
+        <div style={{ background: '#fff', padding: '1.75rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
+            <h3 style={{ margin: 0, color: '#0f172a', fontSize: '1.2rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FiFileText style={{ color: '#f97316' }} /> Official HR Letters & Authorizations
+            </h3>
+            <p style={{ margin: '0.25rem 0 0', fontSize: '0.86rem', color: '#64748b' }}>Generate official corporate documentation and manage employee portal viewing permissions.</p>
           </div>
 
           <table className="admin-table">
@@ -1049,9 +1316,9 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <tr>
                 <th>Letter Type</th>
                 <th>Title</th>
-                <th>Generated On</th>
+                <th>Generated Date</th>
                 <th>Status</th>
-                <th>Employee Portal Access</th>
+                <th>Portal Access</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -1068,7 +1335,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                   <tr key={letDef.type}>
                     <td><strong>{letDef.type}</strong></td>
                     <td>{dbLet?.title || letDef.title}</td>
-                    <td>{dbLet?.createdAt ? new Date(dbLet.createdAt).toLocaleDateString() : 'Ready to Generate'}</td>
+                    <td>{dbLet?.createdAt ? new Date(dbLet.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Ready to Generate'}</td>
                     <td>
                       <span className={`status-badge ${dbLet ? 'status-active' : 'status-pending'}`}>
                         {dbLet ? 'Issued' : 'Draft'}
@@ -1095,16 +1362,16 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                           }
                         }}
                       >
-                        {isAccessGranted ? <><FiCheckCircle /> Access Granted ✅</> : <><FiKey /> Grant Employee Access 🔓</>}
+                        {isAccessGranted ? <><FiCheckCircle /> Access Granted ✅</> : <><FiKey /> Grant Access 🔓</>}
                       </button>
                     </td>
                     <td>
                       <button
                         className="btn-secondary"
-                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}
+                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                         onClick={() => setLetterViewerType(letDef.type.split(' ')[0])}
                       >
-                        View & Edit Letter
+                        <FiEdit2 size={13} /> View & Edit
                       </button>
                     </td>
                   </tr>
@@ -1148,26 +1415,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                   <input className="form-control" type="email" placeholder="Personal Email Address" value={personalForm.personalEmail} onChange={e => setPersonalForm({...personalForm, personalEmail: e.target.value})} />
                 </div>
                 <div className="form-field-group">
-                  <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>Date of Birth</span>
-                    <select
-                      style={{ fontSize: '0.75rem', padding: '1px 6px', borderRadius: '4px', border: '1px solid #cbd5e1', cursor: 'pointer', background: '#f0f9ff', color: '#0284c7', fontWeight: '600' }}
-                      value={personalForm.dob ? personalForm.dob.split('-')[0] : ''}
-                      onChange={e => {
-                        const yr = e.target.value;
-                        if (!yr) return;
-                        const parts = (personalForm.dob || '').split('-');
-                        const month = parts[1] || '01';
-                        const day = parts[2] || '01';
-                        setPersonalForm({ ...personalForm, dob: `${yr}-${month}-${day}` });
-                      }}
-                    >
-                      <option value="">Quick Year Select...</option>
-                      {Array.from({ length: 77 }, (_, i) => 2026 - i).map(y => (
-                        <option key={y} value={y}>{y}</option>
-                      ))}
-                    </select>
-                  </label>
+                  <label className="form-label">Date of Birth</label>
                   <input
                     className="form-control"
                     type="date"
@@ -1369,10 +1617,6 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 <div className="form-field-group">
                   <label className="form-label">Basic Pay (₹)</label>
                   <input className="form-control" placeholder="Basic Pay" value={payslipForm.basicPay} onChange={e => setPayslipForm({...payslipForm, basicPay: e.target.value})} />
-                </div>
-                <div className="form-field-group">
-                  <label className="form-label">HRA (₹)</label>
-                  <input className="form-control" placeholder="HRA" value={payslipForm.hra} onChange={e => setPayslipForm({...payslipForm, hra: e.target.value})} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Allowances (₹)</label>

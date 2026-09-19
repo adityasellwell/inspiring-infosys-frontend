@@ -1640,46 +1640,18 @@ function EmployeeDashboard() {
                 <h1>My Attendance History</h1>
               </div>
 
-              {/* Year-Wise, Month-Wise, Calendar Date & Status Filter Bar */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem', background: '#fff', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', alignItems: 'center' }}>
+              {/* Unified Date & Status Filter Bar */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '1.25rem', background: '#fff', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <FiCalendar style={{ color: '#0284c7' }} />
-                  <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Year:</span>
-                  <select
-                    value={attYearFilter}
-                    onChange={e => setAttYearFilter(e.target.value)}
-                    style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc' }}
-                  >
-                    <option value="All">All Years</option>
-                    {getYearOptions().map(yr => (
-                      <option key={yr} value={yr}>{yr}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <FiCalendar style={{ color: '#0284c7' }} />
-                  <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Month:</span>
-                  <select
-                    value={attMonthFilter}
-                    onChange={e => setAttMonthFilter(e.target.value)}
-                    style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc' }}
-                  >
-                    <option value="All">All Months (Real-time Logs)</option>
-                    {getMonthOptions().map(opt => (
-                      <option key={opt.val} value={opt.val}>{opt.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <FiCalendar style={{ color: '#0284c7' }} />
-                  <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Date:</span>
+                  <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Date Filter:</span>
                   <input
                     type="date"
                     value={attDateFilter}
                     onChange={e => setAttDateFilter(e.target.value)}
-                    style={{ padding: '0.4rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc' }}
+                    onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+                    onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+                    style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#fff', cursor: 'pointer' }}
                   />
                   {attDateFilter && (
                     <button
@@ -1698,7 +1670,7 @@ function EmployeeDashboard() {
                   <select
                     value={attStatusFilter}
                     onChange={e => setAttStatusFilter(e.target.value)}
-                    style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc' }}
+                    style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#fff' }}
                   >
                     <option value="All">All Statuses</option>
                     <option value="Present">Present</option>
@@ -1725,17 +1697,6 @@ function EmployeeDashboard() {
                         const filtered = (attendances || []).filter(att => {
                           if (!att.date) return false;
                           const d = new Date(att.date);
-                          if (attYearFilter !== 'All') {
-                            if (d.getFullYear() !== parseInt(attYearFilter, 10)) {
-                              return false;
-                            }
-                          }
-                          if (attMonthFilter !== 'All') {
-                            const [y, m] = attMonthFilter.split('-');
-                            if (d.getFullYear() !== parseInt(y, 10) || (d.getMonth() + 1) !== parseInt(m, 10)) {
-                              return false;
-                            }
-                          }
                           if (attDateFilter) {
                             const filterD = new Date(attDateFilter);
                             if (d.getFullYear() !== filterD.getFullYear() || d.getMonth() !== filterD.getMonth() || d.getDate() !== filterD.getDate()) {
@@ -1754,8 +1715,8 @@ function EmployeeDashboard() {
                         if (filtered.length === 0) {
                           return (
                             <tr>
-                              <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                                No attendance records match the selected month / filters.
+                              <td colSpan="5" style={{ textAlign: 'center', padding: '2.5rem', color: '#64748b' }}>
+                                No attendance records match the selected date / status filter.
                               </td>
                             </tr>
                           );
@@ -1796,7 +1757,7 @@ function EmployeeDashboard() {
                       <tr>
                         <th>Month & Year</th>
                         <th>Basic Salary</th>
-                        <th>HRA & Allowances</th>
+                        <th>Allowances</th>
                         <th>Deductions</th>
                         <th>Net Salary</th>
                         <th>Issued Date</th>
@@ -1814,7 +1775,7 @@ function EmployeeDashboard() {
                           <tr key={slip.id}>
                             <td><strong>{slip.month} {slip.year}</strong></td>
                             <td>₹{Number(slip.basicPay).toLocaleString('en-IN')}</td>
-                            <td>₹{(Number(slip.hra) + Number(slip.allowances)).toLocaleString('en-IN')}</td>
+                            <td>₹{Number(slip.allowances || 0).toLocaleString('en-IN')}</td>
                             <td style={{ color: '#dc2626' }}>-₹{Number(slip.deductions).toLocaleString('en-IN')}</td>
                             <td style={{ color: '#16a34a', fontWeight: '800' }}>₹{Number(slip.netSalary).toLocaleString('en-IN')}</td>
                             <td>{slip.issuedAt || slip.createdAt ? (isNaN(new Date(slip.issuedAt || slip.createdAt).getTime()) ? String(slip.issuedAt || slip.createdAt) : new Date(slip.issuedAt || slip.createdAt).toLocaleDateString('en-IN')) : '-'}</td>

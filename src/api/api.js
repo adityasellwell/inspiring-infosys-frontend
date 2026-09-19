@@ -452,6 +452,14 @@ export const employeesApi = {
     return res.json();
   },
 
+  deleteQuery: async (id) => {
+    const res = await fetch(`${API_BASE}/employees/queries/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+    return res.json();
+  },
+
   getAllLeaves: async () => {
     const res = await fetch(`${API_BASE}/employees/leaves/all`, {
       headers: getHeaders(false),

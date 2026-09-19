@@ -7,12 +7,14 @@ import {
 } from 'react-icons/fi';
 import { clientServicesApi } from '../../../api/api';
 import { useToast } from '../../../components/common/ToastContext';
+import Modal from '../../../components/common/Modal';
 
 export default function ClientServicesTab() {
   const toast = useToast();
   const [services, setServices] = useState([]);
   const [metrics, setMetrics] = useState({ total: 0, expiredCount: 0, criticalCount: 0, expiringSoonCount: 0, activeCount: 0, totalRenewalRevenue: 0 });
   const [loading, setLoading] = useState(true);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null, confirmText: 'Confirm' });
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -175,38 +177,52 @@ export default function ClientServicesTab() {
     }
   };
 
-  const handleDeleteService = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this client service record?')) return;
-    try {
-      const res = await clientServicesApi.delete(id);
-      if (res && res.success) {
-        toast.success('Client service record deleted!');
-        fetchServices();
-      } else {
-        toast.error(res?.message || 'Failed to delete record');
+  const handleDeleteService = (id) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Client Service',
+      message: 'Are you sure you want to delete this client service record?',
+      confirmText: 'Yes, Delete',
+      onConfirm: async () => {
+        try {
+          const res = await clientServicesApi.delete(id);
+          if (res && res.success) {
+            toast.success('Client service record deleted!');
+            fetchServices();
+          } else {
+            toast.error(res?.message || 'Failed to delete record');
+          }
+        } catch (err) {
+          toast.error('Failed to delete record');
+        }
       }
-    } catch (err) {
-      toast.error('Failed to delete record');
-    }
+    });
   };
 
   // Trigger Expiry Warning Email to Client & Admin
-  const handleSendRenewalAlert = async (service) => {
-    if (!window.confirm(`Send Renewal Expiry Alert Email to ${service.clientName} (${service.clientEmail}) and Admin?`)) return;
-    setSendingAlertId(service.id);
-    try {
-      const res = await clientServicesApi.sendAlert(service.id);
-      if (res && res.success) {
-        toast.success(`Expiry alert email sent successfully to ${service.clientEmail} & Admin!`);
-        fetchServices();
-      } else {
-        toast.error(res?.message || 'Failed to send alert email');
+  const handleSendRenewalAlert = (service) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Send Renewal Alert Email',
+      message: `Send Renewal Expiry Alert Email to ${service.clientName} (${service.clientEmail}) and Admin?`,
+      confirmText: 'Send Email',
+      onConfirm: async () => {
+        setSendingAlertId(service.id);
+        try {
+          const res = await clientServicesApi.sendAlert(service.id);
+          if (res && res.success) {
+            toast.success(`Expiry alert email sent successfully to ${service.clientEmail} & Admin!`);
+            fetchServices();
+          } else {
+            toast.error(res?.message || 'Failed to send alert email');
+          }
+        } catch (err) {
+          toast.error('Failed to send alert email');
+        } finally {
+          setSendingAlertId(null);
+        }
       }
-    } catch (err) {
-      toast.error('Failed to send alert email');
-    } finally {
-      setSendingAlertId(null);
-    }
+    });
   };
 
   // Filtered Services List
@@ -684,6 +700,17 @@ export default function ClientServicesTab() {
           </div>
         </div>
       )}
+
+      <Modal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null, confirmText: 'Confirm' })}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        type="confirm"
+        confirmText={confirmModal.confirmText || 'Confirm'}
+        cancelText="Cancel"
+        onConfirm={confirmModal.onConfirm}
+      />
     </div>
   );
 }

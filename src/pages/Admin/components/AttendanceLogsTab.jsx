@@ -5,12 +5,13 @@ import {
 } from 'react-icons/fi';
 import { employeesApi } from '../../../api/api';
 import { useToast } from '../../../components/common/ToastContext';
+import Modal from '../../../components/common/Modal';
 import { formatEmpId } from './empUtils';
 
 export default function AttendanceLogsTab({ empAttendanceList = [], employeesList = [], empLeavesList = [], onRefreshAttendance }) {
   const toast = useToast();
   const [deletingId, setDeletingId] = useState(null);
-  const [cleaningDuplicates, setCleaningDuplicates] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
 
   // Unified Smart Search & Date Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -221,39 +222,26 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
   };
 
   // Single Attendance Record Deletion Handler
-  const handleDeleteLog = async (attId) => {
+  const handleDeleteLog = (attId) => {
     if (!attId) return;
-    if (!window.confirm('Are you sure you want to delete this attendance record?')) return;
-    setDeletingId(attId);
-    try {
-      const res = await employeesApi.deleteAttendance(attId);
-      toast.success((res && res.message) || 'Attendance record deleted successfully!');
-      if (onRefreshAttendance) onRefreshAttendance();
-    } catch (err) {
-      toast.info('Attendance record updated');
-      if (onRefreshAttendance) onRefreshAttendance();
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  // Clean Duplicate Logs Handler
-  const handleCleanDuplicates = async () => {
-    if (!window.confirm('Are you sure you want to clean duplicate attendance logs? Only 1 earliest clock-in record per employee per day will be kept.')) return;
-    setCleaningDuplicates(true);
-    try {
-      const res = await employeesApi.cleanDuplicateAttendance();
-      if (res.success) {
-        toast.success(res.message || `Cleaned ${res.count || 0} duplicate attendance logs!`);
-        if (onRefreshAttendance) onRefreshAttendance();
-      } else {
-        toast.error(res.message || 'Failed to clean duplicate logs');
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Attendance Record',
+      message: 'Are you sure you want to delete this attendance record?',
+      onConfirm: async () => {
+        setDeletingId(attId);
+        try {
+          const res = await employeesApi.deleteAttendance(attId);
+          toast.success((res && res.message) || 'Attendance record deleted successfully!');
+          if (onRefreshAttendance) onRefreshAttendance();
+        } catch (err) {
+          toast.info('Attendance record updated');
+          if (onRefreshAttendance) onRefreshAttendance();
+        } finally {
+          setDeletingId(null);
+        }
       }
-    } catch (err) {
-      toast.error('Failed to clean duplicate logs');
-    } finally {
-      setCleaningDuplicates(false);
-    }
+    });
   };
 
   return (
@@ -263,28 +251,6 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
           <h1 style={{ fontSize: '1.4rem', fontWeight: '800', margin: 0, color: '#0f172a' }}>Employees Attendance & Salary Calculator</h1>
           <p style={{ margin: '0.25rem 0 0', color: '#64748b', fontSize: '0.85rem' }}>Track month-wise attendance logs and calculate net salary with automatic 1-free-leave deduction policy.</p>
         </div>
-        <button
-          type="button"
-          onClick={handleCleanDuplicates}
-          disabled={cleaningDuplicates}
-          style={{
-            padding: '0.5rem 0.95rem',
-            borderRadius: '8px',
-            border: '1px solid #cbd5e1',
-            background: '#ffffff',
-            color: '#dc2626',
-            fontWeight: '700',
-            fontSize: '0.82rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-            opacity: cleaningDuplicates ? 0.7 : 1
-          }}
-        >
-          <FiTrash2 size={14} /> {cleaningDuplicates ? 'Cleaning Duplicates...' : 'Clean Duplicate Logs'}
-        </button>
       </div>
 
       {/* Unified Search & Calendar Filter Bar */}
@@ -308,48 +274,26 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
-          <select
-            style={{ padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', fontWeight: '600', color: '#0284c7', background: '#f0f9ff', cursor: 'pointer' }}
-            value={selectedDateFilter ? selectedDateFilter.split('-')[0] : ''}
-            onChange={e => {
-              const yr = e.target.value;
-              if (!yr) {
-                setSelectedDateFilter('');
-                return;
-              }
-              const parts = (selectedDateFilter || '').split('-');
-              const month = parts[1] || '01';
-              const day = parts[2] || '01';
-              setSelectedDateFilter(`${yr}-${month}-${day}`);
-            }}
-          >
-            <option value="">Quick Year...</option>
-            {Array.from({ length: 15 }, (_, i) => 2026 - i).map(y => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <FiCalendar style={{ color: '#0284c7' }} />
-            <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Specific Date:</span>
-            <input
-              type="date"
-              value={selectedDateFilter}
-              onChange={e => setSelectedDateFilter(e.target.value)}
-              onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
-              style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc', cursor: 'pointer' }}
-            />
-            {selectedDateFilter && (
-              <button
-                type="button"
-                onClick={() => setSelectedDateFilter('')}
-                style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#f1f5f9', color: '#64748b', cursor: 'pointer', fontWeight: '600' }}
-              >
-                Clear
-              </button>
-            )}
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <FiCalendar style={{ color: '#0284c7' }} />
+          <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Date Filter:</span>
+          <input
+            type="date"
+            value={selectedDateFilter}
+            onChange={e => setSelectedDateFilter(e.target.value)}
+            onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+            onFocus={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+            style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#f8fafc', cursor: 'pointer' }}
+          />
+          {selectedDateFilter && (
+            <button
+              type="button"
+              onClick={() => setSelectedDateFilter('')}
+              style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#f1f5f9', color: '#64748b', cursor: 'pointer', fontWeight: '600' }}
+            >
+              Clear
+            </button>
+          )}
         </div>
       </div>
 
@@ -589,6 +533,17 @@ export default function AttendanceLogsTab({ empAttendanceList = [], employeesLis
           </div>
         </div>
       )}
+
+      <Modal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null })}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        type="confirm"
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        onConfirm={confirmModal.onConfirm}
+      />
     </div>
   );
 }
