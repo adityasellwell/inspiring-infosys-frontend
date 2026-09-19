@@ -1148,8 +1148,36 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                   <input className="form-control" type="email" placeholder="Personal Email Address" value={personalForm.personalEmail} onChange={e => setPersonalForm({...personalForm, personalEmail: e.target.value})} />
                 </div>
                 <div className="form-field-group">
-                  <label className="form-label">Date of Birth</label>
-                  <input className="form-control" type="date" min="1950-01-01" max="2035-12-31" value={personalForm.dob} onChange={e => setPersonalForm({...personalForm, dob: e.target.value})} />
+                  <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Date of Birth</span>
+                    <select
+                      style={{ fontSize: '0.75rem', padding: '1px 6px', borderRadius: '4px', border: '1px solid #cbd5e1', cursor: 'pointer', background: '#f0f9ff', color: '#0284c7', fontWeight: '600' }}
+                      value={personalForm.dob ? personalForm.dob.split('-')[0] : ''}
+                      onChange={e => {
+                        const yr = e.target.value;
+                        if (!yr) return;
+                        const parts = (personalForm.dob || '').split('-');
+                        const month = parts[1] || '01';
+                        const day = parts[2] || '01';
+                        setPersonalForm({ ...personalForm, dob: `${yr}-${month}-${day}` });
+                      }}
+                    >
+                      <option value="">Quick Year Select...</option>
+                      {Array.from({ length: 77 }, (_, i) => 2026 - i).map(y => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <input
+                    className="form-control"
+                    type="date"
+                    min="1950-01-01"
+                    max="2035-12-31"
+                    style={{ cursor: 'pointer' }}
+                    value={personalForm.dob}
+                    onChange={e => setPersonalForm({...personalForm, dob: e.target.value})}
+                    onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+                  />
                 </div>
 
                 <div className="form-field-group">
@@ -1253,7 +1281,14 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Joining Date</label>
-                  <input className="form-control" type="date" value={empForm.joiningDate} onChange={e => setEmpForm({...empForm, joiningDate: e.target.value})} />
+                  <input
+                    className="form-control"
+                    type="date"
+                    style={{ cursor: 'pointer' }}
+                    value={empForm.joiningDate}
+                    onChange={e => setEmpForm({...empForm, joiningDate: e.target.value})}
+                    onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+                  />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Department</label>

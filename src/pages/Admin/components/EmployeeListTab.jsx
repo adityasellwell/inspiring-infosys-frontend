@@ -599,8 +599,36 @@ export default function EmployeeListTab({
                       <input className="form-control" placeholder="10-Digit Alternate Phone" type="tel" maxLength={10} value={addEmpForm.altPhone} onChange={e => setAddEmpForm({ ...addEmpForm, altPhone: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
                     </div>
                     <div className="form-field-group">
-                      <label className="form-label">Date of Birth</label>
-                      <input className="form-control" type="date" min="1950-01-01" max="2035-12-31" value={addEmpForm.dob} onChange={e => setAddEmpForm({ ...addEmpForm, dob: e.target.value })} />
+                      <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Date of Birth</span>
+                        <select
+                          style={{ fontSize: '0.75rem', padding: '1px 6px', borderRadius: '4px', border: '1px solid #cbd5e1', cursor: 'pointer', background: '#f0f9ff', color: '#0284c7', fontWeight: '600' }}
+                          value={addEmpForm.dob ? addEmpForm.dob.split('-')[0] : ''}
+                          onChange={e => {
+                            const yr = e.target.value;
+                            if (!yr) return;
+                            const parts = (addEmpForm.dob || '').split('-');
+                            const month = parts[1] || '01';
+                            const day = parts[2] || '01';
+                            setAddEmpForm({ ...addEmpForm, dob: `${yr}-${month}-${day}` });
+                          }}
+                        >
+                          <option value="">Quick Year Select...</option>
+                          {Array.from({ length: 77 }, (_, i) => 2026 - i).map(y => (
+                            <option key={y} value={y}>{y}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <input
+                        className="form-control"
+                        type="date"
+                        min="1950-01-01"
+                        max="2035-12-31"
+                        style={{ cursor: 'pointer' }}
+                        value={addEmpForm.dob}
+                        onChange={e => setAddEmpForm({ ...addEmpForm, dob: e.target.value })}
+                        onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+                      />
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Gender</label>
@@ -787,7 +815,15 @@ export default function EmployeeListTab({
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Joining Date <span className="required-star">*</span></label>
-                      <input className="form-control" type="date" required value={addEmpForm.joinDate} onChange={e => setAddEmpForm({ ...addEmpForm, joinDate: e.target.value })} />
+                      <input
+                        className="form-control"
+                        type="date"
+                        required
+                        style={{ cursor: 'pointer' }}
+                        value={addEmpForm.joinDate}
+                        onChange={e => setAddEmpForm({ ...addEmpForm, joinDate: e.target.value })}
+                        onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
+                      />
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Employment Type</label>
