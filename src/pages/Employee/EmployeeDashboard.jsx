@@ -17,7 +17,10 @@ const DEFAULT_EMPLOYEE_DATA = null;
 
 function EmployeeDashboard() {
   const toast = useToast();
-  const [token, setToken] = useState(localStorage.getItem('employee_token'));
+  const [token, setToken] = useState(() => {
+    const saved = localStorage.getItem('employee_token');
+    return (saved && saved !== 'undefined' && saved !== 'null') ? saved : null;
+  });
   const [activeTab, setActiveTab] = useState('dashboard');
   const [profileSubTab, setProfileSubTab] = useState('details'); // 'details' | 'bank' | 'docs' | 'letters'
   const [loading, setLoading] = useState(false);
@@ -141,7 +144,7 @@ function EmployeeDashboard() {
         });
       } else {
         console.warn("getMe response failed:", res);
-        if (res?.status === 401 || res?.message?.includes("expired") || res?.message?.includes("Invalid")) {
+        if (res?.status === 401 || res?.message?.includes("expired") || res?.message?.includes("Invalid") || !res?.success) {
           localStorage.removeItem('employee_token');
           localStorage.removeItem('employee_name');
           setToken(null);
@@ -150,6 +153,10 @@ function EmployeeDashboard() {
       }
     } catch (err) {
       console.error("Dashboard fetch error:", err);
+      localStorage.removeItem('employee_token');
+      localStorage.removeItem('employee_name');
+      setToken(null);
+      setData(null);
     } finally {
       setLoading(false);
     }
@@ -512,8 +519,52 @@ function EmployeeDashboard() {
     return raw.toUpperCase();
   };
 
-  const activeData = data || DEFAULT_EMPLOYEE_DATA;
-  const { employee = DEFAULT_EMPLOYEE_DATA.employee, notices = [] } = activeData;
+  if (!data || !data.employee) {
+    return (
+      <div className="emp-portal-wrapper emp-login-container">
+        <div className="emp-login-card">
+          <div className="emp-login-header">
+            <img src="/images/logo2.webp" alt="Inspiring Infosys" className="emp-login-logo" onError={(e) => e.target.src = '/img/logo.webp'} />
+            <h2>Employee Portal</h2>
+            <p>Log in with your official credentials</p>
+          </div>
+
+          {loginError && <div className="login-error-msg" style={{ marginBottom: '1.25rem' }}>{loginError}</div>}
+
+          <form onSubmit={handleLogin} className="login-form">
+            <div className="admin-input-group">
+              <label>Official Email / Personal Email / Employee ID</label>
+              <input
+                type="text"
+                placeholder="e.g. INS001 or name@company.com"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="admin-input-group">
+              <label>Password</label>
+              <input
+                type="password"
+                placeholder="Enter password..."
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn-orange" style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem' }} disabled={loginLoading}>
+              {loginLoading ? 'Signing In...' : 'Log In to Employee Portal'}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  const employee = data.employee;
+  const notices = data.notices || [];
   const attendances = employee.attendances || [];
   const salarySlips = employee.salarySlips || [];
   const leaveRequests = employee.leaveRequests || [];
