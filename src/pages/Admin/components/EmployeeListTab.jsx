@@ -298,6 +298,7 @@ export default function EmployeeListTab({
                 </div>
                 <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <FiUserPlus size={19} />
+                </div>
               </div>
             </div>
           )}
