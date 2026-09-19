@@ -16,7 +16,7 @@ export default function QueriesManagerTab({ empQueriesList, setEmpQueriesList })
     try {
       const res = await employeesApi.replyQuery(queryId, text);
       if (res && res.success) {
-        setEmpQueriesList(prev => prev.map(q => q.id === queryId ? res.data : q));
+        setEmpQueriesList(prev => prev.map(q => (q.id === queryId || String(q.id) === String(queryId)) ? { ...q, ...(res.data || {}), reply: text, status: 'Replied' } : q));
         setQueryReplyText(prev => ({ ...prev, [queryId]: '' }));
         toast.success('Reply sent successfully to employee!');
       } else {

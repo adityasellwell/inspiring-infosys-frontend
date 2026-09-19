@@ -43,12 +43,7 @@ const DEFAULT_PROJECTS = [
   { id: 8, title: 'Business Card Scanner', category: 'Business Tools', imgUrl: '/img/bcs.webp', link: '/business-tools/business-card-scanner-in-mumbai', description: 'AI OCR scanner for instant contact saving and lead management.', sortOrder: 8, isActive: true }
 ];
 
-const DEFAULT_EMPLOYEES = [
-  { id: 3, empId: 'INS001', name: 'sahil mehta', email: 'sahilmehta2324@gmail.com', phone: '8444040514', department: 'IT', designation: 'FULL STACK', joinDate: '2026-09-05', salary: 2222, status: 'Active', address: 'R N B, ADARSH NIWAS, 408, 4th, Palghar' },
-  { id: 4, empId: 'INS003', name: 'yogi', email: 'inspiringinfos@gmail.com', phone: '08444040514', department: 'IT', designation: 'Founder', joinDate: '2026-09-05', salary: 20000, status: 'Active', address: 'OPP JK TOWER, NALASOPARA EAST' },
-  { id: 7, empId: 'INS004', name: 'Alam Ansari', email: 'hello@sellwell.co.in', phone: '8422953384', department: 'IT', designation: 'Software Engineer', joinDate: '2026-09-15', salary: 20000, status: 'Active', address: 'R N B, ADARSH NIWAS, 408, 4th, Palghar' },
-  { id: 8, empId: 'INS005', name: 'Aditya  Jadhav', email: 'adityajadhav7123@gmail.com', phone: '9833379781', department: 'IT', designation: 'Full Stack Developer', joinDate: '2026-09-15', salary: 10000, status: 'Active', address: 'Andheri West' }
-];
+const DEFAULT_EMPLOYEES = [];
 
 function Admin() {
   const location = useLocation();
@@ -163,6 +158,27 @@ function Admin() {
 
   useEffect(() => {
     fetchAllData();
+  }, [token]);
+
+  // Live real-time background polling for ALL admin data (Quotes, Consultations, Attendance, Queries, Leaves, Employees, Stats, Projects)
+  useEffect(() => {
+    if (!token) return;
+
+    // Auto-poll every 5 seconds for instant live updates across ALL tabs
+    const pollInterval = setInterval(() => {
+      fetchAllData();
+    }, 5000);
+
+    // Refresh immediately whenever admin switches back to browser tab
+    const handleFocus = () => {
+      fetchAllData();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [token]);
 
   useEffect(() => {

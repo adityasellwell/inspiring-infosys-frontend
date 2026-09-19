@@ -110,14 +110,26 @@ export default function AdminSidebar({
                 { key: 'all', label: 'All Employees' },
                 { key: 'attendance', label: 'Employees Attendance' },
                 { key: 'leave', label: 'Leave Applications' },
-                { key: 'payroll', label: 'Payroll & Slips' }
+                { key: 'payroll', label: 'Payroll & Slips' },
+                { key: 'queries', label: 'Employee Queries' }
               ].map(subItem => (
                 <button
                   key={subItem.key}
                   className={`sidebar-submenu-btn ${activeTab === 'employees' && (empSubTab || 'all') === subItem.key ? 'active' : ''}`}
                   onClick={() => handleSubTabClick(subItem.key)}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
-                  {subItem.label}
+                  <span>{subItem.label}</span>
+                  {subItem.key === 'queries' && (empQueriesList || []).filter(q => (q.status || '').toLowerCase() === 'pending').length > 0 && (
+                    <span className="sidebar-pill-badge badge-pink" style={{ fontSize: '0.68rem', padding: '0.1rem 0.4rem', marginLeft: 'auto' }}>
+                      {(empQueriesList || []).filter(q => (q.status || '').toLowerCase() === 'pending').length}
+                    </span>
+                  )}
+                  {subItem.key === 'leave' && (empLeavesList || []).filter(l => (l.status || '').toLowerCase() === 'pending').length > 0 && (
+                    <span className="sidebar-pill-badge badge-amber" style={{ fontSize: '0.68rem', padding: '0.1rem 0.4rem', marginLeft: 'auto' }}>
+                      {(empLeavesList || []).filter(l => (l.status || '').toLowerCase() === 'pending').length}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>

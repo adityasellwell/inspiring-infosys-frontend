@@ -610,7 +610,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <p><strong>Monthly Gross Salary:</strong> ₹{Number(employee.salary || 0).toLocaleString('en-IN')}</p>
               <p><strong>Basic Salary:</strong> ₹{Number(employee.basicSalary || 0).toLocaleString('en-IN')}</p>
               <p><strong>Bank Account:</strong> {employee.bankName ? `${employee.bankName} (A/C: ${employee.accountNumber})` : 'Not Configured'}</p>
-              <p><strong>PAN / UAN:</strong> {employee.panNumber || 'N/A'} / {employee.uanNumber || 'N/A'}</p>
+              <p><strong>PAN Card:</strong> {employee.panNumber || 'N/A'}</p>
             </div>
           </div>
         </div>
@@ -645,8 +645,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <p style={{ margin: 0 }}><strong>Account Number:</strong> <strong style={{ color: employee.accountNumber ? '#0f172a' : '#ef4444' }}>{employee.accountNumber || 'Not Provided'}</strong></p>
               <p style={{ margin: 0 }}><strong>IFSC Code:</strong> <strong style={{ color: employee.ifsc ? '#0f172a' : '#ef4444' }}>{employee.ifsc || 'Not Provided'}</strong></p>
               <p style={{ margin: 0 }}><strong>PAN Card Number:</strong> <strong style={{ color: employee.panNumber ? '#0f172a' : '#ef4444' }}>{employee.panNumber || 'Not Provided'}</strong></p>
-              <p style={{ margin: 0 }}><strong>UAN Number:</strong> <strong>{employee.uanNumber || 'Not Provided'}</strong></p>
-              <p style={{ margin: 0 }}><strong>Tax Regime:</strong> <strong>{employee.taxInfo || 'New Tax Regime'}</strong></p>
+
             </div>
           </div>
         </div>
@@ -906,8 +905,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <div><span style={{ color: '#64748b' }}>Account Number:</span> <strong style={{ color: '#0f172a' }}>{employee.accountNumber || 'Not Provided'}</strong></div>
               <div><span style={{ color: '#64748b' }}>IFSC Code:</span> <strong style={{ color: '#0f172a' }}>{employee.ifsc || 'Not Provided'}</strong></div>
               <div><span style={{ color: '#64748b' }}>PAN Number:</span> <strong style={{ color: '#0f172a' }}>{employee.panNumber || 'Not Provided'}</strong></div>
-              <div><span style={{ color: '#64748b' }}>UAN Number:</span> <strong style={{ color: '#0f172a' }}>{employee.uanNumber || 'Not Provided'}</strong></div>
-              <div><span style={{ color: '#64748b' }}>Tax Regime:</span> <strong style={{ color: '#0f172a' }}>{employee.taxInfo || 'New Tax Regime'}</strong></div>
+
             </div>
           </div>
 
@@ -1228,18 +1226,9 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                   <input className="form-control" placeholder="PAN Number" style={{ textTransform: 'uppercase' }} value={personalForm.panNumber} onChange={e => setPersonalForm({...personalForm, panNumber: e.target.value.toUpperCase()})} />
                 </div>
 
-                <div className="form-field-group">
-                  <label className="form-label">UAN Number</label>
-                  <input className="form-control" placeholder="UAN Number" value={personalForm.uanNumber} onChange={e => setPersonalForm({...personalForm, uanNumber: e.target.value})} />
-                </div>
 
-                <div className="form-field-group">
-                  <label className="form-label">Tax Regime</label>
-                  <select className="form-control" value={personalForm.taxInfo} onChange={e => setPersonalForm({...personalForm, taxInfo: e.target.value})}>
-                    <option value="New Tax Regime">New Tax Regime</option>
-                    <option value="Old Tax Regime">Old Tax Regime</option>
-                  </select>
-                </div>
+
+
               </div>
               <div className="admin-modal-footer">
                 <button type="button" className="btn-secondary" onClick={() => setShowEditPersonalModal(false)}>Cancel</button>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiDownload, FiPlus, FiKey, FiTrash2 } from 'react-icons/fi';
+import { FiDownload, FiPlus, FiKey, FiTrash2, FiUsers, FiUserCheck, FiCalendar, FiClock, FiUserPlus, FiFileText } from 'react-icons/fi';
 import EmployeeDetail from './EmployeeDetail';
 import EmployeeRequestsHub from './EmployeeRequestsHub';
 import QueriesManagerTab from './QueriesManagerTab';
@@ -43,6 +43,35 @@ export default function EmployeeListTab({
   const [employeeSubmitting, setEmployeeSubmitting] = useState(false);
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
 
+  const [customDepts, setCustomDepts] = useState([]);
+  const [customDesigs, setCustomDesigs] = useState([]);
+  const [isCustomDept, setIsCustomDept] = useState(false);
+  const [isCustomDesig, setIsCustomDesig] = useState(false);
+
+  // Dynamically extract all unique Departments and Designations from employee list + defaults + custom additions
+  const availableDepartments = React.useMemo(() => {
+    const defaults = ['IT', 'E-Commerce', 'Development', 'Sales', 'HR', 'Finance', 'Marketing', 'Operations'];
+    const empDepts = (employeesList || []).map(e => (e.department || '').trim()).filter(Boolean);
+    return Array.from(new Set([...defaults, ...empDepts, ...customDepts])).sort();
+  }, [employeesList, customDepts]);
+
+  const availableDesignations = React.useMemo(() => {
+    const defaults = [
+      'Software Engineer',
+      'Senior Software Engineer',
+      'Frontend Developer',
+      'Backend Developer',
+      'Full Stack Developer',
+      'Marketplace Specialist',
+      'UI/UX Designer',
+      'HR Manager',
+      'Project Manager',
+      'Team Lead'
+    ];
+    const empDesigs = (employeesList || []).map(e => (e.designation || '').trim()).filter(Boolean);
+    return Array.from(new Set([...defaults, ...empDesigs, ...customDesigs])).sort();
+  }, [employeesList, customDesigs]);
+
   const handleDeleteEmployeeRow = (employee) => {
     setConfirmModal({
       isOpen: true,
@@ -81,6 +110,20 @@ export default function EmployeeListTab({
     salary: '', salaryStructure: 'Standard Corporate', basicSalary: '', hra: '', allowances: '0', deductions: '0',
     bankName: '', accountNumber: '', ifsc: '', panNumber: '', uanNumber: '', taxInfo: 'New Tax Regime', password: ''
   });
+
+  const [formErrors, setFormErrors] = useState({});
+
+  const focusField = (fieldKey, errorMsg) => {
+    setFormErrors({ [fieldKey]: errorMsg });
+    toast.warning(errorMsg);
+    setTimeout(() => {
+      const el = document.getElementById(`input-${fieldKey}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.focus();
+      }
+    }, 50);
+  };
 
   React.useEffect(() => {
     if (empSubTab === 'add' && !addEmpForm.empId) {
@@ -171,61 +214,100 @@ export default function EmployeeListTab({
         />
       ) : (
         <div>
-          {/* Top Dashboard Header */}
-          <div className="admin-content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
-            <div>
-              <h1 style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Employees</h1>
-              <p style={{ color: '#64748b', margin: '0.25rem 0 0', fontSize: '0.9rem' }}>
-                Manage employee profiles, employment information, documents, attendance, leave, payroll and employee requests.
-              </p>
+          {/* Top Dashboard Header (Shown only on All Employees main tab) */}
+          {empSubTab === 'all' && (
+            <div className="admin-content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ flex: '1 1 auto', minWidth: '0' }}>
+                <h1 style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Employees</h1>
+                <p style={{ color: '#64748b', margin: '0.25rem 0 0', fontSize: '0.9rem' }}>
+                  Manage employee profiles, employment information, documents, attendance, leave, payroll and employee requests.
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem', flexShrink: 0, marginLeft: 'auto', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={handleExportEmployeesCSV}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}
+                >
+                  <FiDownload /> Export CSV
+                </button>
+                <button
+                  type="button"
+                  className="btn-orange"
+                  onClick={() => setEmpSubTab('add')}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}
+                >
+                  <FiPlus /> Add Employee
+                </button>
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={handleExportEmployeesCSV}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              >
-                <FiDownload /> Export CSV
-              </button>
-              <button
-                type="button"
-                className="btn-orange"
-                onClick={() => setEmpSubTab('add')}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              >
-                <FiPlus /> Add Employee
-              </button>
-            </div>
-          </div>
+          )}
 
-          {/* Summary Metric Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
-            <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Total Employees</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: '0.2rem 0 0' }}>{(employeesList || []).length}</h3>
+          {/* Summary Metric Cards (Shown only on All Employees main tab) */}
+          {empSubTab === 'all' && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+              <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Total Employees</span>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: '0.2rem 0 0' }}>{(employeesList || []).length}</h3>
+                </div>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#f1f5f9', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <FiUsers size={19} />
+                </div>
+              </div>
+
+              <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Active Employees</span>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#10b981', margin: '0.2rem 0 0' }}>{(employeesList || []).filter(e => (e.status || 'Active').toLowerCase() === 'active').length}</h3>
+                </div>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <FiUserCheck size={19} />
+                </div>
+              </div>
+
+              <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>On Leave</span>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#f97316', margin: '0.2rem 0 0' }}>{calculatedOnLeave}</h3>
+                </div>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#fff7ed', color: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <FiCalendar size={19} />
+                </div>
+              </div>
+
+              <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Pending Requests</span>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#6366f1', margin: '0.2rem 0 0' }}>{dashboardMetrics.pendingRequests || 0}</h3>
+                </div>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#eef2ff', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <FiClock size={19} />
+                </div>
+              </div>
+
+              <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>New Joiners</span>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0284c7', margin: '0.2rem 0 0' }}>{(employeesList || []).filter(e => e.joinDate && new Date(e.joinDate) >= new Date(Date.now() - 30 * 86400000)).length}</h3>
+                </div>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <FiUserPlus size={19} />
+                </div>
+              </div>
+
+              <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Documents Pending</span>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#ec4899', margin: '0.2rem 0 0' }}>{dashboardMetrics.pendingDocuments || 0}</h3>
+                </div>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#fce7f3', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <FiFileText size={19} />
+                </div>
+              </div>
             </div>
-            <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Active Employees</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#10b981', margin: '0.2rem 0 0' }}>{(employeesList || []).filter(e => (e.status || 'Active').toLowerCase() === 'active').length}</h3>
-            </div>
-            <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>On Leave</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#f97316', margin: '0.2rem 0 0' }}>{calculatedOnLeave}</h3>
-            </div>
-            <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Pending Requests</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#6366f1', margin: '0.2rem 0 0' }}>{dashboardMetrics.pendingRequests || 0}</h3>
-            </div>
-            <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>New Joiners</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0284c7', margin: '0.2rem 0 0' }}>{(employeesList || []).filter(e => e.joinDate && new Date(e.joinDate) >= new Date(Date.now() - 30 * 86400000)).length}</h3>
-            </div>
-            <div className="stat-card" style={{ padding: '0.85rem 1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Documents Pending</span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#ec4899', margin: '0.2rem 0 0' }}>{dashboardMetrics.pendingDocuments || 0}</h3>
-            </div>
-          </div>
+          )}
 
           {/* SUB TAB: ALL EMPLOYEES */}
           {empSubTab === 'all' && (
@@ -241,17 +323,15 @@ export default function EmployeeListTab({
                 />
                 <select value={empDeptFilter} onChange={e => setEmpDeptFilter(e.target.value)} style={{ flex: '1 1 120px', minWidth: '110px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}>
                   <option value="All">All Departments</option>
-                  <option value="IT">IT</option>
-                  <option value="E-Commerce">E-Commerce</option>
-                  <option value="Development">Development</option>
-                  <option value="Sales">Sales</option>
+                  {availableDepartments.map(dept => (
+                    <option key={dept} value={dept}>{dept}</option>
+                  ))}
                 </select>
                 <select value={empDesigFilter} onChange={e => setEmpDesigFilter(e.target.value)} style={{ flex: '1 1 120px', minWidth: '110px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}>
                   <option value="All">All Designations</option>
-                  <option value="Senior Software Engineer">Senior Software Engineer</option>
-                  <option value="Marketplace Specialist">Marketplace Specialist</option>
-                  <option value="UI/UX Designer">UI/UX Designer</option>
-                  <option value="FULL STACK">FULL STACK</option>
+                  {availableDesignations.map(desig => (
+                    <option key={desig} value={desig}>{desig}</option>
+                  ))}
                 </select>
                 <select value={empTypeFilter} onChange={e => setEmpTypeFilter(e.target.value)} style={{ flex: '1 1 120px', minWidth: '110px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}>
                   <option value="All">All Employment Types</option>
@@ -324,12 +404,12 @@ export default function EmployeeListTab({
                             </td>
                             <td style={{ textAlign: 'center', verticalAlign: 'middle' }} onClick={e => e.stopPropagation()}>
                               <div style={{ display: 'inline-flex', flexDirection: 'column', gap: '4px', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                                  <button
-                                    type="button"
-                                    className="btn-secondary"
-                                    style={{ padding: '0.18rem 0.55rem', fontSize: '0.75rem', width: '100%', maxWidth: '95px', textAlign: 'center' }}
-                                    onClick={() => { setSelectedEmployeeDetailTab('overview'); setSelectedEmployeeDetailId(employee.id); setSelectedEmployeeObj(employee); }}
-                                  >
+                                <button
+                                  type="button"
+                                  className="btn-secondary"
+                                  style={{ padding: '0.18rem 0.55rem', fontSize: '0.75rem', width: '100%', maxWidth: '95px', textAlign: 'center' }}
+                                  onClick={() => { setSelectedEmployeeDetailTab('overview'); setSelectedEmployeeDetailId(employee.id); setSelectedEmployeeObj(employee); }}
+                                >
                                   View
                                 </button>
                                 <button
@@ -364,18 +444,105 @@ export default function EmployeeListTab({
             <div className="admin-card" style={{ background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
               <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#0f172a', margin: '0 0 1.25rem' }}>+ Add New Employee Master Record</h2>
 
-              <form onSubmit={async (e) => {
+              <form noValidate onSubmit={async (e) => {
                 e.preventDefault();
+
+                // Form Field Validations
+                const firstName = (addEmpForm.firstName || '').trim();
+                const lastName = (addEmpForm.lastName || '').trim();
+                const email = (addEmpForm.personalEmail || addEmpForm.email || '').trim().toLowerCase();
+                const phone = (addEmpForm.phone || '').replace(/\D/g, '');
+                const currentAddress = (addEmpForm.currentAddress || '').trim();
+                const salary = parseFloat(addEmpForm.salary);
+
+                // Multi-Field Validation Collector
+                const newErrors = {};
+
+                if (firstName.length < 2) {
+                  newErrors.firstName = 'First Name is too short (min 2 letters).';
+                }
+                if (lastName.length < 2) {
+                  newErrors.lastName = 'Last Name is too short (min 2 letters).';
+                }
+                if (!email) {
+                  newErrors.personalEmail = 'Email address is required.';
+                } else if (!email.includes('@')) {
+                  newErrors.personalEmail = 'Invalid Email: "@" symbol is missing.';
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                  newErrors.personalEmail = 'Invalid Email: domain extension missing (e.g. .com).';
+                }
+                if (!phone || phone.length !== 10) {
+                  newErrors.phone = 'Mobile Phone must be 10 digits.';
+                }
+                if (!currentAddress || currentAddress.length < 5) {
+                  newErrors.currentAddress = 'Current Address is required.';
+                }
+                if (!addEmpForm.empId || !addEmpForm.empId.trim()) {
+                  newErrors.empId = 'Employee ID is required.';
+                }
+                if (!addEmpForm.department || !addEmpForm.department.trim()) {
+                  newErrors.department = 'Department is required.';
+                }
+                if (!addEmpForm.designation || !addEmpForm.designation.trim()) {
+                  newErrors.designation = 'Designation is required.';
+                }
+                if (!salary || isNaN(salary) || salary <= 0) {
+                  newErrors.salary = 'Monthly Salary must be greater than 0.';
+                }
+                if (addEmpForm.pincode && !/^\d{6}$/.test(addEmpForm.pincode.trim())) {
+                  newErrors.pincode = 'Pincode must be 6 digits.';
+                }
+                if (addEmpForm.panNumber && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(addEmpForm.panNumber.trim())) {
+                  newErrors.panNumber = 'Invalid PAN format (e.g. ABCDE1234F).';
+                }
+                if (addEmpForm.ifsc && !/^[A-Z]{4}0[A-Z0-9]{6}$/i.test(addEmpForm.ifsc.trim())) {
+                  newErrors.ifsc = 'Invalid IFSC format (e.g. SBIN0001234).';
+                }
+
+                if (Object.keys(newErrors).length > 0) {
+                  setFormErrors(newErrors);
+                  const errKeys = Object.keys(newErrors);
+                  const firstKey = errKeys[0];
+                  const count = errKeys.length;
+
+                  toast.warning(
+                    count === 1
+                      ? newErrors[firstKey]
+                      : `Please fix the ${count} highlighted errors below.`
+                  );
+
+                  setTimeout(() => {
+                    const el = document.getElementById(`input-${firstKey}`);
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      el.focus();
+                    }
+                  }, 50);
+
+                  return;
+                }
+
                 setEmployeeSubmitting(true);
                 try {
                   const payload = {
                     ...addEmpForm,
-                    name: `${addEmpForm.firstName} ${addEmpForm.lastName}`.trim() || addEmpForm.name,
-                    email: addEmpForm.email || addEmpForm.personalEmail
+                    name: `${firstName} ${lastName}`.trim(),
+                    email,
+                    phone,
+                    panNumber: (addEmpForm.panNumber || '').toUpperCase().trim(),
+                    ifsc: (addEmpForm.ifsc || '').toUpperCase().trim()
                   };
                   const res = await employeesApi.create(payload);
                   if (res.success) {
                     toast.success('Employee added successfully to Master Database!');
+                    if (addEmpForm.department && !customDepts.includes(addEmpForm.department.trim())) {
+                      setCustomDepts(prev => [...prev, addEmpForm.department.trim()]);
+                    }
+                    if (addEmpForm.designation && !customDesigs.includes(addEmpForm.designation.trim())) {
+                      setCustomDesigs(prev => [...prev, addEmpForm.designation.trim()]);
+                    }
+                    setIsCustomDept(false);
+                    setIsCustomDesig(false);
                     setCredentialsModal({
                       empId: res.data.empId,
                       name: res.data.name,
@@ -398,7 +565,8 @@ export default function EmployeeListTab({
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
                     <div className="form-field-group">
                       <label className="form-label">First Name <span className="required-star">*</span></label>
-                      <input className="form-control" placeholder="First Name" required value={addEmpForm.firstName} onChange={e => setAddEmpForm({ ...addEmpForm, firstName: e.target.value })} />
+                      <input id="input-firstName" className="form-control" style={formErrors.firstName ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="First Name" required minLength={2} value={addEmpForm.firstName} onChange={e => { setFormErrors(prev => ({ ...prev, firstName: null })); setAddEmpForm({ ...addEmpForm, firstName: e.target.value }); }} />
+                      {formErrors.firstName && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.firstName}</span>}
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Middle Name</label>
@@ -406,19 +574,22 @@ export default function EmployeeListTab({
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Last Name <span className="required-star">*</span></label>
-                      <input className="form-control" placeholder="Last Name" required value={addEmpForm.lastName} onChange={e => setAddEmpForm({ ...addEmpForm, lastName: e.target.value })} />
+                      <input id="input-lastName" className="form-control" style={formErrors.lastName ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="Last Name" required minLength={2} value={addEmpForm.lastName} onChange={e => { setFormErrors(prev => ({ ...prev, lastName: null })); setAddEmpForm({ ...addEmpForm, lastName: e.target.value }); }} />
+                      {formErrors.lastName && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.lastName}</span>}
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Personal Email <span className="required-star">*</span></label>
-                      <input className="form-control" placeholder="Personal Email" type="email" required value={addEmpForm.personalEmail} onChange={e => setAddEmpForm({ ...addEmpForm, personalEmail: e.target.value, email: e.target.value })} />
+                      <input id="input-personalEmail" className="form-control" style={formErrors.personalEmail ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="Personal Email" type="email" required value={addEmpForm.personalEmail} onChange={e => { setFormErrors(prev => ({ ...prev, personalEmail: null })); setAddEmpForm({ ...addEmpForm, personalEmail: e.target.value, email: e.target.value }); }} />
+                      {formErrors.personalEmail && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.personalEmail}</span>}
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Mobile Phone <span className="required-star">*</span></label>
-                      <input className="form-control" placeholder="Mobile Phone" required value={addEmpForm.phone} onChange={e => setAddEmpForm({ ...addEmpForm, phone: e.target.value })} />
+                      <input id="input-phone" className="form-control" style={formErrors.phone ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="10-Digit Mobile Phone" type="tel" maxLength={10} required value={addEmpForm.phone} onChange={e => { setFormErrors(prev => ({ ...prev, phone: null })); setAddEmpForm({ ...addEmpForm, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }); }} />
+                      {formErrors.phone && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.phone}</span>}
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Alternate Phone</label>
-                      <input className="form-control" placeholder="Alternate Phone" value={addEmpForm.altPhone} onChange={e => setAddEmpForm({ ...addEmpForm, altPhone: e.target.value })} />
+                      <input className="form-control" placeholder="10-Digit Alternate Phone" type="tel" maxLength={10} value={addEmpForm.altPhone} onChange={e => setAddEmpForm({ ...addEmpForm, altPhone: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Date of Birth</label>
@@ -441,7 +612,8 @@ export default function EmployeeListTab({
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div className="form-field-group">
                       <label className="form-label">Current Address <span className="required-star">*</span></label>
-                      <textarea className="form-control" placeholder="Current Address" required value={addEmpForm.currentAddress} onChange={e => setAddEmpForm({ ...addEmpForm, currentAddress: e.target.value })} rows={2} />
+                      <textarea id="input-currentAddress" className="form-control" style={formErrors.currentAddress ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="Current Address" required minLength={5} value={addEmpForm.currentAddress} onChange={e => { setFormErrors(prev => ({ ...prev, currentAddress: null })); setAddEmpForm({ ...addEmpForm, currentAddress: e.target.value }); }} rows={2} />
+                      {formErrors.currentAddress && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.currentAddress}</span>}
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Permanent Address</label>
@@ -461,7 +633,8 @@ export default function EmployeeListTab({
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Pincode</label>
-                      <input className="form-control" placeholder="Pincode" value={addEmpForm.pincode} onChange={e => setAddEmpForm({ ...addEmpForm, pincode: e.target.value })} />
+                      <input id="input-pincode" className="form-control" style={formErrors.pincode ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="6-digit Pincode" maxLength={6} value={addEmpForm.pincode} onChange={e => { setFormErrors(prev => ({ ...prev, pincode: null })); setAddEmpForm({ ...addEmpForm, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) }); }} />
+                      {formErrors.pincode && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.pincode}</span>}
                     </div>
                   </div>
                 </div>
@@ -480,11 +653,11 @@ export default function EmployeeListTab({
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Emergency Phone</label>
-                      <input className="form-control" placeholder="Emergency Phone" value={addEmpForm.emergencyPhone} onChange={e => setAddEmpForm({ ...addEmpForm, emergencyPhone: e.target.value })} />
+                      <input className="form-control" placeholder="10-Digit Emergency Phone" type="tel" maxLength={10} value={addEmpForm.emergencyPhone} onChange={e => setAddEmpForm({ ...addEmpForm, emergencyPhone: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Alt Emergency Phone</label>
-                      <input className="form-control" placeholder="Alternate Emergency Phone" value={addEmpForm.emergencyAltPhone} onChange={e => setAddEmpForm({ ...addEmpForm, emergencyAltPhone: e.target.value })} />
+                      <input className="form-control" placeholder="10-Digit Alternate Phone" type="tel" maxLength={10} value={addEmpForm.emergencyAltPhone} onChange={e => setAddEmpForm({ ...addEmpForm, emergencyAltPhone: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
                     </div>
                   </div>
                 </div>
@@ -495,16 +668,111 @@ export default function EmployeeListTab({
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
                     <div className="form-field-group">
                       <label className="form-label">Employee ID <span className="required-star">*</span></label>
-                      <input className="form-control" placeholder="e.g. INS001" required value={addEmpForm.empId || generateNextEmpId(employeesList)} onChange={e => setAddEmpForm({ ...addEmpForm, empId: e.target.value })} />
+                      <input id="input-empId" className="form-control" style={formErrors.empId ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="e.g. INS001" required value={addEmpForm.empId || generateNextEmpId(employeesList)} onChange={e => { setFormErrors(prev => ({ ...prev, empId: null })); setAddEmpForm({ ...addEmpForm, empId: e.target.value }); }} />
+                      {formErrors.empId && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.empId}</span>}
                       <span style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px', display: 'block' }}>Auto-generated. You can edit this if needed.</span>
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Department <span className="required-star">*</span></label>
-                      <input className="form-control" placeholder="Department" required value={addEmpForm.department} onChange={e => setAddEmpForm({ ...addEmpForm, department: e.target.value })} />
+                      {!isCustomDept ? (
+                        <select
+                          id="input-department"
+                          className="form-control"
+                          style={formErrors.department ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}}
+                          value={addEmpForm.department}
+                          onChange={e => {
+                            setFormErrors(prev => ({ ...prev, department: null }));
+                            if (e.target.value === '__ADD_NEW__') {
+                              setIsCustomDept(true);
+                              setAddEmpForm({ ...addEmpForm, department: '' });
+                            } else {
+                              setAddEmpForm({ ...addEmpForm, department: e.target.value });
+                            }
+                          }}
+                        >
+                          {availableDepartments.map(dept => (
+                            <option key={dept} value={dept}>{dept}</option>
+                          ))}
+                          <option value="__ADD_NEW__" style={{ fontWeight: '700', color: '#2563eb' }}>+ Add New Department...</option>
+                        </select>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <input
+                            id="input-department"
+                            className="form-control"
+                            style={formErrors.department ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}}
+                            placeholder="Enter New Department Name"
+                            autoFocus
+                            value={addEmpForm.department}
+                            onChange={e => {
+                              setFormErrors(prev => ({ ...prev, department: null }));
+                              setAddEmpForm({ ...addEmpForm, department: e.target.value });
+                            }}
+                          />
+                          <button
+                            type="button"
+                            style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: '0.78rem', cursor: 'pointer', textAlign: 'left', padding: 0, fontWeight: '600' }}
+                            onClick={() => {
+                              setIsCustomDept(false);
+                              setAddEmpForm({ ...addEmpForm, department: availableDepartments[0] || 'IT' });
+                            }}
+                          >
+                            ← Select from existing list
+                          </button>
+                        </div>
+                      )}
+                      {formErrors.department && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.department}</span>}
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Designation <span className="required-star">*</span></label>
-                      <input className="form-control" placeholder="Designation" required value={addEmpForm.designation} onChange={e => setAddEmpForm({ ...addEmpForm, designation: e.target.value })} />
+                      {!isCustomDesig ? (
+                        <select
+                          id="input-designation"
+                          className="form-control"
+                          style={formErrors.designation ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}}
+                          value={addEmpForm.designation}
+                          onChange={e => {
+                            setFormErrors(prev => ({ ...prev, designation: null }));
+                            if (e.target.value === '__ADD_NEW__') {
+                              setIsCustomDesig(true);
+                              setAddEmpForm({ ...addEmpForm, designation: '' });
+                            } else {
+                              setAddEmpForm({ ...addEmpForm, designation: e.target.value });
+                            }
+                          }}
+                        >
+                          {availableDesignations.map(desig => (
+                            <option key={desig} value={desig}>{desig}</option>
+                          ))}
+                          <option value="__ADD_NEW__" style={{ fontWeight: '700', color: '#2563eb' }}>+ Add New Designation...</option>
+                        </select>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <input
+                            id="input-designation"
+                            className="form-control"
+                            style={formErrors.designation ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}}
+                            placeholder="Enter New Designation Title"
+                            autoFocus
+                            value={addEmpForm.designation}
+                            onChange={e => {
+                              setFormErrors(prev => ({ ...prev, designation: null }));
+                              setAddEmpForm({ ...addEmpForm, designation: e.target.value });
+                            }}
+                          />
+                          <button
+                            type="button"
+                            style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: '0.78rem', cursor: 'pointer', textAlign: 'left', padding: 0, fontWeight: '600' }}
+                            onClick={() => {
+                              setIsCustomDesig(false);
+                              setAddEmpForm({ ...addEmpForm, designation: availableDesignations[0] || 'Software Engineer' });
+                            }}
+                          >
+                            ← Select from existing list
+                          </button>
+                        </div>
+                      )}
+                      {formErrors.designation && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.designation}</span>}
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Reporting Manager</label>
@@ -555,7 +823,8 @@ export default function EmployeeListTab({
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
                     <div className="form-field-group">
                       <label className="form-label">Monthly Salary (₹) <span className="required-star">*</span></label>
-                      <input className="form-control" placeholder="Monthly Salary" type="number" required value={addEmpForm.salary} onChange={e => setAddEmpForm({ ...addEmpForm, salary: e.target.value })} />
+                      <input id="input-salary" className="form-control" style={formErrors.salary ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="Monthly Salary" type="number" min="1" required value={addEmpForm.salary} onChange={e => { setFormErrors(prev => ({ ...prev, salary: null })); setAddEmpForm({ ...addEmpForm, salary: e.target.value }); }} />
+                      {formErrors.salary && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.salary}</span>}
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">Bank Name</label>
@@ -567,15 +836,13 @@ export default function EmployeeListTab({
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">IFSC Code</label>
-                      <input className="form-control" placeholder="IFSC Code" value={addEmpForm.ifsc} onChange={e => setAddEmpForm({ ...addEmpForm, ifsc: e.target.value })} />
+                      <input id="input-ifsc" className="form-control" style={formErrors.ifsc ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="e.g. SBIN0001234" maxLength={11} value={addEmpForm.ifsc} onChange={e => { setFormErrors(prev => ({ ...prev, ifsc: null })); setAddEmpForm({ ...addEmpForm, ifsc: e.target.value.toUpperCase() }); }} />
+                      {formErrors.ifsc && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.ifsc}</span>}
                     </div>
                     <div className="form-field-group">
                       <label className="form-label">PAN Number</label>
-                      <input className="form-control" placeholder="PAN Number" value={addEmpForm.panNumber} onChange={e => setAddEmpForm({ ...addEmpForm, panNumber: e.target.value })} />
-                    </div>
-                    <div className="form-field-group">
-                      <label className="form-label">UAN Number</label>
-                      <input className="form-control" placeholder="UAN Number" value={addEmpForm.uanNumber} onChange={e => setAddEmpForm({ ...addEmpForm, uanNumber: e.target.value })} />
+                      <input id="input-panNumber" className="form-control" style={formErrors.panNumber ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="e.g. ABCDE1234F" maxLength={10} value={addEmpForm.panNumber} onChange={e => { setFormErrors(prev => ({ ...prev, panNumber: null })); setAddEmpForm({ ...addEmpForm, panNumber: e.target.value.toUpperCase() }); }} />
+                      {formErrors.panNumber && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.panNumber}</span>}
                     </div>
                   </div>
                 </div>
@@ -603,7 +870,11 @@ export default function EmployeeListTab({
 
           {/* SUB TAB: LEAVE APPLICATIONS */}
           {empSubTab === 'leave' && (
-            <LeavesManagerTab empLeavesList={empLeavesList} setEmpLeavesList={setEmpLeavesList} />
+            <LeavesManagerTab
+              empLeavesList={empLeavesList}
+              setEmpLeavesList={setEmpLeavesList}
+              employeesList={employeesList}
+            />
           )}
 
           {/* SUB TAB: EMPLOYEE QUERIES */}
@@ -613,39 +884,47 @@ export default function EmployeeListTab({
 
           {/* SUB TAB: PAYROLL */}
           {empSubTab === 'payroll' && (
-            <div className="admin-card">
-              <h2 style={{ fontSize: '1.2rem', margin: '0 0 1rem' }}>Payroll & Issued Salary Slips</h2>
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Employee</th>
-                    <th>Department</th>
-                    <th>Gross Monthly Salary</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(employeesList || []).map(emp => (
-                    <tr key={emp.id}>
-                      <td><strong>{emp.name}</strong> ({formatEmpId(emp.empId, emp.id)})</td>
-                      <td>{emp.department}</td>
-                      <td>₹{Number(emp.salary || 0).toLocaleString('en-IN')}</td>
-                      <td>
-                        <button
-                          className="btn-orange"
-                          style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem' }}
-                          onClick={() => {
-                            setSelectedEmployeeDetailTab('payroll');
-                            setSelectedEmployeeDetailId(emp.id);
-                          }}
-                        >
-                          Manage Payroll
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="admin-payroll-tab-pane">
+              <div className="admin-content-header">
+                <h1>Payroll & Issued Salary Slips</h1>
+                <p>View employee salary breakdown, generate official monthly pay slips, and manage compensation structure.</p>
+              </div>
+
+              <div className="admin-card">
+                <div className="table-responsive">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Employee</th>
+                        <th>Department</th>
+                        <th>Gross Monthly Salary</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(employeesList || []).map(emp => (
+                        <tr key={emp.id}>
+                          <td><strong>{emp.name}</strong> ({formatEmpId(emp.empId, emp.id)})</td>
+                          <td>{emp.department}</td>
+                          <td>₹{Number(emp.salary || 0).toLocaleString('en-IN')}</td>
+                          <td>
+                            <button
+                              className="btn-orange"
+                              style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem' }}
+                              onClick={() => {
+                                setSelectedEmployeeDetailTab('payroll');
+                                setSelectedEmployeeDetailId(emp.id);
+                              }}
+                            >
+                              Manage Payroll
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           )}
         </div>

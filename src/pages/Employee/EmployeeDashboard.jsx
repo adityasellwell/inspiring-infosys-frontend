@@ -13,36 +13,7 @@ import Modal from '../../components/common/Modal';
 import { useToast } from '../../components/common/ToastContext';
 import './EmployeeDashboard.css';
 
-const DEFAULT_EMPLOYEE_DATA = {
-  employee: {
-    id: 1,
-    empId: 'INS004',
-    name: 'Atul Mishra',
-    email: 'info4alam@gmail.com',
-    phone: '8444040514',
-    department: 'IT',
-    designation: 'FULL STACK',
-    joinDate: '2026-09-01',
-    salary: 75000,
-    status: 'Active',
-    address: 'Mumbai, India',
-    photoUrl: '',
-    aadharUrl: '',
-    panUrl: '',
-    attendances: [
-      { id: 1, date: new Date().toISOString(), checkIn: '09:30 AM', checkOut: '06:30 PM', status: 'Present', workDuration: '9.0 hrs' }
-    ],
-    salarySlips: [
-      { id: 1, month: 'September', year: 2026, basicPay: 50000, hra: 15000, allowances: 10000, deductions: 0, netSalary: 75000, createdAt: new Date().toISOString() }
-    ],
-    leaveRequests: [],
-    queries: [],
-    dailyWorkReports: []
-  },
-  notices: [
-    { id: 1, title: 'Welcome to Inspiring Infosys Employee Portal', content: 'You can mark attendance, submit leave applications, view salary slips, and communicate with HR.', priority: 'High', createdAt: new Date().toISOString() }
-  ]
-};
+const DEFAULT_EMPLOYEE_DATA = null;
 
 function EmployeeDashboard() {
   const toast = useToast();
@@ -169,19 +140,30 @@ function EmployeeDashboard() {
           emergencyPhone: emp.emergencyPhone || ''
         });
       } else {
-        localStorage.removeItem('employee_token');
-        localStorage.removeItem('employee_name');
-        setToken(null);
-        setData(null);
+        console.warn("getMe response failed:", res);
+        if (res?.status === 401 || res?.message?.includes("expired") || res?.message?.includes("Invalid")) {
+          localStorage.removeItem('employee_token');
+          localStorage.removeItem('employee_name');
+          setToken(null);
+          setData(null);
+        }
       }
     } catch (err) {
       console.error("Dashboard fetch error:", err);
-      localStorage.removeItem('employee_token');
-      localStorage.removeItem('employee_name');
-      setToken(null);
-      setData(null);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const silentRefreshDashboard = async () => {
+    if (!token) return;
+    try {
+      const res = await employeePortalApi.getMe();
+      if (res && res.success && res.data && res.data.employee) {
+        setData(res.data);
+      }
+    } catch (err) {
+      console.error("Silent refresh error:", err);
     }
   };
 
@@ -191,6 +173,25 @@ function EmployeeDashboard() {
     } else {
       setLoading(false);
     }
+  }, [token]);
+
+  // Live real-time background polling for Employee Portal (Queries replies, Leave status, Attendance, Salary Slips)
+  useEffect(() => {
+    if (!token) return;
+
+    const pollInterval = setInterval(() => {
+      silentRefreshDashboard();
+    }, 5000);
+
+    const handleFocus = () => {
+      silentRefreshDashboard();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [token]);
 
   // Auth Handlers
@@ -451,10 +452,10 @@ function EmployeeDashboard() {
 
           <form onSubmit={handleLogin} className="login-form">
             <div className="admin-input-group">
-              <label>Official Email Address</label>
+              <label>Official Email / Personal Email / Employee ID</label>
               <input
-                type="email"
-                placeholder="name@company.com"
+                type="text"
+                placeholder="e.g. INS001 or name@company.com"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
                 required
@@ -1181,28 +1182,6 @@ function EmployeeDashboard() {
                         />
                       </div>
 
-                      <div className="form-field-group">
-                        <label className="form-label">UAN Number</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Universal Account Number"
-                          value={bankForm.uanNumber}
-                          onChange={(e) => setBankForm({ ...bankForm, uanNumber: e.target.value })}
-                        />
-                      </div>
-
-                      <div className="form-field-group">
-                        <label className="form-label">Tax Regime</label>
-                        <select
-                          className="form-control"
-                          value={bankForm.taxInfo}
-                          onChange={(e) => setBankForm({ ...bankForm, taxInfo: e.target.value })}
-                        >
-                          <option value="New Tax Regime">New Tax Regime</option>
-                          <option value="Old Tax Regime">Old Tax Regime</option>
-                        </select>
-                      </div>
                     </div>
 
                     <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #e2e8f0' }}>
