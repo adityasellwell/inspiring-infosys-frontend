@@ -201,6 +201,10 @@ export default function EmployeeListTab({
     statusOnLeaveCount
   );
 
+  const pendingLeavesCount = (empLeavesList || []).filter(l => (l.status || 'Pending').toLowerCase() === 'pending').length;
+  const pendingQueriesCount = (empQueriesList || []).filter(q => (q.status || 'Pending').toLowerCase() === 'pending').length;
+  const calculatedPendingRequests = pendingLeavesCount + pendingQueriesCount;
+
   return (
     <div className="admin-employees-tab-pane">
       {selectedEmployeeDetailId ? (
@@ -280,7 +284,7 @@ export default function EmployeeListTab({
               <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Pending Requests</span>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#6366f1', margin: '0.2rem 0 0' }}>{dashboardMetrics.pendingRequests || 0}</h3>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#6366f1', margin: '0.2rem 0 0' }}>{calculatedPendingRequests}</h3>
                 </div>
                 <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#eef2ff', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <FiClock size={19} />

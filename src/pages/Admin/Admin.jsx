@@ -85,11 +85,11 @@ function Admin() {
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
 
   const [dashboardMetrics, setDashboardMetrics] = useState({
-    totalEmployees: 4,
-    activeEmployees: 4,
+    totalEmployees: 0,
+    activeEmployees: 0,
     onLeaveEmployees: 0,
-    pendingRequests: 2,
-    newJoiners: 1,
+    pendingRequests: 0,
+    newJoiners: 0,
     pendingDocuments: 0
   });
 
