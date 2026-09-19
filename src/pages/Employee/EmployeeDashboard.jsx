@@ -209,8 +209,9 @@ function EmployeeDashboard() {
     try {
       const res = await employeePortalApi.login(loginEmail, loginPassword);
       if (res && res.success && res.token) {
+        const empName = res.employee?.name || res.data?.employee?.name || 'Employee';
         localStorage.setItem('employee_token', res.token);
-        localStorage.setItem('employee_name', res.employee.name);
+        localStorage.setItem('employee_name', empName);
         setToken(res.token);
       } else {
         setLoginError(res?.message || 'Invalid employee email or password.');
