@@ -298,17 +298,6 @@ export default function EmployeeListTab({
                 </div>
                 <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <FiUserPlus size={19} />
-                </div>
-              </div>
-
-              <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Documents Pending</span>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#ec4899', margin: '0.2rem 0 0' }}>{dashboardMetrics.pendingDocuments || 0}</h3>
-                </div>
-                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#fce7f3', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <FiFileText size={19} />
-                </div>
               </div>
             </div>
           )}
