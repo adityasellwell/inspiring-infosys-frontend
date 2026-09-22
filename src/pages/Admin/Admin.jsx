@@ -15,6 +15,7 @@ import QuotesInboxTab from './components/QuotesInboxTab';
 import ConsultationsInboxTab from './components/ConsultationsInboxTab';
 import QuoteConfigTab from './components/QuoteConfigTab';
 import ClientServicesTab from './components/ClientServicesTab';
+import AdminProfileTab from './components/AdminProfileTab';
 
 import './Admin.css';
 
@@ -51,6 +52,8 @@ function Admin() {
   const getInitialTab = () => {
     const path = (location.pathname || '').toLowerCase();
     if (path.includes('/employees') || path.includes('/staff') || path.includes('/attendance') || path.includes('/leaves') || path.includes('/queries')) return 'employees';
+    const saved = localStorage.getItem('admin_active_tab');
+    if (saved && saved !== 'undefined') return saved;
     return 'stats';
   };
 
@@ -61,6 +64,12 @@ function Admin() {
   const [adminName, setAdminName] = useState(localStorage.getItem('admin_name') || 'Admin');
   const [activeTab, setActiveTab] = useState(getInitialTab);
   const [empSubTab, setEmpSubTab] = useState('all');
+
+  useEffect(() => {
+    if (activeTab) {
+      localStorage.setItem('admin_active_tab', activeTab);
+    }
+  }, [activeTab]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Login Form States
@@ -285,6 +294,7 @@ function Admin() {
         setIsSidebarOpen={setIsSidebarOpen}
         handleLogout={handleLogout}
         handleExitAdmin={handleExitAdmin}
+        onSelectProfile={() => setActiveTab('profile')}
       />
 
       <div className="admin-body-layout">
@@ -308,6 +318,10 @@ function Admin() {
         <main className="admin-content-pane">
           {activeTab === 'stats' && (
             <StatsManager statsList={statsList} setStatsList={setStatsList} />
+          )}
+
+          {activeTab === 'profile' && (
+            <AdminProfileTab />
           )}
 
           {activeTab === 'testimonials' && (

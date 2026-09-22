@@ -356,16 +356,6 @@ export default function EmployeeListTab({
 
               <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Pending Requests</span>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#6366f1', margin: '0.2rem 0 0' }}>{calculatedPendingRequests}</h3>
-                </div>
-                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#eef2ff', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <FiClock size={19} />
-                </div>
-              </div>
-
-              <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
                   <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>New Joiners</span>
                   <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0284c7', margin: '0.2rem 0 0' }}>{(employeesList || []).filter(e => e.joinDate && new Date(e.joinDate) >= new Date(Date.now() - 30 * 86400000)).length}</h3>
                 </div>
@@ -1024,9 +1014,44 @@ export default function EmployeeListTab({
           {/* SUB TAB: PAYROLL */}
           {empSubTab === 'payroll' && (
             <div className="admin-payroll-tab-pane">
-              <div className="admin-content-header">
+              <div className="admin-content-header" style={{ marginBottom: '1.25rem' }}>
                 <h1>Payroll & Issued Salary Slips</h1>
                 <p>View employee salary breakdown, generate official monthly pay slips, and manage compensation structure.</p>
+              </div>
+
+              {/* Summary Metric Cards for Payroll */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+                <div className="stat-card" style={{ padding: '1rem 1.25rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Total Staff on Payroll</span>
+                    <h3 style={{ fontSize: '1.65rem', fontWeight: '800', color: '#0f172a', margin: '0.2rem 0 0' }}>{(employeesList || []).length}</h3>
+                  </div>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f1f5f9', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <FiUsers size={21} />
+                  </div>
+                </div>
+
+                <div className="stat-card" style={{ padding: '1rem 1.25rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Monthly Payroll Expense</span>
+                    <h3 style={{ fontSize: '1.65rem', fontWeight: '800', color: '#10b981', margin: '0.2rem 0 0' }}>
+                      ₹{(employeesList || []).reduce((sum, emp) => sum + (Number(emp.salary) || 0), 0).toLocaleString('en-IN')}
+                    </h3>
+                  </div>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <FiFileText size={21} />
+                  </div>
+                </div>
+
+                <div className="stat-card" style={{ padding: '1rem 1.25rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Configured Pay Slips</span>
+                    <h3 style={{ fontSize: '1.65rem', fontWeight: '800', color: '#6366f1', margin: '0.2rem 0 0' }}>{(employeesList || []).filter(e => Number(e.salary || 0) > 0).length}</h3>
+                  </div>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eef2ff', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <FiUserCheck size={21} />
+                  </div>
+                </div>
               </div>
 
               <div className="admin-card">
@@ -1046,7 +1071,7 @@ export default function EmployeeListTab({
                           <td><strong>{emp.name}</strong> ({formatEmpId(emp.empId, emp.id)})</td>
                           <td>{emp.department}</td>
                           <td>₹{Number(emp.salary || 0).toLocaleString('en-IN')}</td>
-                          <td>
+                          <td style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                             <button
                               className="btn-orange"
                               style={{ padding: '0.25rem 0.6rem', fontSize: '0.8rem' }}
@@ -1056,6 +1081,27 @@ export default function EmployeeListTab({
                               }}
                             >
                               Manage Payroll
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{
+                                padding: '0.25rem 0.6rem',
+                                fontSize: '0.8rem',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                background: '#fef2f2',
+                                color: '#dc2626',
+                                border: '1px solid #fecaca',
+                                borderRadius: '6px',
+                                fontWeight: '600',
+                                cursor: 'pointer'
+                              }}
+                              onClick={() => handleDeleteEmployeeRow(emp)}
+                              title="Delete Employee"
+                            >
+                              <FiTrash2 size={13} /> Delete
                             </button>
                           </td>
                         </tr>

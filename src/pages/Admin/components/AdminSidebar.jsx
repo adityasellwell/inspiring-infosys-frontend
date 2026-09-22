@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FiGrid, FiStar, FiLayers, FiUserCheck, FiClock,
   FiMessageSquare, FiCalendar, FiInbox, FiPhoneCall, FiSliders, FiLogOut,
@@ -27,7 +27,13 @@ export default function AdminSidebar({
   cancelTurnoverEdit,
   handleExitAdmin
 }) {
-  const [isEmployeesExpanded, setIsEmployeesExpanded] = useState(true);
+  const [isEmployeesExpanded, setIsEmployeesExpanded] = useState(activeTab === 'employees');
+
+  useEffect(() => {
+    if (activeTab === 'employees') {
+      setIsEmployeesExpanded(true);
+    }
+  }, [activeTab]);
 
   const handleTabClick = (tabKey, cancelFn) => {
     setActiveTab(tabKey);

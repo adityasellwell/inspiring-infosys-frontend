@@ -34,6 +34,14 @@ export const authApi = {
     });
     return res.json();
   },
+  updateProfile: async (profileData) => {
+    const res = await fetch(`${API_BASE}/auth/profile`, {
+      method: 'PUT',
+      headers: getHeaders(true),
+      body: JSON.stringify(profileData),
+    });
+    return res.json();
+  },
   logout: () => {
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_name');
@@ -672,6 +680,14 @@ export const clientServicesApi = {
       method: 'POST',
       headers: getHeaders(true),
       body: JSON.stringify({ domain }),
+    });
+    return res.json();
+  },
+
+  runAutoAlerts: async () => {
+    const res = await fetch(`${API_BASE}/client-services/run-auto-alerts`, {
+      method: 'POST',
+      headers: getHeaders(false),
     });
     return res.json();
   }
