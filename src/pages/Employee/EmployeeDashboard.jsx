@@ -452,7 +452,7 @@ function EmployeeDashboard() {
       <div className="emp-portal-wrapper emp-login-container">
         <div className="emp-login-card">
           <div className="emp-login-header">
-            <img src="/images/logo2.webp" alt="Inspiring Infosys" className="emp-login-logo" onError={(e) => e.target.src = '/img/logo.webp'} />
+            <img src="/images/logo2.webp" alt="Inspiring Infosys" className="emp-login-logo" style={{ maxHeight: '46px', maxWidth: '200px', width: 'auto', height: '46px', objectFit: 'contain', margin: '0 auto 1.25rem', display: 'block' }} onError={(e) => e.target.src = '/img/logo.webp'} />
             <h2>Employee Portal</h2>
             <p>Log in with your official credentials</p>
           </div>
@@ -526,7 +526,7 @@ function EmployeeDashboard() {
       <div className="emp-portal-wrapper emp-login-container">
         <div className="emp-login-card">
           <div className="emp-login-header">
-            <img src="/images/logo2.webp" alt="Inspiring Infosys" className="emp-login-logo" onError={(e) => e.target.src = '/img/logo.webp'} />
+            <img src="/images/logo2.webp" alt="Inspiring Infosys" className="emp-login-logo" style={{ maxHeight: '46px', maxWidth: '200px', width: 'auto', height: '46px', objectFit: 'contain', margin: '0 auto 1.25rem', display: 'block' }} onError={(e) => e.target.src = '/img/logo.webp'} />
             <h2>Employee Portal</h2>
             <p>Log in with your official credentials</p>
           </div>

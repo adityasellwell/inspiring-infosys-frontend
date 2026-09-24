@@ -309,8 +309,13 @@
 }
 
 .login-logo {
-  height: 40px;
-  margin-bottom: 1rem;
+  height: 44px !important;
+  max-height: 44px !important;
+  width: auto !important;
+  max-width: 200px !important;
+  object-fit: contain !important;
+  margin: 0 auto 1rem auto !important;
+  display: block !important;
 }
 
 .login-header h2 {

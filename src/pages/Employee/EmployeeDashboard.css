@@ -34,8 +34,13 @@
 }
 
 .emp-login-logo {
-  height: 42px;
-  margin-bottom: 1.25rem;
+  height: 46px !important;
+  max-height: 46px !important;
+  width: auto !important;
+  max-width: 200px !important;
+  object-fit: contain !important;
+  margin: 0 auto 1.25rem auto !important;
+  display: block !important;
 }
 
 .emp-login-header h2 {
