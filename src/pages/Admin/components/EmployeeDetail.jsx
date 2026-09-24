@@ -139,7 +139,8 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
       middleName: data.middleName || '',
       lastName: defaultLastName,
       phone: data.phone || '',
-      personalEmail: data.personalEmail || '',
+      email: data.email || data.personalEmail || '',
+      personalEmail: data.personalEmail || data.email || '',
       altPhone: data.altPhone || '',
       dob: data.dob ? String(data.dob).split('T')[0] : '',
       gender: data.gender || 'Male',
@@ -251,13 +252,17 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
   // Handlers
   const handleSavePersonal = async (e) => {
     e.preventDefault();
+    const primaryEmail = (personalForm.email || personalForm.personalEmail || '').trim().toLowerCase();
+    const persEmail = (personalForm.personalEmail || personalForm.email || '').trim().toLowerCase();
     const payload = {
       ...personalForm,
+      email: primaryEmail,
+      personalEmail: persEmail,
       name: `${personalForm.firstName || ''} ${personalForm.lastName || ''}`.trim()
     };
     const res = await employeesApi.update(employee.id, payload);
     if (res.success) {
-      toast.success('Personal information updated!');
+      toast.success('Personal and login credentials email updated!');
       setShowEditPersonalModal(false);
       fetchEmployeeData();
       if (onUpdate) onUpdate();
@@ -469,7 +474,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                     setCredentialsModal({
                       empId: formatEmpId(res.data.empId || employee.empId, employee.id),
                       name: res.data.name || employee.name,
-                      email: res.data.email || employee.email,
+                      email: res.data.email || res.data.personalEmail || employee.email || employee.personalEmail,
                       password: res.data.password || 'Inspire#2026',
                       designation: res.data.designation || employee.designation
                     });
@@ -477,7 +482,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                     setCredentialsModal({
                       empId: formatEmpId(employee.empId, employee.id),
                       name: employee.name,
-                      email: employee.email,
+                      email: employee.email || employee.personalEmail,
                       password: 'Inspire#2026',
                       designation: employee.designation
                     });
@@ -486,7 +491,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                   setCredentialsModal({
                     empId: formatEmpId(employee.empId, employee.id),
                     name: employee.name,
-                    email: employee.email,
+                    email: employee.email || employee.personalEmail,
                     password: 'Inspire#2026',
                     designation: employee.designation
                   });
@@ -541,7 +546,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
             </p>
             <div className="profile-meta-row">
               <span><FiUser /> Emp ID: <strong>{formatEmpId(employee.empId, employee.id)}</strong></span>
-              <span><FiMail /> {employee.email}</span>
+              <span><FiMail /> {employee.email || employee.personalEmail}</span>
               <span><FiPhone /> {employee.phone || 'N/A'}</span>
               <span><FiCalendar /> Joined: {new Date(employee.joinDate).toLocaleDateString()}</span>
             </div>
@@ -744,9 +749,13 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                     </span>
                   </div>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Official / Login Email</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0284c7' }}>{employee.email || employee.personalEmail || 'Not Set'}</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Personal Email</span>
-                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0284c7' }}>{employee.personalEmail || employee.email}</div>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.personalEmail || employee.email || 'Not Set'}</div>
                 </div>
                 <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Primary Phone</span>
@@ -1412,8 +1421,32 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 </div>
 
                 <div className="form-field-group">
+                  <label className="form-label">Official / Login Email <span className="required-star">*</span> (For Portal Credentials)</label>
+                  <input
+                    className="form-control"
+                    type="email"
+                    placeholder="Official / Login Email"
+                    value={personalForm.email || ''}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setPersonalForm(prev => ({
+                        ...prev,
+                        email: val,
+                        personalEmail: (!prev.personalEmail || prev.personalEmail === prev.email) ? val : prev.personalEmail
+                      }));
+                    }}
+                    required
+                  />
+                </div>
+                <div className="form-field-group">
                   <label className="form-label">Personal Email</label>
-                  <input className="form-control" type="email" placeholder="Personal Email Address" value={personalForm.personalEmail} onChange={e => setPersonalForm({...personalForm, personalEmail: e.target.value})} />
+                  <input
+                    className="form-control"
+                    type="email"
+                    placeholder="Personal Email Address"
+                    value={personalForm.personalEmail || ''}
+                    onChange={e => setPersonalForm(prev => ({ ...prev, personalEmail: e.target.value }))}
+                  />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Date of Birth</label>

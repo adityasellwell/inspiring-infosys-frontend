@@ -249,12 +249,13 @@ export default function EmployeeListTab({
 
   const handleViewCredentials = async (employee) => {
     const targetEmpId = formatEmpId(employee.empId, employee.id);
+    const resolvedEmail = employee.email || employee.personalEmail || '';
     try {
       const res = await employeesApi.resetPassword(employee.id || employee.empId, 'Inspire#2026');
       setCredentialsModal({
         empId: targetEmpId,
         name: employee.name,
-        email: employee.email,
+        email: resolvedEmail,
         password: (res && res.data && res.data.password) || 'Inspire#2026',
         designation: employee.designation
       });
@@ -262,7 +263,7 @@ export default function EmployeeListTab({
       setCredentialsModal({
         empId: targetEmpId,
         name: employee.name,
-        email: employee.email,
+        email: resolvedEmail,
         password: 'Inspire#2026',
         designation: employee.designation
       });
@@ -465,7 +466,7 @@ export default function EmployeeListTab({
                             <td style={{ textAlign: 'left', fontWeight: '700', color: '#1e293b', whiteSpace: 'nowrap' }}>{formatEmpId(employee.empId, employee.id)}</td>
                             <td style={{ textAlign: 'left' }}>
                               <strong style={{ color: '#0284c7', display: 'block', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>{employee.name}</strong>
-                              <div style={{ fontSize: '0.74rem', color: '#64748b', whiteSpace: 'nowrap' }}>{employee.email}</div>
+                              <div style={{ fontSize: '0.74rem', color: '#64748b', whiteSpace: 'nowrap' }}>{employee.email || employee.personalEmail}</div>
                             </td>
                             <td style={{ textAlign: 'left', whiteSpace: 'nowrap' }}>{employee.department}</td>
                             <td style={{ textAlign: 'left', whiteSpace: 'nowrap' }}>{employee.designation}</td>
