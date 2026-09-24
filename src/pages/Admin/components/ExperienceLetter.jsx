@@ -3,7 +3,7 @@ import { FiPrinter, FiX, FiFileText, FiCalendar, FiEdit3, FiRotateCcw, FiCheck }
 import { formatEmpId } from './empUtils';
 import './ExperienceLetter.css';
 
-function ExperienceLetter({ employee, onClose }) {
+function ExperienceLetter({ employee, onClose, isReadOnly = false }) {
   if (!employee) return null;
 
   const todayStr = new Date().toISOString().split('T')[0];
@@ -130,14 +130,58 @@ function ExperienceLetter({ employee, onClose }) {
   const handlePrint = () => {
     setIsEditMode(false);
     setTimeout(() => {
-      window.print();
-    }, 100);
+      const wrapper = document.querySelector('.experience-letter-document-wrapper');
+      if (!wrapper) { window.print(); return; }
+
+      const printHTML = wrapper.innerHTML;
+      const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+        .map(el => el.outerHTML).join('\n');
+
+      const existing = document.getElementById('__experience-print-frame__');
+      if (existing) existing.remove();
+      const iframe = document.createElement('iframe');
+      iframe.id = '__experience-print-frame__';
+      iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none;';
+      document.body.appendChild(iframe);
+
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      doc.open();
+      doc.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Experience Letter – ${employeeName}</title>
+  ${styles}
+  <style>
+    @page { size: A4 portrait; margin: 0; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box !important; }
+    html, body { margin: 0 !important; padding: 0 !important; background: #ffffff; }
+    .experience-letter-document-wrapper { display: block !important; width: 210mm !important; margin: 0 !important; padding: 0 !important; transform: none !important; background: #ffffff !important; }
+    .experience-letter-page { position: relative !important; display: flex !important; flex-direction: column !important; width: 210mm !important; min-height: 297mm !important; height: auto !important; padding: 0 12mm 12mm 12mm !important; box-sizing: border-box !important; background: #ffffff !important; color: #000000 !important; overflow: visible !important; box-shadow: none !important; border-radius: 0 !important; margin: 0 !important; transform: none !important; }
+    .official-page-footer { margin-top: auto !important; flex-shrink: 0 !important; width: calc(100% + 24mm) !important; margin-left: -12mm !important; margin-right: -12mm !important; margin-bottom: -12mm !important; }
+    .no-print { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="experience-letter-document-wrapper">${printHTML}</div>
+</body>
+</html>`);
+      doc.close();
+
+      setTimeout(() => {
+        try {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        } catch (e) { window.print(); }
+        setTimeout(() => { if (iframe.parentNode) iframe.parentNode.removeChild(iframe); }, 2000);
+      }, 800);
+    }, 150);
   };
 
   return (
     <div className="experience-letter-modal-overlay" onClick={onClose}>
       <div className="experience-letter-modal-card" onClick={(e) => e.stopPropagation()}>
-        
+
         {/* Modal Header Bar */}
         <div className="experience-letter-modal-header no-print">
           <div className="header-top-row">
@@ -147,14 +191,16 @@ function ExperienceLetter({ employee, onClose }) {
             </div>
 
             <div className="modal-header-actions">
-              <button
-                type="button"
-                className={`btn-toggle-edit ${isEditMode ? 'active' : ''}`}
-                onClick={() => setIsEditMode(!isEditMode)}
-                title={isEditMode ? 'Finish Editing' : 'Click text on letter to edit directly'}
-              >
-                {isEditMode ? <><FiCheck size={14} /> Done Editing</> : <><FiEdit3 size={14} /> Edit Text</>}
-              </button>
+              {!isReadOnly && (
+                <button
+                  type="button"
+                  className={`btn-toggle-edit ${isEditMode ? 'active' : ''}`}
+                  onClick={() => setIsEditMode(!isEditMode)}
+                  title={isEditMode ? 'Finish Editing' : 'Click text on letter to edit directly'}
+                >
+                  {isEditMode ? <><FiCheck size={14} /> Done Editing</> : <><FiEdit3 size={14} /> Edit Text</>}
+                </button>
+              )}
 
               <button
                 type="button"
@@ -176,18 +222,20 @@ function ExperienceLetter({ employee, onClose }) {
             </div>
           </div>
 
-          <div className="modal-header-controls">
+          {!isReadOnly && (
+            <div className="modal-header-controls">
 
-            <div className="control-group">
-              <label><FiCalendar size={12} /> Relieving Date:</label>
-              <input
-                type="date"
-                value={relievingDate}
-                onChange={(e) => setRelievingDate(e.target.value)}
-                className="date-picker-input"
-              />
+              <div className="control-group">
+                <label><FiCalendar size={12} /> Relieving Date:</label>
+                <input
+                  type="date"
+                  value={relievingDate}
+                  onChange={(e) => setRelievingDate(e.target.value)}
+                  className="date-picker-input"
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Modal Body */}
@@ -202,15 +250,15 @@ function ExperienceLetter({ employee, onClose }) {
 
             {/* ════════════════════════ PAGE: EXPERIENCE LETTER ════════════════════════ */}
             <div className={`experience-letter-page ${isEditMode ? 'editable-page-active' : ''}`}>
-              
+
               {/* Top Blue Header Banner */}
               <div className="doc-top-blue-header">
                 <svg className="header-wave-svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="expBlueHeaderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#08529c" />
-                      <stop offset="60%" stopColor="#0b66b8" />
-                      <stop offset="100%" stopColor="#0d7acc" />
+                      <stop offset="0%" stopColor="#004b99" />
+                      <stop offset="50%" stopColor="#0077e6" />
+                      <stop offset="100%" stopColor="#00a8ff" />
                     </linearGradient>
                   </defs>
                   <path d="M 0,0 L 1000,0 L 1000,95 C 650,88 350,15 0,45 Z" fill="url(#expBlueHeaderGrad)" />

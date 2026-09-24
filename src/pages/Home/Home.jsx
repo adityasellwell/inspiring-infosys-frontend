@@ -1397,9 +1397,13 @@ function Home() {
                   return (
                     <div key={idx} className="testimonial-card-wrap">
                       <div className={`testimonial-card ${isHighlighted ? 'card-highlighted' : ''} ${t.colorClass || 'badge-blue'}`}>
-                        {/* Top Initials Circle Badge */}
+                        {/* Top Initials Circle Badge / Avatar */}
                         <div className="testimonial-initials-badge">
-                          {t.initials}
+                          {t.imgUrl || t.image ? (
+                            <img src={t.imgUrl || t.image} alt={t.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                          ) : (
+                            t.initials
+                          )}
                         </div>
 
                         <div className="testimonial-header">

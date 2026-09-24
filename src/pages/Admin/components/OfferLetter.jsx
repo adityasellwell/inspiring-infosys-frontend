@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FiPrinter, FiX, FiFileText, FiCalendar, FiEdit3, FiRotateCcw, FiCheck } from 'react-icons/fi';
 import './OfferLetter.css';
 
-function OfferLetter({ employee, onClose }) {
+function OfferLetter({ employee, onClose, isReadOnly = false }) {
   if (!employee) return null;
 
   const todayStr = new Date().toISOString().split('T')[0];
@@ -161,6 +161,21 @@ function OfferLetter({ employee, onClose }) {
     setSalaryText(formatCurrency(salaryInput));
   }, [salaryInput]);
 
+  // Dynamic scale for mobile: fit A4 (794px) within the modal body width
+  const modalBodyRef = useRef(null);
+  const [pageScale, setPageScale] = useState(1);
+  useEffect(() => {
+    const computeScale = () => {
+      if (!modalBodyRef.current) return;
+      const available = modalBodyRef.current.clientWidth - 32;
+      const a4px = 794; // 210mm at 96dpi
+      setPageScale(available >= a4px ? 1 : Math.round((available / a4px) * 100) / 100);
+    };
+    computeScale();
+    window.addEventListener('resize', computeScale);
+    return () => window.removeEventListener('resize', computeScale);
+  }, []);
+
   // Sync paras when dates/desig change unless overridden
   useEffect(() => {
     setPara1(`I am writing to you on behalf of INSPIRING INFOSYS, innovative IT & E-Commerce Company specializing in IT & E-Commerce Service Provider. We have thoroughly reviewed your qualifications and are delighted to extend a formal offer of employment to you for the position of ${designationText} at INSPIRING INFOSYS.`);
@@ -217,11 +232,107 @@ function OfferLetter({ employee, onClose }) {
     setReceiverSigLabel('Signature of Receiver');
   };
 
+  // Print via a hidden off-screen iframe — no new tab, guaranteed clean 3-page output
   const handlePrint = () => {
     setIsEditMode(false);
     setTimeout(() => {
-      window.print();
-    }, 100);
+      const wrapper = document.querySelector('.offer-letter-document-wrapper');
+      if (!wrapper) { window.print(); return; }
+
+      const printHTML = wrapper.innerHTML;
+
+      // Gather all stylesheets from the current page (fonts, OfferLetter.css, etc.)
+      const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+        .map(el => el.outerHTML)
+        .join('\n');
+
+      // Create a hidden off-screen iframe (stays on same page, no new tab)
+      const existing = document.getElementById('__offer-print-frame__');
+      if (existing) existing.remove();
+      const iframe = document.createElement('iframe');
+      iframe.id = '__offer-print-frame__';
+      iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none;';
+      document.body.appendChild(iframe);
+
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      doc.open();
+      doc.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Offer Letter – ${candidateName}</title>
+  ${styles}
+  <style>
+    @page { size: A4 portrait; margin: 0; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box !important; }
+    html, body { margin: 0 !important; padding: 0 !important; background: #ffffff; }
+    /* Clean document wrapper */
+    .offer-letter-document-wrapper {
+      display: block !important;
+      width: 210mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      transform: none !important;
+      background: #ffffff !important;
+    }
+    /* Each A4 page */
+    .offer-letter-page {
+      position: relative !important;
+      display: flex !important;
+      flex-direction: column !important;
+      width: 210mm !important;
+      height: 297mm !important;
+      max-height: 297mm !important;
+      min-height: 297mm !important;
+      padding: 0 15mm 20mm 15mm !important;
+      box-sizing: border-box !important;
+      background: #ffffff !important;
+      color: #000000 !important;
+      overflow: hidden !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+      transform: none !important;
+      page-break-after: always !important;
+      break-after: page !important;
+    }
+    .offer-letter-page:last-child {
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+    }
+    /* Footer at bottom via flex */
+    .official-page-footer {
+      margin-top: auto !important;
+      flex-shrink: 0 !important;
+      width: calc(100% + 30mm) !important;
+      margin-left: -15mm !important;
+      margin-right: -15mm !important;
+      margin-bottom: -20mm !important;
+    }
+    .no-print { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="offer-letter-document-wrapper">${printHTML}</div>
+</body>
+</html>`);
+      doc.close();
+
+      // Print after content is fully loaded
+      setTimeout(() => {
+        try {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        } catch (e) {
+          window.print(); // fallback
+        }
+        // Auto-remove iframe after print dialog closes
+        setTimeout(() => {
+          if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+        }, 2000);
+      }, 500);
+    }, 150);
   };
 
   const recipientPrefix = candidateName && (candidateName.toLowerCase().startsWith('mr.') || candidateName.toLowerCase().startsWith('ms.'))
@@ -231,7 +342,7 @@ function OfferLetter({ employee, onClose }) {
   return (
     <div className="offer-letter-modal-overlay" onClick={onClose}>
       <div className="offer-letter-modal-card" onClick={(e) => e.stopPropagation()}>
-        
+
         {/* Modal Header Bar */}
         <div className="offer-letter-modal-header no-print">
           <div className="header-top-row">
@@ -241,14 +352,16 @@ function OfferLetter({ employee, onClose }) {
             </div>
 
             <div className="modal-header-actions">
-              <button
-                type="button"
-                className={`btn-toggle-edit ${isEditMode ? 'active' : ''}`}
-                onClick={() => setIsEditMode(!isEditMode)}
-                title={isEditMode ? 'Finish Editing' : 'Click text on offer letter to edit directly'}
-              >
-                {isEditMode ? <><FiCheck size={14} /> Done Editing</> : <><FiEdit3 size={14} /> Edit Text</>}
-              </button>
+              {!isReadOnly && (
+                <button
+                  type="button"
+                  className={`btn-toggle-edit ${isEditMode ? 'active' : ''}`}
+                  onClick={() => setIsEditMode(!isEditMode)}
+                  title={isEditMode ? 'Finish Editing' : 'Click text on offer letter to edit directly'}
+                >
+                  {isEditMode ? <><FiCheck size={14} /> Done Editing</> : <><FiEdit3 size={14} /> Edit Text</>}
+                </button>
+              )}
 
               <button
                 type="button"
@@ -272,8 +385,11 @@ function OfferLetter({ employee, onClose }) {
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="offer-letter-modal-body">
-          <div className="offer-letter-document-wrapper">
+        <div className="offer-letter-modal-body" ref={modalBodyRef}>
+          <div
+            className="offer-letter-document-wrapper"
+            style={{ '--doc-scale': pageScale }}
+          >
 
             {isEditMode && (
               <div className="edit-banner-info no-print">
@@ -288,9 +404,9 @@ function OfferLetter({ employee, onClose }) {
                 <svg className="header-wave-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="blueHeaderGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#08529c" />
-                      <stop offset="60%" stopColor="#0b66b8" />
-                      <stop offset="100%" stopColor="#0d7acc" />
+                      <stop offset="0%" stopColor="#004b99" />
+                      <stop offset="50%" stopColor="#0077e6" />
+                      <stop offset="100%" stopColor="#00a8ff" />
                     </linearGradient>
                   </defs>
                   <path d="M 0,0 L 1000,0 L 1000,125 C 650,115 350,20 0,60 Z" fill="url(#blueHeaderGrad1)" />
@@ -461,9 +577,9 @@ function OfferLetter({ employee, onClose }) {
                 <svg className="header-wave-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="blueHeaderGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#08529c" />
-                      <stop offset="60%" stopColor="#0b66b8" />
-                      <stop offset="100%" stopColor="#0d7acc" />
+                      <stop offset="0%" stopColor="#004b99" />
+                      <stop offset="50%" stopColor="#0077e6" />
+                      <stop offset="100%" stopColor="#00a8ff" />
                     </linearGradient>
                   </defs>
                   <path d="M 0,0 L 1000,0 L 1000,125 C 650,115 350,20 0,60 Z" fill="url(#blueHeaderGrad2)" />
@@ -698,9 +814,9 @@ function OfferLetter({ employee, onClose }) {
                 <svg className="header-wave-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="blueHeaderGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#08529c" />
-                      <stop offset="60%" stopColor="#0b66b8" />
-                      <stop offset="100%" stopColor="#0d7acc" />
+                      <stop offset="0%" stopColor="#004b99" />
+                      <stop offset="50%" stopColor="#0077e6" />
+                      <stop offset="100%" stopColor="#00a8ff" />
                     </linearGradient>
                   </defs>
                   <path d="M 0,0 L 1000,0 L 1000,125 C 650,115 350,20 0,60 Z" fill="url(#blueHeaderGrad3)" />

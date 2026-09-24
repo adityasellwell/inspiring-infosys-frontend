@@ -303,19 +303,18 @@ export default function EmployeeListTab({
         <div>
           {/* Top Dashboard Header (Shown only on All Employees main tab) */}
           {empSubTab === 'all' && (
-            <div className="admin-content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '1.5rem' }}>
-              <div style={{ flex: '1 1 auto', minWidth: '0' }}>
-                <h1 style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Employees</h1>
-                <p style={{ color: '#64748b', margin: '0.25rem 0 0', fontSize: '0.9rem' }}>
+            <div className="admin-content-header employee-header-flex">
+              <div className="header-title-area">
+                <h1>Employees</h1>
+                <p>
                   Manage employee profiles, employment information, documents, attendance, leave, payroll and employee requests.
                 </p>
               </div>
-              <div style={{ display: 'flex', gap: '0.75rem', flexShrink: 0, marginLeft: 'auto', alignItems: 'center' }}>
+              <div className="header-actions-area">
                 <button
                   type="button"
                   className="btn-secondary"
                   onClick={handleExportEmployeesCSV}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}
                 >
                   <FiDownload /> Export CSV
                 </button>
@@ -323,7 +322,6 @@ export default function EmployeeListTab({
                   type="button"
                   className="btn-orange"
                   onClick={() => setEmpSubTab('add')}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}
                 >
                   <FiPlus /> Add Employee
                 </button>
@@ -333,7 +331,7 @@ export default function EmployeeListTab({
 
           {/* Summary Metric Cards (Shown only on All Employees main tab) */}
           {empSubTab === 'all' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+            <div className="employee-stats-grid">
               <div className="stat-card" style={{ padding: '0.9rem 1.1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Total Employees</span>
@@ -370,15 +368,16 @@ export default function EmployeeListTab({
           {empSubTab === 'all' && (
             <div>
               {/* Filter & Search Bar */}
-              <div className="admin-filter-bar" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem', marginBottom: '1.25rem', background: '#fff', padding: '0.75rem 0.85rem', borderRadius: '10px', border: '1px solid #e2e8f0', alignItems: 'center' }}>
+              <div className="admin-filter-bar">
                 <input
                   type="text"
+                  className="filter-input-search"
                   placeholder="Search by Name, Emp ID, Email..."
                   value={empSearch}
                   onChange={e => setEmpSearch(e.target.value)}
-                  style={{ flex: '2 1 180px', minWidth: '160px', padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
                 />
                 <select
+                  className="filter-select"
                   value={empDeptFilter}
                   onChange={e => {
                     if (e.target.value === '__ADD_NEW__' || e.target.value === '__MANAGE_DELETE__') {
@@ -387,7 +386,6 @@ export default function EmployeeListTab({
                       setEmpDeptFilter(e.target.value);
                     }
                   }}
-                  style={{ flex: '1 1 120px', minWidth: '110px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
                 >
                   <option value="All">All Departments</option>
                   {availableDepartments.map(dept => (
@@ -397,6 +395,7 @@ export default function EmployeeListTab({
                   <option value="__MANAGE_DELETE__" style={{ fontWeight: '700', color: '#dc2626' }}>🗑️ Delete / Manage Departments...</option>
                 </select>
                 <select
+                  className="filter-select"
                   value={empDesigFilter}
                   onChange={e => {
                     if (e.target.value === '__ADD_NEW__' || e.target.value === '__MANAGE_DELETE__') {
@@ -405,7 +404,6 @@ export default function EmployeeListTab({
                       setEmpDesigFilter(e.target.value);
                     }
                   }}
-                  style={{ flex: '1 1 120px', minWidth: '110px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
                 >
                   <option value="All">All Designations</option>
                   {availableDesignations.map(desig => (
@@ -414,14 +412,14 @@ export default function EmployeeListTab({
                   <option value="__ADD_NEW__" style={{ fontWeight: '700', color: '#2563eb' }}>+ Add New Designation...</option>
                   <option value="__MANAGE_DELETE__" style={{ fontWeight: '700', color: '#dc2626' }}>🗑️ Delete / Manage Designations...</option>
                 </select>
-                <select value={empTypeFilter} onChange={e => setEmpTypeFilter(e.target.value)} style={{ flex: '1 1 120px', minWidth: '110px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}>
+                <select className="filter-select" value={empTypeFilter} onChange={e => setEmpTypeFilter(e.target.value)}>
                   <option value="All">All Employment Types</option>
                   <option value="Full-Time">Full-Time</option>
                   <option value="Part-Time">Part-Time</option>
                   <option value="Contract">Contract</option>
                   <option value="Intern">Intern</option>
                 </select>
-                <select value={empStatusFilter} onChange={e => setEmpStatusFilter(e.target.value)} style={{ flex: '1 1 110px', minWidth: '100px', padding: '0.45rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}>
+                <select className="filter-select" value={empStatusFilter} onChange={e => setEmpStatusFilter(e.target.value)}>
                   <option value="All">All Statuses</option>
                   <option value="Active">Active</option>
                   <option value="On Leave">On Leave</option>
@@ -435,7 +433,7 @@ export default function EmployeeListTab({
               {/* Employee Data Table */}
               <div className="admin-card employee-list-card" style={{ padding: '0.75rem' }}>
                 <div className="table-responsive" style={{ width: '100%', maxWidth: '100%', overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
-                  <table className="admin-table" style={{ width: '100%', minWidth: '850px' }}>
+                  <table className="admin-table admin-employees-table">
                     <thead>
                       <tr>
                         <th style={{ textAlign: 'left', width: '70px', whiteSpace: 'nowrap' }}>Emp ID</th>

@@ -305,14 +305,18 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   border-radius: 2px;
   box-sizing: border-box;
-  padding: 0 15mm 25mm 15mm;
+  padding: 0 15mm 20mm 15mm;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   color: #1e293b;
   font-size: 10.2pt;
   line-height: 1.55;
+  /* Mobile scale: shrinks page to fit narrow screens */
+  transform: scale(var(--doc-scale, 1));
+  transform-origin: top center;
+  /* Collapse empty space created by scaling down */
+  margin-bottom: calc(297mm * (var(--doc-scale, 1) - 1));
 }
 
 /* ── Top Curved Blue Header Banner ── */
@@ -347,19 +351,18 @@
   z-index: 2;
   display: flex;
   align-items: center;
+  overflow: visible;
 }
 
 .header-banner-logo {
-  height: 44px;
-  width: auto;
-  object-fit: contain;
-  background: transparent !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  border: none !important;
-  mix-blend-mode: multiply;
-  filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.2));
+  height: 64px !important;
+  max-height: 70px !important;
+  width: auto !important;
+  max-width: 240px !important;
+  object-fit: contain !important;
+  mix-blend-mode: multiply !important;
+  filter: none !important;
+  display: block !important;
 }
 
 .doc-logo-banner {
@@ -371,17 +374,17 @@
   justify-content: space-between;
   align-items: center;
   font-family: 'Inter', sans-serif;
-  font-size: 10pt;
+  font-size: 9.8pt;
   color: #1e293b;
-  margin-top: 10px;
-  margin-bottom: 20px;
+  margin-top: 4px;
+  margin-bottom: 8px;
   flex-shrink: 0;
 }
 
 /* Page 2 Specific Spacing */
 .page-2 .doc-meta-row {
-  margin-top: 10px;
-  margin-bottom: 15px;
+  margin-top: 4px;
+  margin-bottom: 6px;
   flex-shrink: 0;
 }
 
@@ -397,171 +400,174 @@
 
 /* Recipient */
 .doc-recipient {
-  margin-bottom: 20px;
-  font-size: 10.5pt;
-  line-height: 1.45;
+  margin-bottom: 8px;
+  font-size: 10pt;
+  line-height: 1.4;
 }
 
 .to-label {
-  margin: 0 0 4px 0;
+  margin: 0 0 2px 0;
   color: #64748b;
   font-weight: 500;
 }
 
 .recipient-name {
-  margin: 0 0 4px 0;
-  font-size: 11.5pt;
+  margin: 0 0 2px 0;
+  font-size: 11pt;
   color: #0f172a;
 }
 
 .recipient-addr,
 .recipient-contact {
   margin: 0 0 2px 0;
-  font-size: 9.8pt;
+  font-size: 9.5pt;
   color: #334155;
 }
 
 /* Subject */
 .doc-subject {
-  margin-bottom: 20px;
-  font-size: 10.8pt;
+  margin-bottom: 8px;
+  font-size: 10.2pt;
   color: #0f172a;
 }
 
 /* Paragraphs */
 .doc-paragraphs p {
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   text-align: justify;
-  font-size: 10.2pt;
-  line-height: 1.6;
+  font-size: 9.8pt;
+  line-height: 1.48;
   color: #1e293b;
 }
 
 .offer-details-intro {
-  margin-top: 15px;
-  margin-bottom: 8px !important;
+  margin-top: 6px;
+  margin-bottom: 4px !important;
 }
 
 .position-highlight-box {
-  margin: 10px 0 15px 30px;
-  font-size: 11pt;
+  margin: 6px 0 6px 20px;
+  font-size: 10.2pt;
   color: #0f172a;
 }
 
 /* ── PAGE 2 STYLING ── */
 .checklist-heading {
-  font-size: 10.8pt;
+  font-size: 10.5pt;
   font-weight: 600;
   color: #0f172a;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
 .checklist-items {
   list-style-type: disc;
-  padding-left: 35px;
-  margin-bottom: 40px;
+  padding-left: 30px;
+  margin-bottom: 25px;
 }
 
 .checklist-items li {
-  margin-bottom: 10px;
-  font-size: 10.2pt;
-  line-height: 1.55;
+  margin-bottom: 8px;
+  font-size: 9.8pt;
+  line-height: 1.45;
   color: #1e293b;
 }
 
 .page-signature-section {
-  margin-top: 30px;
+  margin-top: 15px;
 }
 
 .company-sig-box {
-  margin-bottom: 40px;
+  margin-bottom: 25px;
   text-align: right;
   padding-right: 20px;
 }
 
 .sig-for-company {
-  font-size: 10.8pt;
-  margin-bottom: 15px;
+  font-size: 10.2pt;
+  margin-bottom: 10px;
   color: #0f172a;
 }
 
 .stamp-wrapper {
-  height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin-bottom: 3px;
+  height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  margin: 4px 0 !important;
 }
 
 .official-stamp-img {
-  height: 60px;
-  width: auto;
-  object-fit: contain;
-  mix-blend-mode: multiply;
+  height: 48px !important;
+  max-height: 50px !important;
+  width: auto !important;
+  max-width: 130px !important;
+  object-fit: contain !important;
+  mix-blend-mode: multiply !important;
+  display: block !important;
 }
 
 .sig-title {
-  font-size: 10.2pt;
+  font-size: 9.8pt;
   font-weight: 600;
   color: #334155;
 }
 
 .acceptance-declaration p {
-  font-size: 10.2pt;
-  line-height: 1.55;
-  margin-bottom: 25px;
+  font-size: 9.8pt;
+  line-height: 1.45;
+  margin-bottom: 15px;
   color: #1e293b;
 }
 
 .dots-line {
-  font-size: 12pt;
+  font-size: 11pt;
   letter-spacing: 2px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: #64748b;
 }
 
 .receiver-sig-label {
-  font-size: 10.2pt;
+  font-size: 9.8pt;
   color: #0f172a;
 }
 
 /* ── PAGE 3 ANNEXURE STYLING ── */
 .annexure-title {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .page-2 .annexure-title {
   margin-top: 0;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .annexure-title h2 {
   font-family: 'Inter', sans-serif;
-  font-size: 13pt;
+  font-size: 12.5pt;
   font-weight: 800;
   color: #0f172a;
   margin: 0;
 }
 
 .annexure-sub {
-  font-size: 10.2pt;
-  margin-bottom: 12px;
+  font-size: 9.8pt;
+  margin-bottom: 8px;
   color: #334155;
 }
 
 .remuneration-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   font-family: 'Inter', sans-serif;
 }
 
 .remuneration-table th,
 .remuneration-table td {
   border: 1.5px solid #0f172a;
-  padding: 7px 12px;
-  font-size: 10pt;
+  padding: 5px 10px;
+  font-size: 9.5pt;
   text-align: left;
 }
 
@@ -573,30 +579,30 @@
 
 .terms-block h3 {
   font-family: 'Inter', sans-serif;
-  font-size: 10.8pt;
+  font-size: 10.2pt;
   font-weight: 800;
   color: #0f172a;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
 }
 
 .terms-block ul {
   list-style-type: disc;
-  padding-left: 25px;
-  margin-bottom: 10px;
+  padding-left: 20px;
+  margin-bottom: 8px;
 }
 
 .terms-block li {
-  margin-bottom: 4px;
-  font-size: 10pt;
-  line-height: 1.45;
+  margin-bottom: 3px;
+  font-size: 9.5pt;
+  line-height: 1.4;
   color: #1e293b;
 }
 
 .terms-block p {
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   text-align: justify;
-  font-size: 10pt;
-  line-height: 1.45;
+  font-size: 9.5pt;
+  line-height: 1.4;
   color: #1e293b;
 }
 
@@ -604,8 +610,8 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: 30px;
-  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-bottom: 4px;
 }
 
 .annexure-sig-col {
@@ -618,12 +624,12 @@
 
 .inline-stamp {
   justify-content: flex-end;
-  height: 70px;
+  height: 50px !important;
 }
 
 .sig-heading {
   font-size: 10.2pt;
-  margin-bottom: 20px;
+  margin-bottom: 4px;
   color: #0f172a;
 }
 
@@ -635,16 +641,24 @@
 
 /* ── OFFICIAL FOOTER (On Every Page) ── */
 .official-page-footer {
-  width: 100%;
+  width: calc(100% + 30mm);
+  margin-left: -15mm;
+  margin-right: -15mm;
+  margin-bottom: -20mm;
   margin-top: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
   font-family: 'Inter', Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
 }
 
 .footer-address {
   text-align: center;
   font-size: 8.2pt;
-  color: #475569;
-  margin-bottom: 8px;
+  color: #334155;
+  padding: 0 15mm 6px 15mm;
+  margin: 0;
   line-height: 1.35;
 }
 
@@ -655,8 +669,8 @@
   font-size: 9.2pt;
   font-weight: 700;
   color: #ffffff;
-  border-radius: 4px;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .bar-left {
@@ -665,7 +679,7 @@
   /* Inspiring Infosys Green */
   display: flex;
   align-items: center;
-  padding-left: 15px;
+  padding-left: 15mm;
 }
 
 .bar-right {
@@ -675,7 +689,50 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 15px;
+  padding-right: 15mm;
+}
+
+/* ════════════════════════ MOBILE RESPONSIVE ════════════════════════ */
+@media (max-width: 860px) {
+  .offer-letter-modal-card {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .offer-letter-modal-body {
+    padding: 0.75rem 0.25rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .offer-letter-modal-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .modal-header-controls {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .modal-header-actions {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .btn-toggle-edit,
+  .btn-modal-reset,
+  .btn-modal-print {
+    font-size: 0.75rem;
+    padding: 0 0.6rem;
+    height: 32px;
+  }
+
+  .modal-header-title span {
+    font-size: 0.85rem;
+  }
 }
 
 /* ════════════════════════ PRINT RULES ════════════════════════ */
@@ -685,109 +742,126 @@
     margin: 0;
   }
 
-  html,
-  body {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #ffffff !important;
-    width: 100% !important;
-    height: 100% !important;
-    overflow: visible !important;
+  * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    box-sizing: border-box !important;
   }
 
-  /* Hide background website/admin dashboard elements */
-  .admin-top-navbar,
-  .admin-sidebar,
-  .admin-content-pane,
-  .admin-mobile-toggle,
-  header,
-  aside,
-  nav,
-  .no-print {
+  /* ─── body.offer-letter-printing: show ONLY the offer letter ─── */
+
+  /* Step 1: Remove portal dashboard from layout so letter starts at top */
+  body.offer-letter-printing .emp-portal-wrapper {
     display: none !important;
   }
 
-  /* Reset dashboard container to static block */
-  .admin-dashboard-container {
+  /* Step 2: Make everything else invisible (keeps layout, just hidden) */
+  body.offer-letter-printing * {
+    visibility: hidden !important;
+  }
+
+  /* Step 3: Fix the modal ancestor chain — reset position/height/overflow
+     so all 3 letter pages can flow across the full print canvas */
+  body.offer-letter-printing .offer-letter-modal-overlay {
+    position: static !important;
     display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
     height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    width: 210mm !important;
+    padding: 0 !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  body.offer-letter-printing .offer-letter-modal-card {
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    width: 210mm !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    animation: none !important;
+  }
+
+  body.offer-letter-printing .offer-letter-modal-header,
+  body.offer-letter-printing .no-print {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  body.offer-letter-printing .offer-letter-modal-body {
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
     background: transparent !important;
   }
 
-  /* Reset modal overlay to static document flow */
-  .offer-letter-modal-overlay {
-    position: static !important;
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
-    background: #ffffff !important;
-    backdrop-filter: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-    overflow: visible !important;
+  /* Step 4: Document wrapper — static flow, no scale transform */
+  body.offer-letter-printing .offer-letter-document-wrapper,
+  body.offer-letter-printing .offer-letter-document-wrapper * {
+    visibility: visible !important;
   }
 
-  .offer-letter-modal-card {
+  body.offer-letter-printing .offer-letter-document-wrapper {
     position: static !important;
     display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
-    background: #ffffff !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    overflow: visible !important;
-  }
-
-  .offer-letter-modal-header {
-    display: none !important;
-  }
-
-  .offer-letter-modal-body {
-    position: static !important;
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
+    width: 210mm !important;
     padding: 0 !important;
     margin: 0 !important;
     background: #ffffff !important;
-    overflow: visible !important;
+    transform: none !important;
+    gap: 0 !important;
   }
 
-  .offer-letter-document-wrapper {
-    display: block !important;
-    width: 100% !important;
-  }
-
-  .offer-letter-page {
+  /* Step 5: Each A4 page — exact 297mm, flex column */
+  body.offer-letter-printing .offer-letter-page {
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
     width: 210mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
     min-height: 297mm !important;
-    height: auto !important;
-    padding: 0 15mm 20mm 15mm !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    margin: 0 auto !important;
-    page-break-after: always !important;
-    break-after: page !important;
+    padding: 0 15mm 0 15mm !important;
     box-sizing: border-box !important;
     background: #ffffff !important;
     color: #000000 !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+    page-break-after: always !important;
+    break-after: page !important;
   }
 
-  .annexure-signatures-row,
-  .page-signature-section,
-  .official-page-footer {
+  body.offer-letter-printing .offer-letter-page:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Step 6: Footer pushed to very bottom via flex margin-top:auto */
+  body.offer-letter-printing .official-page-footer {
+    margin-top: auto !important;
+    flex-shrink: 0 !important;
+    width: calc(100% + 30mm) !important;
+    margin-left: -15mm !important;
+    margin-right: -15mm !important;
+    margin-bottom: 0 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  body.offer-letter-printing .annexure-signatures-row,
+  body.offer-letter-printing .page-signature-section {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }

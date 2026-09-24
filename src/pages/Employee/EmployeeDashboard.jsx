@@ -3,7 +3,7 @@ import {
   FiUser, FiClock, FiDollarSign, FiCalendar, FiHelpCircle, FiFileText,
   FiBell, FiLogOut, FiUpload, FiCheckCircle, FiAlertCircle, FiPrinter,
   FiPlus, FiBriefcase, FiMapPin, FiMail, FiPhone, FiCheck, FiSend, FiFile,
-  FiGrid, FiTrendingUp, FiCreditCard
+  FiGrid, FiTrendingUp, FiCreditCard, FiMenu, FiX
 } from 'react-icons/fi';
 import { employeePortalApi } from '../../api/api';
 import OfferLetter from '../Admin/components/OfferLetter';
@@ -23,6 +23,7 @@ function EmployeeDashboard() {
   });
   const [activeTab, setActiveTab] = useState('dashboard');
   const [profileSubTab, setProfileSubTab] = useState('details'); // 'details' | 'bank' | 'docs' | 'letters'
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
@@ -579,18 +580,18 @@ function EmployeeDashboard() {
     if (a.checkIn) {
       const dIn = new Date(a.checkIn);
       if (!isNaN(dIn.getTime()) &&
-          dIn.getFullYear() === now.getFullYear() &&
-          dIn.getMonth() === now.getMonth() &&
-          dIn.getDate() === now.getDate()) {
+        dIn.getFullYear() === now.getFullYear() &&
+        dIn.getMonth() === now.getMonth() &&
+        dIn.getDate() === now.getDate()) {
         return true;
       }
     }
     if (a.date) {
       const d = new Date(a.date);
       if (!isNaN(d.getTime()) &&
-          d.getFullYear() === now.getFullYear() &&
-          d.getMonth() === now.getMonth() &&
-          d.getDate() === now.getDate()) {
+        d.getFullYear() === now.getFullYear() &&
+        d.getMonth() === now.getMonth() &&
+        d.getDate() === now.getDate()) {
         return true;
       }
     }
@@ -604,6 +605,14 @@ function EmployeeDashboard() {
       {/* ── Top Header Bar ── */}
       <header className="emp-navbar">
         <div className="emp-nav-left">
+          <button
+            type="button"
+            className="emp-mobile-menu-btn"
+            onClick={() => setSidebarOpen(prev => !prev)}
+            title="Toggle Menu"
+          >
+            {sidebarOpen ? <FiX size={22} /> : <FiMenu size={22} />}
+          </button>
           <img src="/images/logo2.webp" alt="Inspiring Infosys" className="emp-nav-logo" onError={(e) => e.target.src = '/img/logo.webp'} />
         </div>
 
@@ -612,14 +621,14 @@ function EmployeeDashboard() {
           <div className="emp-clock-widget">
             {!isClockedIn ? (
               <button className="btn-clock-in" onClick={handleClockIn}>
-                <FiClock /> Clock In Now
+                <FiClock /> <span>Clock In Now</span>
               </button>
             ) : !isClockedOut ? (
               <button className="btn-clock-out" onClick={handleClockOut}>
-                <FiClock /> Clock Out
+                <FiClock /> <span>Clock Out</span>
               </button>
             ) : (
-              <span className="badge-status badge-approved">Checked Out Today</span>
+              <span className="badge-status badge-approved">Checked Out</span>
             )}
           </div>
 
@@ -629,7 +638,7 @@ function EmployeeDashboard() {
             ) : (
               <div className="emp-avatar-circle">{employee.name ? employee.name.charAt(0).toUpperCase() : 'E'}</div>
             )}
-            <div style={{ textAlign: 'left' }}>
+            <div className="emp-profile-meta" style={{ textAlign: 'left' }}>
               <div style={{ fontWeight: '800', fontSize: '0.9rem', color: '#0f172a' }}>{employee.name}</div>
               <div style={{ fontSize: '0.74rem', color: '#64748b' }}>{employee.designation || 'Team Member'}</div>
             </div>
@@ -641,9 +650,14 @@ function EmployeeDashboard() {
         </div>
       </header>
 
+      {/* Mobile Drawer Overlay Backdrop */}
+      {sidebarOpen && (
+        <div className="emp-sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+      )}
+
       {/* ── Dashboard Sidebar + Content ── */}
       <div className="emp-main-container">
-        <aside className="emp-sidebar">
+        <aside className={`emp-sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div className="emp-sidebar-brand-box" style={{ padding: '0.65rem 0.5rem 1rem', marginBottom: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
             <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#38bdf8', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'inline-block' }}>
               EMPLOYEE PORTAL
@@ -651,30 +665,30 @@ function EmployeeDashboard() {
           </div>
           <div className="emp-sidebar-menu">
             <div className="emp-sidebar-section-title">OVERVIEW</div>
-            <button className={`emp-sidebar-btn ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
-              <FiGrid /> Executive Dashboard
+            <button className={`emp-sidebar-btn ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setSidebarOpen(false); }}>
+              <FiGrid /> <span>Executive Dashboard</span>
             </button>
 
             <div className="emp-sidebar-section-title">MY RECORDS</div>
-            <button className={`emp-sidebar-btn ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>
-              <FiUser /> My Profile
+            <button className={`emp-sidebar-btn ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => { setActiveTab('profile'); setSidebarOpen(false); }}>
+              <FiUser /> <span>My Profile</span>
             </button>
-            <button className={`emp-sidebar-btn ${activeTab === 'idcard' ? 'active' : ''}`} onClick={() => setActiveTab('idcard')}>
-              <FiCreditCard /> Employee ID Card
+            <button className={`emp-sidebar-btn ${activeTab === 'idcard' ? 'active' : ''}`} onClick={() => { setActiveTab('idcard'); setSidebarOpen(false); }}>
+              <FiCreditCard /> <span>Employee ID Card</span>
             </button>
-            <button className={`emp-sidebar-btn ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => setActiveTab('attendance')}>
-              <FiClock /> Attendance Logs
+            <button className={`emp-sidebar-btn ${activeTab === 'attendance' ? 'active' : ''}`} onClick={() => { setActiveTab('attendance'); setSidebarOpen(false); }}>
+              <FiClock /> <span>Attendance Logs</span>
             </button>
-            <button className={`emp-sidebar-btn ${activeTab === 'salary' ? 'active' : ''}`} onClick={() => setActiveTab('salary')}>
-              <FiDollarSign /> Salary Slips
+            <button className={`emp-sidebar-btn ${activeTab === 'salary' ? 'active' : ''}`} onClick={() => { setActiveTab('salary'); setSidebarOpen(false); }}>
+              <FiDollarSign /> <span>Salary Slips</span>
             </button>
 
             <div className="emp-sidebar-section-title">SERVICES & HELP</div>
-            <button className={`emp-sidebar-btn ${activeTab === 'leaves' ? 'active' : ''}`} onClick={() => setActiveTab('leaves')}>
-              <FiCalendar /> Leaves Tracker
+            <button className={`emp-sidebar-btn ${activeTab === 'leaves' ? 'active' : ''}`} onClick={() => { setActiveTab('leaves'); setSidebarOpen(false); }}>
+              <FiCalendar /> <span>Leaves Tracker</span>
             </button>
-            <button className={`emp-sidebar-btn ${activeTab === 'queries' ? 'active' : ''}`} onClick={() => setActiveTab('queries')}>
-              <FiHelpCircle /> Query Box
+            <button className={`emp-sidebar-btn ${activeTab === 'queries' ? 'active' : ''}`} onClick={() => { setActiveTab('queries'); setSidebarOpen(false); }}>
+              <FiHelpCircle /> <span>Query Box</span>
             </button>
           </div>
         </aside>
@@ -1936,9 +1950,9 @@ function EmployeeDashboard() {
       </div>
 
       {/* Official Letters Modals */}
-      {showOfferModal && <OfferLetter employee={employee} onClose={() => setShowOfferModal(false)} />}
-      {showRelievingModal && <RelievingLetter employee={employee} onClose={() => setShowRelievingModal(false)} />}
-      {showExperienceModal && <ExperienceLetter employee={employee} onClose={() => setShowExperienceModal(false)} />}
+      {showOfferModal && <OfferLetter employee={employee} isReadOnly={true} onClose={() => setShowOfferModal(false)} />}
+      {showRelievingModal && <RelievingLetter employee={employee} isReadOnly={true} onClose={() => setShowRelievingModal(false)} />}
+      {showExperienceModal && <ExperienceLetter employee={employee} isReadOnly={true} onClose={() => setShowExperienceModal(false)} />}
 
       {/* Blue and White Custom Modal Popup */}
       <Modal

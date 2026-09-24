@@ -450,17 +450,17 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
   const leaveCount = leaveRequests.filter(l => l.status === 'Approved').length;
 
   return (
-    <div className="employee-detail-wrapper" style={{ padding: '1.5rem' }}>
+    <div className="employee-detail-wrapper">
       {/* Top Bar Navigation */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <button className="btn-secondary" onClick={onBack} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+      <div className="detail-top-nav">
+        <button className="btn-secondary btn-back-list" onClick={onBack}>
           <FiChevronLeft /> Back to Employee List
         </button>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div className="detail-top-actions">
           <button
             type="button"
             className="btn-secondary"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
+            style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
             onClick={async () => {
               if (setCredentialsModal) {
                 try {
@@ -508,7 +508,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
           <button
             type="button"
             className="btn-secondary"
-            style={{ color: '#dc2626', borderColor: '#fca5a5', background: '#fef2f2', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            style={{ color: '#dc2626', borderColor: '#fca5a5', background: '#fef2f2' }}
             onClick={handleDeleteEmployee}
           >
             <FiTrash2 size={15} /> Delete Staff
@@ -520,17 +520,17 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
       </div>
 
       {/* Header Profile Card */}
-      <div className="admin-table-container" style={{ padding: '1.5rem', marginBottom: '1.5rem', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-          <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#f0f9ff', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: '700', border: '2px solid #bae6fd', overflow: 'hidden' }}>
+      <div className="admin-card detail-profile-card">
+        <div className="profile-card-content">
+          <div className="profile-avatar">
             {employee.photoUrl ? (
               <img src={employee.photoUrl} alt={employee.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
               employee.name.charAt(0)
             )}
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div className="profile-info">
+            <div className="profile-name-row">
               <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>{employee.name}</h2>
               <span className={`status-badge status-${(employee.status || 'Active').toLowerCase().replace(' ', '-')}`}>
                 {employee.status || 'Active'}
@@ -539,7 +539,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
             <p style={{ margin: '0.25rem 0', color: '#475569', fontWeight: '600' }}>
               {employee.designation || 'Specialist'} &bull; <span style={{ color: '#0284c7' }}>{employee.department || 'IT'}</span>
             </p>
-            <div style={{ display: 'flex', gap: '1.25rem', fontSize: '0.85rem', color: '#64748b', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+            <div className="profile-meta-row">
               <span><FiUser /> Emp ID: <strong>{formatEmpId(employee.empId, employee.id)}</strong></span>
               <span><FiMail /> {employee.email}</span>
               <span><FiPhone /> {employee.phone || 'N/A'}</span>
@@ -550,7 +550,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
       </div>
 
       {/* Tabs Bar */}
-      <div className="admin-tabs" style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.5rem', overflowX: 'auto' }}>
+      <div className="admin-tabs detail-tabs-bar">
         {['overview', 'personal', 'employment', 'attendance', 'leave', 'payroll', 'documents', 'letters'].map((tab) => (
           <button
             key={tab}
@@ -577,7 +577,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
       {activeTab === 'overview' && (
         <div>
           {/* Top Metric Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div className="detail-stats-grid">
             <div className="stat-card" style={{ padding: '1.1rem 1.25rem', background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', display: 'block' }}>Leave Balance</span>
@@ -628,7 +628,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
           </div>
 
           {/* Section Grids */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+          <div className="detail-two-col-grid">
             {/* Employment Summary Card */}
             <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
@@ -636,7 +636,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}>Employment Summary</h4>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="detail-info-grid">
                 <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Reporting Manager</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -653,14 +653,14 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                   </div>
                 </div>
 
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Work Mode & Location</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <FiMapPin style={{ color: '#f97316' }} /> {employee.workMode || 'On-site'} ({employee.workLocation || 'Mumbai Office'})
                   </div>
                 </div>
 
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Shift Timings</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <FiClock style={{ color: '#10b981' }} /> {employee.shift || 'General (10:00 AM - 7:00 PM)'}
@@ -676,7 +676,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}>Payroll & Financial Overview</h4>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="detail-info-grid">
                 <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Monthly Gross Salary</span>
                   <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#16a34a' }}>
@@ -691,14 +691,14 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                   </div>
                 </div>
 
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Bank Account Info</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: employee.accountNumber ? '#0f172a' : '#ef4444' }}>
                     {employee.bankName ? `${employee.bankName} (A/C: ${employee.accountNumber})` : 'Not Configured'}
                   </div>
                 </div>
 
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>PAN Card Number</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: employee.panNumber ? '#0f172a' : '#ef4444' }}>
                     {employee.panNumber || 'Not Uploaded'}
@@ -713,7 +713,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
       {/* ── TAB 2: PERSONAL INFO ── */}
       {activeTab === 'personal' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '1.25rem 1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div className="detail-header-card-row">
             <div>
               <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <FiUser style={{ color: '#f97316' }} /> Personal & Contact Details
@@ -725,13 +725,13 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+          <div className="detail-two-col-grid">
             {/* Primary Contact Info Card */}
             <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <h4 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: '800', color: '#0f172a', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <FiMail style={{ color: '#0284c7' }} /> Primary Identity & Contact
               </h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="detail-info-grid">
                 <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Full Name</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.name}</div>
@@ -795,7 +795,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
             <h4 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: '800', color: '#0f172a', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <FiDollarSign style={{ color: '#10b981' }} /> Bank Account & Statutory Information
             </h4>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+            <div className="detail-stats-grid">
               <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                 <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Bank Name</span>
                 <div style={{ fontSize: '0.95rem', fontWeight: '800', color: employee.bankName ? '#0f172a' : '#ef4444' }}>
@@ -828,7 +828,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
       {/* ── TAB 3: EMPLOYMENT ── */}
       {activeTab === 'employment' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '1.25rem 1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div className="detail-header-card-row">
             <div>
               <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <FiBriefcase style={{ color: '#0284c7' }} /> Employment Information
@@ -840,13 +840,13 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+          <div className="detail-two-col-grid">
             {/* Role & Org Card */}
             <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <h4 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: '800', color: '#0f172a', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <FiUser style={{ color: '#f97316' }} /> Organization & Role
               </h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="detail-info-grid">
                 <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Employee ID</span>
                   <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0284c7' }}>{formatEmpId(employee.empId, employee.id)}</div>
@@ -867,7 +867,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Designation</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.designation || 'N/A'}</div>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Reporting Manager</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <FiUser style={{ color: '#0284c7' }} /> {employee.reportingManager || 'HR Manager'}
@@ -881,7 +881,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <h4 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: '800', color: '#0f172a', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <FiClock style={{ color: '#10b981' }} /> Work Setup & Status
               </h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="detail-info-grid">
                 <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Work Mode</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.workMode || 'On-site'}</div>
@@ -919,11 +919,11 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
       {/* ── TAB 4: ATTENDANCE ── */}
       {activeTab === 'attendance' && (
         <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <div className="detail-header-card-row" style={{ marginBottom: '1.25rem' }}>
             <h3 style={{ margin: 0, color: '#0f172a', fontSize: '1.2rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <FiClock style={{ color: '#0284c7' }} /> Attendance Logs & History
             </h3>
-            <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.8rem', fontWeight: '700' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.8rem', fontWeight: '700', flexWrap: 'wrap' }}>
               <span style={{ background: '#dcfce7', color: '#15803d', padding: '0.3rem 0.75rem', borderRadius: '20px' }}>
                 Present: {attendances.filter(a => (a.status || '').toLowerCase() === 'present' || a.checkIn).length}
               </span>
@@ -937,8 +937,8 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
           </div>
 
           {/* Unified Date & Status Filter Bar */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '1.25rem', background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="admin-filter-bar" style={{ marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <FiCalendar style={{ color: '#0284c7' }} />
               <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Date Filter:</span>
               <input
@@ -960,13 +960,14 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               )}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <FiClock style={{ color: '#0284c7' }} />
               <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155', whiteSpace: 'nowrap' }}>Status:</span>
               <select
                 value={attStatusFilter}
                 onChange={e => setAttStatusFilter(e.target.value)}
-                style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', background: '#fff' }}
+                className="filter-select"
+                style={{ background: '#fff' }}
               >
                 <option value="All">All Statuses</option>
                 <option value="Present">Present</option>
@@ -1045,7 +1046,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
       {activeTab === 'leave' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {/* Leave Entitlement Metric Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+          <div className="detail-stats-grid">
             <div style={{ background: '#fff', padding: '1.25rem', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block' }}>Casual Leave</span>
               <h4 style={{ margin: '0.2rem 0 0', fontSize: '1.3rem', fontWeight: '800', color: '#0284c7' }}>8 / 12 Days</h4>
@@ -1391,7 +1392,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <button type="button" className="admin-modal-close-btn" onClick={() => setShowEditPersonalModal(false)}><FiX size={18} /></button>
             </div>
             <form onSubmit={handleSavePersonal}>
-              <div className="admin-modal-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.15rem', maxHeight: '70vh', overflowY: 'auto' }}>
+              <div className="admin-modal-body detail-form-grid" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
                 <div className="form-field-group">
                   <label className="form-label">First Name <span className="required-star">*</span></label>
                   <input className="form-control" placeholder="First Name" value={personalForm.firstName} onChange={e => setPersonalForm({...personalForm, firstName: e.target.value})} required />
@@ -1522,7 +1523,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <button type="button" className="admin-modal-close-btn" onClick={() => setShowEditEmpModal(false)}><FiX size={18} /></button>
             </div>
             <form onSubmit={handleSaveEmp}>
-              <div className="admin-modal-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.15rem' }}>
+              <div className="admin-modal-body detail-form-grid">
                 <div className="form-field-group">
                   <label className="form-label">Employee Code (Emp ID)</label>
                   <input className="form-control" placeholder="e.g. INS001" value={empForm.empId} onChange={e => setEmpForm({...empForm, empId: e.target.value})} />
@@ -1605,7 +1606,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <button type="button" className="admin-modal-close-btn" onClick={() => setShowPayslipModal(false)}><FiX size={18} /></button>
             </div>
             <form onSubmit={handleIssuePayslip}>
-              <div className="admin-modal-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.15rem' }}>
+              <div className="admin-modal-body detail-form-grid">
                 <div className="form-field-group">
                   <label className="form-label">Month</label>
                   <input className="form-control" placeholder="Month" value={payslipForm.month} onChange={e => setPayslipForm({...payslipForm, month: e.target.value})} />

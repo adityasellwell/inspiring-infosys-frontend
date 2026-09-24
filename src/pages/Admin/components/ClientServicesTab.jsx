@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   FiGlobe, FiServer, FiShield, FiTool, FiCloud, FiSearch,
   FiPlus, FiEdit, FiTrash2, FiSend, FiRefreshCw, FiCalendar,
@@ -416,6 +416,22 @@ export default function ClientServicesTab() {
 
     return true;
   });
+
+  // Sort services so that services belonging to the same client/domain are listed right next to each other ("ek ke neeche ek")
+  const sortedServices = useMemo(() => {
+    const list = [...filteredServices];
+    return list.sort((a, b) => {
+      const keyA = (a.clientEmail || a.clientName || '').toLowerCase().trim();
+      const keyB = (b.clientEmail || b.clientName || '').toLowerCase().trim();
+      if (keyA < keyB) return -1;
+      if (keyA > keyB) return 1;
+
+      // Secondary sort by service name / domain
+      const nameA = (a.serviceName || '').toLowerCase().trim();
+      const nameB = (b.serviceName || '').toLowerCase().trim();
+      return nameA.localeCompare(nameB);
+    });
+  }, [filteredServices]);
 
   const getServiceTypeIcon = (type) => {
     switch (type) {
@@ -993,7 +1009,7 @@ export default function ClientServicesTab() {
               </tr>
             </thead>
             <tbody>
-              {filteredServices.length === 0 ? (
+              {sortedServices.length === 0 ? (
                 <tr>
                   <td colSpan="9" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
                     <FiGlobe size={28} style={{ color: '#94a3b8', marginBottom: '0.4rem' }} />
@@ -1001,7 +1017,13 @@ export default function ClientServicesTab() {
                   </td>
                 </tr>
               ) : (
-                filteredServices.map(s => {
+                sortedServices.map((s, idx) => {
+                  const prev = idx > 0 ? sortedServices[idx - 1] : null;
+                  const isSameClientAsPrev = prev && (
+                    (prev.clientEmail && s.clientEmail && prev.clientEmail.trim().toLowerCase() === s.clientEmail.trim().toLowerCase()) ||
+                    (prev.clientName && s.clientName && prev.clientName.trim().toLowerCase() === s.clientName.trim().toLowerCase())
+                  );
+
                   const daysLeft = s.daysLeft;
                   const isExpired = daysLeft !== null && daysLeft <= 0;
                   const isCritical = daysLeft !== null && daysLeft > 0 && daysLeft <= 7;
@@ -1009,7 +1031,14 @@ export default function ClientServicesTab() {
                   const isSelected = selectedIds.includes(s.id);
 
                   return (
-                    <tr key={s.id} style={{ background: isSelected ? '#f0f9ff' : 'transparent', borderBottom: '1px solid #f1f5f9' }}>
+                    <tr
+                      key={s.id}
+                      style={{
+                        background: isSelected ? '#f0f9ff' : isSameClientAsPrev ? '#fafafa' : 'transparent',
+                        borderBottom: '1px solid #f1f5f9',
+                        borderLeft: isSameClientAsPrev ? '3px solid #0284c7' : '3px solid transparent'
+                      }}
+                    >
                       <td style={{ textAlign: 'center', verticalAlign: 'middle', padding: '0.55rem 0.3rem' }}>
                         <input
                           type="checkbox"
@@ -1020,7 +1049,14 @@ export default function ClientServicesTab() {
                       </td>
 
                       <td style={{ verticalAlign: 'middle', padding: '0.55rem 0.5rem' }}>
-                        <strong style={{ color: '#0f172a', display: 'block', fontSize: '0.82rem' }}>{s.clientName}</strong>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
+                          <strong style={{ color: '#0f172a', fontSize: '0.82rem' }}>{s.clientName}</strong>
+                          {isSameClientAsPrev && (
+                            <span style={{ fontSize: '0.66rem', color: '#0284c7', background: '#e0f2fe', border: '1px solid #bae6fd', padding: '1px 5px', borderRadius: '4px', fontWeight: '800' }}>
+                              Same Client
+                            </span>
+                          )}
+                        </div>
                         {s.companyName && <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b' }}>{s.companyName}</span>}
                         <div style={{ fontSize: '0.74rem', color: '#0284c7', marginTop: '1px', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={s.clientEmail}>
                           <FiMail size={11} style={{ verticalAlign: 'middle', marginRight: '3px' }} />

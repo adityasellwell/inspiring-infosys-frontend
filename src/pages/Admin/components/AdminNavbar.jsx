@@ -1,33 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FiX, FiMenu, FiLogOut, FiUser } from 'react-icons/fi';
 
 export default function AdminNavbar({
   isSidebarOpen,
   setIsSidebarOpen,
   adminName,
-  isUserMenuOpen: controlledOpen,
-  handleUserMenuEnter,
-  handleUserMenuLeave,
   handleLogout,
   onSelectProfile
 }) {
-  const [internalOpen, setInternalOpen] = useState(false);
-  const isMenuOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
 
-  const onEnter = () => {
-    if (handleUserMenuEnter) handleUserMenuEnter();
-    else setInternalOpen(true);
-  };
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  const onLeave = () => {
-    if (handleUserMenuLeave) handleUserMenuLeave();
-    else setInternalOpen(false);
+  const toggleDropdown = () => {
+    setIsOpen(prev => !prev);
   };
 
   const handleProfileClick = () => {
-    setInternalOpen(false);
+    setIsOpen(false);
     if (onSelectProfile) onSelectProfile();
   };
+
+  const handleSignOutClick = () => {
+    setIsOpen(false);
+    if (handleLogout) handleLogout();
+  };
+
+  const initial = adminName ? adminName.charAt(0).toUpperCase() : 'A';
 
   return (
     <header className="admin-top-navbar">
@@ -43,98 +52,135 @@ export default function AdminNavbar({
         </button>
       </div>
       <div className="admin-top-navbar-right">
-        <div className="admin-user-menu" onMouseEnter={onEnter} onMouseLeave={onLeave} style={{ position: 'relative' }}>
-          <div
-            className="admin-user-trigger"
-            onClick={() => setInternalOpen(prev => !prev)}
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+        <div className="admin-user-menu-container" ref={menuRef} style={{ position: 'relative' }}>
+          <button
+            type="button"
+            className="admin-user-avatar-btn"
+            onClick={toggleDropdown}
+            aria-expanded={isOpen}
+            title="Account Profile Menu"
+            style={{
+              background: isOpen ? '#f1f5f9' : 'transparent',
+              border: 'none',
+              borderRadius: '16px',
+              padding: '6px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+              outline: 'none',
+              boxShadow: 'none'
+            }}
+            onMouseEnter={e => { if (!isOpen) e.currentTarget.style.background = '#f8fafc'; }}
+            onMouseLeave={e => { if (!isOpen) e.currentTarget.style.background = 'transparent'; }}
           >
             <div style={{
-              width: '40px',
-              height: '40px',
+              width: '42px',
+              height: '42px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #2563eb 0%, #06b6d4 100%)',
+              background: 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: '900',
-              fontSize: '1.15rem',
-              boxShadow: '0 2px 10px rgba(37, 99, 235, 0.3)',
-              border: '2px solid #ffffff'
+              fontSize: '1.2rem',
+              boxShadow: '0 4px 14px rgba(2, 132, 199, 0.28)',
+              border: '2.5px solid #ffffff'
             }}>
-              {adminName ? adminName.charAt(0).toUpperCase() : 'A'}
+              {initial}
             </div>
-          </div>
+          </button>
 
-          <div
-            className={`admin-user-dropdown ${isMenuOpen ? 'open' : ''}`}
-            style={{
-              position: 'absolute',
-              top: '115%',
-              right: 0,
-              background: '#ffffff',
-              borderRadius: '14px',
-              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.12)',
-              border: '1px solid #e2e8f0',
-              padding: '0.5rem',
-              minWidth: '170px',
-              zIndex: 999,
-              display: isMenuOpen ? 'block' : 'none'
-            }}
-          >
-            <button
-              type="button"
-              onClick={handleProfileClick}
+          {isOpen && (
+            <div
+              className="admin-profile-dropdown"
               style={{
-                width: '100%',
-                padding: '0.65rem 0.85rem',
-                border: 'none',
-                background: 'none',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                fontSize: '0.88rem',
-                fontWeight: '600',
-                color: '#334155',
-                cursor: 'pointer',
-                textAlign: 'left'
+                position: 'absolute',
+                top: 'calc(100% + 10px)',
+                right: 0,
+                background: '#ffffff',
+                borderRadius: '18px',
+                boxShadow: '0 12px 35px rgba(15, 23, 42, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05)',
+                border: '1px solid #e2e8f0',
+                padding: '0.65rem',
+                minWidth: '200px',
+                zIndex: 9999,
+                animation: 'dropdownFadeIn 0.15s ease-out forwards'
               }}
-              onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
-              onMouseLeave={e => e.currentTarget.style.background = 'none'}
             >
-              <FiUser size={16} style={{ color: '#475569' }} />
-              My Profile
-            </button>
+              {/* Caret Arrow Triangle Top */}
+              <div style={{
+                position: 'absolute',
+                top: '-7px',
+                right: '22px',
+                width: '12px',
+                height: '12px',
+                background: '#ffffff',
+                borderLeft: '1px solid #e2e8f0',
+                borderTop: '1px solid #e2e8f0',
+                transform: 'rotate(45deg)',
+                boxSizing: 'border-box'
+              }} />
 
-            <div style={{ height: '1px', background: '#f1f5f9', margin: '0.35rem 0' }} />
+              <button
+                type="button"
+                className="dropdown-menu-item"
+                onClick={handleProfileClick}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 0.95rem',
+                  border: 'none',
+                  background: 'transparent',
+                  borderRadius: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  fontSize: '0.94rem',
+                  fontWeight: '700',
+                  color: '#1e293b',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'background-color 0.15s ease'
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <FiUser size={18} style={{ color: '#64748b' }} />
+                <span>My Profile</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={handleLogout}
-              style={{
-                width: '100%',
-                padding: '0.65rem 0.85rem',
-                border: 'none',
-                background: 'none',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                fontSize: '0.88rem',
-                fontWeight: '700',
-                color: '#dc2626',
-                cursor: 'pointer',
-                textAlign: 'left'
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'}
-              onMouseLeave={e => e.currentTarget.style.background = 'none'}
-            >
-              <FiLogOut size={16} style={{ color: '#ef4444' }} />
-              Sign Out
-            </button>
-          </div>
+              <div style={{ height: '1px', background: '#f1f5f9', margin: '0.4rem 0' }} />
+
+              <button
+                type="button"
+                className="dropdown-menu-item logout-item"
+                onClick={handleSignOutClick}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 0.95rem',
+                  border: 'none',
+                  background: 'transparent',
+                  borderRadius: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  fontSize: '0.94rem',
+                  fontWeight: '700',
+                  color: '#dc2626',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'background-color 0.15s ease'
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <FiLogOut size={18} style={{ color: '#ef4444' }} />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

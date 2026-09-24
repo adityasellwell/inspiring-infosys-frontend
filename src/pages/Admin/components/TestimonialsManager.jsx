@@ -8,18 +8,19 @@ export default function TestimonialsManager({ testimonialsList, setTestimonialsL
   const toast = useToast();
   const [editingId, setEditingId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [testiForm, setTestiForm] = useState({ name: '', text: '', rating: 5, timeAgo: 'Just now', initials: '', isActive: true });
+  const [testiForm, setTestiForm] = useState({ name: '', text: '', rating: 5, timeAgo: 'Just now', initials: '', imgUrl: '', isActive: true });
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, id: null });
 
   const startEditTesti = (testi) => {
     setEditingId(testi.id);
     setIsEditing(true);
     setTestiForm({
-      name: testi.name,
-      text: testi.text,
-      rating: testi.rating,
-      timeAgo: testi.timeAgo,
-      initials: testi.initials,
+      name: testi.name || '',
+      text: testi.text || '',
+      rating: testi.rating || 5,
+      timeAgo: testi.timeAgo || 'Just now',
+      initials: testi.initials || '',
+      imgUrl: testi.imgUrl || testi.image || '',
       isActive: testi.isActive ?? true
     });
   };
@@ -27,7 +28,7 @@ export default function TestimonialsManager({ testimonialsList, setTestimonialsL
   const cancelTestiEdit = () => {
     setEditingId(null);
     setIsEditing(false);
-    setTestiForm({ name: '', text: '', rating: 5, timeAgo: 'Just now', initials: '', isActive: true });
+    setTestiForm({ name: '', text: '', rating: 5, timeAgo: 'Just now', initials: '', imgUrl: '', isActive: true });
   };
 
   const handleTestiFormSubmit = async (e) => {
@@ -46,7 +47,7 @@ export default function TestimonialsManager({ testimonialsList, setTestimonialsL
         const res = await testimonialsApi.create(testiForm);
         if (res.success) {
           setTestimonialsList(prev => [...prev, res.data]);
-          setTestiForm({ name: '', text: '', rating: 5, timeAgo: 'Just now', initials: '', isActive: true });
+          setTestiForm({ name: '', text: '', rating: 5, timeAgo: 'Just now', initials: '', imgUrl: '', isActive: true });
           toast.success('Testimonial added!');
         } else {
           toast.error(res.message || 'Operation failed');
@@ -93,7 +94,7 @@ export default function TestimonialsManager({ testimonialsList, setTestimonialsL
           <h2>{isEditing ? 'Edit Testimonial' : 'Add New Testimonial'}</h2>
         </div>
         <form onSubmit={handleTestiFormSubmit} className="login-form">
-          <div className="form-grid form-grid-2">
+          <div className="form-grid form-grid-3">
             <div className="admin-input-group">
               <label>Client Name</label>
               <input
@@ -111,6 +112,15 @@ export default function TestimonialsManager({ testimonialsList, setTestimonialsL
                 placeholder="E.g., NK"
                 value={testiForm.initials}
                 onChange={(e) => setTestiForm({ ...testiForm, initials: e.target.value })}
+              />
+            </div>
+            <div className="admin-input-group">
+              <label>Client Image URL</label>
+              <input
+                type="text"
+                placeholder="E.g., /images/client.jpg or https://..."
+                value={testiForm.imgUrl}
+                onChange={(e) => setTestiForm({ ...testiForm, imgUrl: e.target.value })}
               />
             </div>
           </div>
@@ -136,6 +146,8 @@ export default function TestimonialsManager({ testimonialsList, setTestimonialsL
                 <option value="5">5 Stars</option>
                 <option value="4">4 Stars</option>
                 <option value="3">3 Stars</option>
+                <option value="2">2 Stars</option>
+                <option value="1">1 Star</option>
               </select>
             </div>
             <div className="admin-input-group">
@@ -178,6 +190,7 @@ export default function TestimonialsManager({ testimonialsList, setTestimonialsL
           <thead>
             <tr>
               <th>Client Name</th>
+              <th>Image</th>
               <th>Initials</th>
               <th>Rating</th>
               <th>Review Content</th>
@@ -190,7 +203,19 @@ export default function TestimonialsManager({ testimonialsList, setTestimonialsL
             {testimonialsList.map(testi => (
               <tr key={testi.id}>
                 <td><strong>{testi.name}</strong></td>
-                <td><span className="filing-tag-pill">{testi.initials}</span></td>
+                <td>
+                  {testi.imgUrl || testi.image ? (
+                    <img
+                      src={testi.imgUrl || testi.image}
+                      alt={testi.name}
+                      style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #cbd5e1' }}
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontStyle: 'italic' }}>No Image</span>
+                  )}
+                </td>
+                <td><span className="filing-tag-pill">{testi.initials || '--'}</span></td>
                 <td style={{ color: '#fbbf24', fontWeight: '800' }}>{'★'.repeat(testi.rating)}</td>
                 <td style={{ maxWidth: '300px', whiteSpace: 'normal', fontSize: '0.82rem' }}>{testi.text}</td>
                 <td>{testi.timeAgo}</td>
