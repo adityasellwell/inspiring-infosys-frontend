@@ -77,6 +77,45 @@
 
 .modal-icon {
   color: #38bdf8;
+  flex-shrink: 0;
+}
+
+.title-text-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.main-doc-title {
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.doc-emp-subtitle {
+  font-weight: 500;
+  color: #38bdf8;
+  font-size: 0.85rem;
+}
+
+.btn-modal-view-mode {
+  background: #1e293b;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.15s ease;
+}
+
+.btn-modal-view-mode:hover {
+  background: #334155;
+  color: #ffffff;
+  border-color: #64748b;
 }
 
 .modal-header-controls {
@@ -693,45 +732,105 @@
 }
 
 /* ════════════════════════ MOBILE RESPONSIVE ════════════════════════ */
-@media (max-width: 860px) {
-  .offer-letter-modal-card {
-    width: 100vw;
-    max-width: 100vw;
-    height: 100vh;
-    max-height: 100vh;
-    border-radius: 0;
+@media screen and (max-width: 860px) {
+  .offer-letter-modal-overlay {
+    padding: 0;
   }
 
-  .offer-letter-modal-body {
-    padding: 0.75rem 0.25rem;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  .offer-letter-modal-card {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
   }
 
   .offer-letter-modal-header {
-    padding: 0.5rem 0.75rem;
+    padding: 0.6rem 0.75rem !important;
+    gap: 0.4rem !important;
   }
 
-  .modal-header-controls {
-    flex-wrap: wrap;
-    gap: 0.25rem;
+  .header-top-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
   }
 
-  .modal-header-actions {
-    flex-wrap: wrap;
-    gap: 0.3rem;
-  }
-
-  .btn-toggle-edit,
-  .btn-modal-reset,
-  .btn-modal-print {
-    font-size: 0.75rem;
-    padding: 0 0.6rem;
-    height: 32px;
+  .modal-header-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+    font-size: 0.88rem !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+    color: #f8fafc !important;
   }
 
   .modal-header-title span {
-    font-size: 0.85rem;
+    white-space: normal !important;
+    word-break: break-word !important;
+    line-height: 1.25 !important;
+  }
+
+  .modal-header-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .btn-modal-print {
+    background-color: #16a34a !important;
+    color: #ffffff !important;
+    padding: 0.35rem 0.65rem !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    height: 34px !important;
+    white-space: nowrap !important;
+    gap: 4px !important;
+    border-radius: 6px !important;
+  }
+
+  .btn-modal-print:hover {
+    background-color: #15803d !important;
+  }
+
+  .btn-modal-close {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 6px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .modal-header-controls {
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
+    padding: 0.35rem 0.5rem !important;
+  }
+
+  .control-group {
+    font-size: 0.72rem !important;
+  }
+
+  /* Modal body container: fits scaled A4 without horizontal clipping */
+  .offer-letter-modal-body {
+    padding: 0.75rem 0.25rem !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    background: #0f172a !important;
+  }
+
+  .offer-letter-document-wrapper {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
   }
 }
 
@@ -748,81 +847,126 @@
     box-sizing: border-box !important;
   }
 
-  /* ─── body.offer-letter-printing: show ONLY the offer letter ─── */
+  html, body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    overflow: visible !important;
+  }
 
-  /* Step 1: Remove portal dashboard from layout so letter starts at top */
-  body.offer-letter-printing .emp-portal-wrapper {
+  /* Hide background navigation & dashboard chrome only when printing official letters */
+  body.letter-printing .emp-navbar,
+  body.letter-printing .emp-sidebar,
+  body.letter-printing .emp-sidebar-backdrop,
+  body.letter-printing .admin-top-navbar,
+  body.letter-printing .admin-sidebar,
+  body.letter-printing .admin-mobile-toggle,
+  body.letter-printing .detail-header-card-row,
+  body.letter-printing .detail-tabs-nav,
+  body.letter-printing .detail-two-col-grid,
+  body.letter-printing .detail-stats-grid,
+  body.letter-printing .detail-profile-card,
+  body.letter-printing .detail-top-nav,
+  body.letter-printing .admin-content-header,
+  body.letter-printing .admin-card,
+  body.letter-printing .toast-container,
+  body.letter-printing header,
+  body.letter-printing aside,
+  body.letter-printing nav,
+  body.letter-printing footer,
+  .no-print,
+  .offer-letter-modal-header {
     display: none !important;
   }
 
-  /* Step 2: Make everything else invisible (keeps layout, just hidden) */
-  body.offer-letter-printing * {
-    visibility: hidden !important;
+  /* Keep portal & dashboard parent wrappers visible in layout flow */
+  .emp-portal-wrapper,
+  .emp-main-container,
+  .emp-content-area,
+  .admin-dashboard-container,
+  .admin-app-layout,
+  .admin-main-wrapper,
+  .admin-content-pane,
+  .admin-main-content,
+  .employee-detail-wrapper {
+    display: block !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    overflow: visible !important;
   }
 
-  /* Step 3: Fix the modal ancestor chain — reset position/height/overflow
-     so all 3 letter pages can flow across the full print canvas */
-  body.offer-letter-printing .offer-letter-modal-overlay {
+  /* Reset modal overlay to static document flow */
+  .offer-letter-modal-overlay {
     position: static !important;
     display: block !important;
+    width: 100% !important;
     height: auto !important;
+    min-height: 0 !important;
     max-height: none !important;
     overflow: visible !important;
-    width: 210mm !important;
-    padding: 0 !important;
     background: transparent !important;
     backdrop-filter: none !important;
     border: none !important;
     box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    inset: auto !important;
   }
 
-  body.offer-letter-printing .offer-letter-modal-card {
+  .offer-letter-modal-card {
+    position: static !important;
     display: block !important;
+    width: 100% !important;
+    max-width: none !important;
     height: auto !important;
     max-height: none !important;
     overflow: visible !important;
-    width: 210mm !important;
     background: transparent !important;
     box-shadow: none !important;
+    border: none !important;
     border-radius: 0 !important;
     padding: 0 !important;
+    margin: 0 !important;
     animation: none !important;
+    transform: none !important;
   }
 
-  body.offer-letter-printing .offer-letter-modal-header,
-  body.offer-letter-printing .no-print {
-    display: none !important;
-    visibility: hidden !important;
-  }
-
-  body.offer-letter-printing .offer-letter-modal-body {
+  .offer-letter-modal-body {
+    position: static !important;
     display: block !important;
+    width: 100% !important;
     height: auto !important;
     max-height: none !important;
     overflow: visible !important;
-    padding: 0 !important;
     background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  /* Step 4: Document wrapper — static flow, no scale transform */
-  body.offer-letter-printing .offer-letter-document-wrapper,
-  body.offer-letter-printing .offer-letter-document-wrapper * {
-    visibility: visible !important;
-  }
-
-  body.offer-letter-printing .offer-letter-document-wrapper {
+  /* Document wrapper: unscaled static flow */
+  .offer-letter-document-wrapper {
     position: static !important;
     display: block !important;
     width: 210mm !important;
+    margin: 0 auto !important;
     padding: 0 !important;
-    margin: 0 !important;
-    background: #ffffff !important;
+    background: transparent !important;
     transform: none !important;
     gap: 0 !important;
   }
 
-  /* Step 5: Each A4 page — exact 297mm, flex column */
-  body.offer-letter-printing .offer-letter-page {
+  /* Each A4 page: exact 210mm x 297mm */
+  .offer-letter-page {
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;
@@ -837,19 +981,21 @@
     overflow: hidden !important;
     box-shadow: none !important;
     border-radius: 0 !important;
-    margin: 0 !important;
+    border: none !important;
+    margin: 0 auto !important;
+    margin-bottom: 0 !important;
     transform: none !important;
     page-break-after: always !important;
     break-after: page !important;
   }
 
-  body.offer-letter-printing .offer-letter-page:last-child {
+  .offer-letter-page:last-child {
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
 
-  /* Step 6: Footer pushed to very bottom via flex margin-top:auto */
-  body.offer-letter-printing .official-page-footer {
+  /* Footer at very bottom via flex */
+  .official-page-footer {
     margin-top: auto !important;
     flex-shrink: 0 !important;
     width: calc(100% + 30mm) !important;
@@ -860,8 +1006,8 @@
     break-inside: avoid !important;
   }
 
-  body.offer-letter-printing .annexure-signatures-row,
-  body.offer-letter-printing .page-signature-section {
+  .annexure-signatures-row,
+  .page-signature-section {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }

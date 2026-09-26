@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { FiPrinter, FiX, FiFileText, FiCalendar, FiEdit3, FiRotateCcw, FiCheck } from 'react-icons/fi';
 import { formatEmpId } from './empUtils';
 import './RelievingLetter.css';
@@ -6,22 +7,68 @@ import './RelievingLetter.css';
 function RelievingLetter({ employee, onClose, isReadOnly = false }) {
   if (!employee) return null;
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('letter-printing', 'relieving-letter-printing');
+    };
+  }, []);
+
+  // Helper to cleanly format date strings
+  const parseLocalDate = (dateString) => {
+    if (!dateString) return null;
+    if (dateString instanceof Date) return isNaN(dateString.getTime()) ? null : dateString;
+    const str = String(dateString).trim();
+    if (!str) return null;
+    const clean = str.split('T')[0];
+    const delimiter = clean.includes('/') ? '/' : clean.includes('-') ? '-' : null;
+    if (delimiter) {
+      const parts = clean.split(delimiter);
+      if (parts.length === 3) {
+        if (parts[0].length === 4) {
+          const y = parseInt(parts[0], 10);
+          const m = parseInt(parts[1], 10) - 1;
+          const d = parseInt(parts[2], 10);
+          const dateObj = new Date(y, m, d);
+          if (!isNaN(dateObj.getTime())) return dateObj;
+        } else if (parts[2].length === 4) {
+          const d = parseInt(parts[0], 10);
+          const m = parseInt(parts[1], 10) - 1;
+          const y = parseInt(parts[2], 10);
+          const dateObj = new Date(y, m, d);
+          if (!isNaN(dateObj.getTime())) return dateObj;
+        }
+      }
+    }
+    const fallback = new Date(str);
+    return isNaN(fallback.getTime()) ? null : fallback;
+  };
+
+  const getLocalDateIso = (d = new Date()) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+
+  const todayStr = getLocalDateIso(new Date());
 
   // Default resignation date: 30 days prior to today
-  const defaultResignDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const defaultResignDate = getLocalDateIso(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
 
   // Joining date calculation
   const getInitialJoinDate = () => {
-    if (employee.joinDate) {
-      const parsedIso = new Date(employee.joinDate).toISOString().split('T')[0];
-      if (parsedIso !== todayStr) {
-        return parsedIso;
+    if (employee && employee.joinDate) {
+      const d = parseLocalDate(employee.joinDate);
+      if (d && !isNaN(d.getTime())) {
+        const parsedIso = getLocalDateIso(d);
+        if (parsedIso !== todayStr) {
+          return parsedIso;
+        }
       }
     }
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-    return oneYearAgo.toISOString().split('T')[0];
+    return getLocalDateIso(oneYearAgo);
   };
 
   const [joiningDate, setJoiningDate] = useState(getInitialJoinDate());
@@ -29,20 +76,6 @@ function RelievingLetter({ employee, onClose, isReadOnly = false }) {
   const [relievingDate, setRelievingDate] = useState(todayStr);
   const [noticePeriodStatus, setNoticePeriodStatus] = useState('Fully Served');
   const [isEditMode, setIsEditMode] = useState(false);
-
-  // Helper to cleanly format date strings (YYYY-MM-DD)
-  const parseLocalDate = (dateString) => {
-    if (!dateString) return null;
-    const clean = String(dateString).split('T')[0];
-    const parts = clean.split('-');
-    if (parts.length === 3) {
-      const year = parseInt(parts[0], 10);
-      const month = parseInt(parts[1], 10) - 1;
-      const day = parseInt(parts[2], 10);
-      return new Date(year, month, day);
-    }
-    return new Date(dateString);
-  };
 
   const formatDateDisplay = (dateString) => {
     const d = parseLocalDate(dateString);
@@ -79,7 +112,7 @@ function RelievingLetter({ employee, onClose, isReadOnly = false }) {
     const finYearStr = `${yearShort}-${nextYearShort}`;
     const monthNameStr = issueDateObj.toLocaleDateString('en-US', { month: 'long' });
 
-    if (employee.empId && employee.empId.includes('/')) {
+    if (employee && employee.empId && typeof employee.empId === 'string' && employee.empId.includes('/')) {
       return `REL/${employee.empId}`;
     }
     const rawId = formatEmpId(employee.empId, employee.id);
@@ -142,62 +175,46 @@ function RelievingLetter({ employee, onClose, isReadOnly = false }) {
     setPara5(`We take this opportunity to thank you for your valuable services and contributions to INSPIRING INFOSYS and wish you all the best and continued success in your future professional career.`);
   };
 
+  // Dynamic scale for mobile: fit A4 (794px) within modal body
+  const modalBodyRef = useRef(null);
+  const [pageScale, setPageScale] = useState(1);
+  useEffect(() => {
+    const computeScale = () => {
+      if (!modalBodyRef.current) return;
+      const available = modalBodyRef.current.clientWidth - 24;
+      const a4px = 794; // 210mm at 96dpi
+      setPageScale(available >= a4px ? 1 : Math.round((available / a4px) * 1000) / 1000);
+    };
+    computeScale();
+    window.addEventListener('resize', computeScale);
+    return () => window.removeEventListener('resize', computeScale);
+  }, []);
+
   const handlePrint = () => {
     setIsEditMode(false);
+    const originalTitle = document.title;
+    const cleanName = (employeeName || employee?.name || 'Employee').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+    document.title = `Relieving_Letter_${cleanName}`;
+    document.body.classList.add('letter-printing', 'relieving-letter-printing');
+
+    const cleanup = () => {
+      document.title = originalTitle;
+      document.body.classList.remove('letter-printing', 'relieving-letter-printing');
+      window.removeEventListener('afterprint', cleanup);
+    };
+
+    window.addEventListener('afterprint', cleanup);
+
     setTimeout(() => {
-      const wrapper = document.querySelector('.relieving-letter-document-wrapper');
-      if (!wrapper) { window.print(); return; }
-
-      const printHTML = wrapper.innerHTML;
-      const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-        .map(el => el.outerHTML).join('\n');
-
-      const existing = document.getElementById('__relieving-print-frame__');
-      if (existing) existing.remove();
-      const iframe = document.createElement('iframe');
-      iframe.id = '__relieving-print-frame__';
-      iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none;';
-      document.body.appendChild(iframe);
-
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      doc.open();
-      doc.write(`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <title>Relieving Letter – ${employeeName}</title>
-  ${styles}
-  <style>
-    @page { size: A4 portrait; margin: 0; }
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box !important; }
-    html, body { margin: 0 !important; padding: 0 !important; background: #ffffff; }
-    .relieving-letter-document-wrapper { display: block !important; width: 210mm !important; margin: 0 !important; padding: 0 !important; transform: none !important; background: #ffffff !important; }
-    .relieving-letter-page { position: relative !important; display: flex !important; flex-direction: column !important; width: 210mm !important; min-height: 297mm !important; height: auto !important; padding: 0 12mm 12mm 12mm !important; box-sizing: border-box !important; background: #ffffff !important; color: #000000 !important; overflow: visible !important; box-shadow: none !important; border-radius: 0 !important; margin: 0 !important; transform: none !important; }
-    .official-page-footer { margin-top: auto !important; flex-shrink: 0 !important; width: calc(100% + 24mm) !important; margin-left: -12mm !important; margin-right: -12mm !important; margin-bottom: -12mm !important; }
-    .no-print { display: none !important; }
-  </style>
-</head>
-<body>
-  <div class="relieving-letter-document-wrapper">${printHTML}</div>
-</body>
-</html>`);
-      doc.close();
-
-      setTimeout(() => {
-        try {
-          iframe.contentWindow.focus();
-          iframe.contentWindow.print();
-        } catch (e) { window.print(); }
-        setTimeout(() => { if (iframe.parentNode) iframe.parentNode.removeChild(iframe); }, 2000);
-      }, 800);
-    }, 150);
+      window.print();
+    }, 200);
   };
 
   const recipientPrefix = employeeName && (employeeName.toLowerCase().startsWith('mr.') || employeeName.toLowerCase().startsWith('ms.'))
     ? ''
     : 'Mr./Ms. ';
 
-  return (
+  const modalContent = (
     <div className="relieving-letter-modal-overlay" onClick={onClose}>
       <div className="relieving-letter-modal-card" onClick={(e) => e.stopPropagation()}>
 
@@ -217,7 +234,7 @@ function RelievingLetter({ employee, onClose, isReadOnly = false }) {
                   onClick={() => setIsEditMode(!isEditMode)}
                   title={isEditMode ? 'Finish Editing' : 'Click text on letter to edit directly'}
                 >
-                  {isEditMode ? <><FiCheck size={14} /> Done Editing</> : <><FiEdit3 size={14} /> Edit Text</>}
+                  {isEditMode ? <><FiCheck size={14} /> Done</> : <><FiEdit3 size={14} /> Edit</>}
                 </button>
               )}
 
@@ -227,7 +244,7 @@ function RelievingLetter({ employee, onClose, isReadOnly = false }) {
                 onClick={handlePrint}
                 title="Print or Save as PDF"
               >
-                <FiPrinter size={16} /> Print / Save PDF
+                <FiPrinter size={16} /> <span>Print / Save PDF</span>
               </button>
 
               <button
@@ -281,8 +298,11 @@ function RelievingLetter({ employee, onClose, isReadOnly = false }) {
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="relieving-letter-modal-body">
-          <div className="relieving-letter-document-wrapper">
+        <div className="relieving-letter-modal-body" ref={modalBodyRef}>
+          <div
+            className="relieving-letter-document-wrapper"
+            style={{ '--doc-scale': pageScale }}
+          >
 
             {isEditMode && (
               <div className="edit-banner-info no-print">
@@ -504,6 +524,8 @@ function RelievingLetter({ employee, onClose, isReadOnly = false }) {
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent;
 }
 
 export default RelievingLetter;

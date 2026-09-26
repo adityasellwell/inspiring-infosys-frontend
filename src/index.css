@@ -588,3 +588,33 @@ input[type="date"] {
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL PRINT RULES FOR HR OFFICIAL LETTERS (Portaled to body)
+   ═══════════════════════════════════════════════════════════════ */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  body.letter-printing {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Completely hide the application root (#root) so nothing from the site leaks into print */
+  body.letter-printing > #root {
+    display: none !important;
+  }
+
+  /* Hide any other non-portal element on body */
+  body.letter-printing > *:not(.offer-letter-modal-overlay):not(.relieving-letter-modal-overlay):not(.experience-letter-modal-overlay) {
+    display: none !important;
+  }
+}

@@ -1637,7 +1637,13 @@ function EmployeeDashboard() {
                       type="button"
                       className="btn-orange"
                       style={{ flex: 1, justifyContent: 'center' }}
-                      onClick={() => window.print()}
+                      onClick={() => {
+                        document.body.classList.add('id-card-printing');
+                        window.print();
+                        setTimeout(() => {
+                          document.body.classList.remove('id-card-printing');
+                        }, 1500);
+                      }}
                     >
                       <FiPrinter /> Print ID Card ({idCardSide === 'both' ? 'FRONT & BACK' : idCardSide.toUpperCase()})
                     </button>

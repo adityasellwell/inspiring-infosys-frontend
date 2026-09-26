@@ -1,9 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { FiPrinter, FiX, FiFileText, FiCalendar, FiEdit3, FiRotateCcw, FiCheck } from 'react-icons/fi';
 import './OfferLetter.css';
 
 function OfferLetter({ employee, onClose, isReadOnly = false }) {
   if (!employee) return null;
+
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('letter-printing', 'offer-letter-printing');
+    };
+  }, []);
 
   const todayStr = new Date().toISOString().split('T')[0];
 
@@ -232,118 +239,35 @@ function OfferLetter({ employee, onClose, isReadOnly = false }) {
     setReceiverSigLabel('Signature of Receiver');
   };
 
-  // Print via a hidden off-screen iframe — no new tab, guaranteed clean 3-page output
   const handlePrint = () => {
     setIsEditMode(false);
+    const originalTitle = document.title;
+    const cleanName = (candidateName || employee?.name || 'Candidate').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+    document.title = `Offer_Letter_${cleanName}`;
+    document.body.classList.add('letter-printing', 'offer-letter-printing');
+
+    const cleanup = () => {
+      document.title = originalTitle;
+      document.body.classList.remove('letter-printing', 'offer-letter-printing');
+      window.removeEventListener('afterprint', cleanup);
+    };
+
+    window.addEventListener('afterprint', cleanup);
+
     setTimeout(() => {
-      const wrapper = document.querySelector('.offer-letter-document-wrapper');
-      if (!wrapper) { window.print(); return; }
-
-      const printHTML = wrapper.innerHTML;
-
-      // Gather all stylesheets from the current page (fonts, OfferLetter.css, etc.)
-      const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-        .map(el => el.outerHTML)
-        .join('\n');
-
-      // Create a hidden off-screen iframe (stays on same page, no new tab)
-      const existing = document.getElementById('__offer-print-frame__');
-      if (existing) existing.remove();
-      const iframe = document.createElement('iframe');
-      iframe.id = '__offer-print-frame__';
-      iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none;';
-      document.body.appendChild(iframe);
-
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      doc.open();
-      doc.write(`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <title>Offer Letter – ${candidateName}</title>
-  ${styles}
-  <style>
-    @page { size: A4 portrait; margin: 0; }
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box !important; }
-    html, body { margin: 0 !important; padding: 0 !important; background: #ffffff; }
-    /* Clean document wrapper */
-    .offer-letter-document-wrapper {
-      display: block !important;
-      width: 210mm !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      gap: 0 !important;
-      transform: none !important;
-      background: #ffffff !important;
-    }
-    /* Each A4 page */
-    .offer-letter-page {
-      position: relative !important;
-      display: flex !important;
-      flex-direction: column !important;
-      width: 210mm !important;
-      height: 297mm !important;
-      max-height: 297mm !important;
-      min-height: 297mm !important;
-      padding: 0 15mm 20mm 15mm !important;
-      box-sizing: border-box !important;
-      background: #ffffff !important;
-      color: #000000 !important;
-      overflow: hidden !important;
-      box-shadow: none !important;
-      border-radius: 0 !important;
-      margin: 0 !important;
-      transform: none !important;
-      page-break-after: always !important;
-      break-after: page !important;
-    }
-    .offer-letter-page:last-child {
-      page-break-after: avoid !important;
-      break-after: avoid !important;
-    }
-    /* Footer at bottom via flex */
-    .official-page-footer {
-      margin-top: auto !important;
-      flex-shrink: 0 !important;
-      width: calc(100% + 30mm) !important;
-      margin-left: -15mm !important;
-      margin-right: -15mm !important;
-      margin-bottom: -20mm !important;
-    }
-    .no-print { display: none !important; }
-  </style>
-</head>
-<body>
-  <div class="offer-letter-document-wrapper">${printHTML}</div>
-</body>
-</html>`);
-      doc.close();
-
-      // Print after content is fully loaded
-      setTimeout(() => {
-        try {
-          iframe.contentWindow.focus();
-          iframe.contentWindow.print();
-        } catch (e) {
-          window.print(); // fallback
-        }
-        // Auto-remove iframe after print dialog closes
-        setTimeout(() => {
-          if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-        }, 2000);
-      }, 500);
-    }, 150);
+      window.print();
+    }, 200);
   };
 
   const recipientPrefix = candidateName && (candidateName.toLowerCase().startsWith('mr.') || candidateName.toLowerCase().startsWith('ms.'))
     ? ''
     : 'Mr./Ms. ';
 
-  return (
+  const modalContent = (
     <div className="offer-letter-modal-overlay" onClick={onClose}>
       <div className="offer-letter-modal-card" onClick={(e) => e.stopPropagation()}>
 
-        {/* Modal Header Bar */}
+        {/* Compact Header Bar */}
         <div className="offer-letter-modal-header no-print">
           <div className="header-top-row">
             <div className="modal-header-title">
@@ -359,7 +283,7 @@ function OfferLetter({ employee, onClose, isReadOnly = false }) {
                   onClick={() => setIsEditMode(!isEditMode)}
                   title={isEditMode ? 'Finish Editing' : 'Click text on offer letter to edit directly'}
                 >
-                  {isEditMode ? <><FiCheck size={14} /> Done Editing</> : <><FiEdit3 size={14} /> Edit Text</>}
+                  {isEditMode ? <><FiCheck size={14} /> Done</> : <><FiEdit3 size={14} /> Edit</>}
                 </button>
               )}
 
@@ -369,7 +293,7 @@ function OfferLetter({ employee, onClose, isReadOnly = false }) {
                 onClick={handlePrint}
                 title="Print or Save as PDF"
               >
-                <FiPrinter size={16} /> Print / Save PDF
+                <FiPrinter size={16} /> <span>Print / Save PDF</span>
               </button>
 
               <button
@@ -964,6 +888,8 @@ function OfferLetter({ employee, onClose, isReadOnly = false }) {
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent;
 }
 
 export default OfferLetter;

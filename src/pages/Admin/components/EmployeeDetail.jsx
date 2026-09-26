@@ -116,7 +116,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
   };
 
   useEffect(() => {
-    const isAnyOpen = showEditPersonalModal || showEditEmpModal || showPayslipModal || !!letterViewerType;
+    const isAnyOpen = showEditPersonalModal || showEditEmpModal || showEditPayrollModal || showPayslipModal || !!letterViewerType;
     if (isAnyOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -125,7 +125,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
     return () => {
       document.body.style.overflow = '';
     };
-  }, [showEditPersonalModal, showEditEmpModal, showPayslipModal, letterViewerType]);
+  }, [showEditPersonalModal, showEditEmpModal, showEditPayrollModal, showPayslipModal, letterViewerType]);
 
   const populateForms = (data) => {
     if (!data) return;
@@ -165,6 +165,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
       joiningDate: data.joiningDate ? String(data.joiningDate).split('T')[0] : (data.joinDate ? String(data.joinDate).split('T')[0] : ''),
       department: data.department || '',
       designation: data.designation || '',
+      salary: data.salary || 0,
       reportingManager: data.reportingManager || 'HR Manager',
       employmentType: data.employmentType || 'Full-Time',
       workLocation: data.workLocation || 'Mumbai Office',
@@ -273,7 +274,8 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
     e.preventDefault();
     const payload = {
       ...empForm,
-      empId: formatEmpId(empForm.empId, employee.id)
+      empId: formatEmpId(empForm.empId, employee.id),
+      salary: empForm.salary !== undefined ? parseFloat(empForm.salary || 0) : undefined
     };
     const res = await employeesApi.update(employee.id, payload);
     if (res.success) {
@@ -286,9 +288,19 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
 
   const handleSavePayroll = async (e) => {
     e.preventDefault();
-    const res = await employeesApi.update(employee.id, payrollForm);
+    const grossSalary = parseFloat(payrollForm.salary || 0);
+    const basicPay = parseFloat(payrollForm.basicSalary !== undefined && payrollForm.basicSalary !== '' ? payrollForm.basicSalary : (grossSalary ? Math.round(grossSalary * 0.5) : 0));
+    const payload = {
+      ...payrollForm,
+      salary: grossSalary,
+      basicSalary: basicPay,
+      allowances: parseFloat(payrollForm.allowances || 0),
+      deductions: parseFloat(payrollForm.deductions || 0),
+      hra: parseFloat(payrollForm.hra || 0)
+    };
+    const res = await employeesApi.update(employee.id, payload);
     if (res.success) {
-      toast.success('Payroll details updated!');
+      toast.success('Salary structure & compensation updated!');
       setShowEditPayrollModal(false);
       fetchEmployeeData();
       if (onUpdate) onUpdate();
@@ -737,11 +749,11 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 <FiMail style={{ color: '#0284c7' }} /> Primary Identity & Contact
               </h4>
               <div className="detail-info-grid">
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Full Name</span>
-                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.name}</div>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', wordBreak: 'break-word' }}>{employee.name}</div>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Gender</span>
                   <div>
                     <span className="status-badge" style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: '700', padding: '0.15rem 0.5rem', borderRadius: '6px', fontSize: '0.8rem' }}>
@@ -749,23 +761,23 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                     </span>
                   </div>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Official / Login Email</span>
-                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0284c7' }}>{employee.email || employee.personalEmail || 'Not Set'}</div>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0284c7', wordBreak: 'break-all' }}>{employee.email || employee.personalEmail || 'Not Set'}</div>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Personal Email</span>
-                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.personalEmail || employee.email || 'Not Set'}</div>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', wordBreak: 'break-all' }}>{employee.personalEmail || employee.email || 'Not Set'}</div>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Primary Phone</span>
-                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.phone || 'N/A'}</div>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', wordBreak: 'break-word' }}>{employee.phone || 'N/A'}</div>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Alternate Phone</span>
-                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.altPhone || 'N/A'}</div>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', wordBreak: 'break-word' }}>{employee.altPhone || 'N/A'}</div>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Date of Birth</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <FiCalendar style={{ color: '#f97316' }} /> {employee.dob ? new Date(employee.dob).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Not Provided'}
@@ -899,7 +911,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Work Location</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a' }}>{employee.workLocation || 'Mumbai Office'}</div>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Joining Date</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <FiCalendar style={{ color: '#f97316' }} /> {new Date(employee.joinDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}
@@ -1606,6 +1618,22 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                   </select>
                 </div>
                 <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
+                  <label className="form-label" style={{ fontWeight: '700', color: '#15803d' }}>Monthly Gross Salary (₹)</label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    min="0"
+                    step="any"
+                    placeholder="e.g. 50000"
+                    style={{ fontWeight: '700' }}
+                    value={empForm.salary ?? ''}
+                    onChange={e => setEmpForm({...empForm, salary: e.target.value})}
+                  />
+                  <small style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '2px' }}>
+                    Gross monthly compensation. You can also configure detailed breakdowns under the Payroll tab.
+                  </small>
+                </div>
+                <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
                   <label className="form-label">Shift Timings</label>
                   <input className="form-control" placeholder="e.g. Standard Shift (10:00 AM - 7:00 PM)" value={empForm.shift} onChange={e => setEmpForm({...empForm, shift: e.target.value})} />
                 </div>
@@ -1624,6 +1652,191 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <div className="admin-modal-footer">
                 <button type="button" className="btn-secondary" onClick={() => setShowEditEmpModal(false)}>Cancel</button>
                 <button type="submit" className="btn-orange">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Salary Structure & Payroll Modal */}
+      {showEditPayrollModal && (
+        <div className="admin-modal-overlay">
+          <div className="admin-modal" style={{ maxWidth: '680px' }}>
+            <div className="admin-modal-header">
+              <h3 className="admin-modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiDollarSign style={{ color: '#10b981' }} /> Edit Salary Structure & Compensation
+              </h3>
+              <button type="button" className="admin-modal-close-btn" onClick={() => setShowEditPayrollModal(false)}><FiX size={18} /></button>
+            </div>
+            <form onSubmit={handleSavePayroll}>
+              <div className="admin-modal-body detail-form-grid">
+                
+                {/* Gross Salary */}
+                <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
+                  <label className="form-label" style={{ fontWeight: '800', color: '#0f172a' }}>
+                    Gross Monthly Salary (₹) <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    min="0"
+                    step="any"
+                    placeholder="e.g. 50000"
+                    style={{ fontSize: '1.15rem', fontWeight: '800', color: '#15803d' }}
+                    value={payrollForm.salary ?? ''}
+                    onChange={e => {
+                      const val = e.target.value;
+                      const num = parseFloat(val) || 0;
+                      setPayrollForm(prev => ({
+                        ...prev,
+                        salary: val,
+                        basicSalary: prev.basicSalary && parseFloat(prev.basicSalary) !== Math.round(parseFloat(prev.salary || 0) * 0.5)
+                          ? prev.basicSalary
+                          : Math.round(num * 0.5)
+                      }));
+                    }}
+                    required
+                  />
+                  <small style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '2px' }}>
+                    Total gross compensation paid to the employee each calendar month.
+                  </small>
+                </div>
+
+                <div className="form-field-group">
+                  <label className="form-label">Salary Structure Model</label>
+                  <select
+                    className="form-control"
+                    value={payrollForm.salaryStructure || 'Standard Corporate'}
+                    onChange={e => setPayrollForm({ ...payrollForm, salaryStructure: e.target.value })}
+                  >
+                    <option value="Standard Corporate">Standard Corporate Structure</option>
+                    <option value="Executive Grade">Executive Grade</option>
+                    <option value="Fixed CTC">Fixed CTC</option>
+                    <option value="Internship Stipend">Internship Stipend</option>
+                    <option value="Hourly / Freelance">Hourly / Freelance</option>
+                  </select>
+                </div>
+
+                <div className="form-field-group">
+                  <label className="form-label">Basic Pay (₹)</label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 25000"
+                    value={payrollForm.basicSalary ?? ''}
+                    onChange={e => setPayrollForm({ ...payrollForm, basicSalary: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-field-group">
+                  <label className="form-label">Special Allowances / HRA (₹)</label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 10000"
+                    value={payrollForm.allowances ?? ''}
+                    onChange={e => setPayrollForm({ ...payrollForm, allowances: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-field-group">
+                  <label className="form-label">Monthly Deductions (₹)</label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 2000 (PF, PT, TDS)"
+                    value={payrollForm.deductions ?? ''}
+                    onChange={e => setPayrollForm({ ...payrollForm, deductions: e.target.value })}
+                  />
+                </div>
+
+                {/* Net Take-Home Calculation Banner */}
+                <div style={{ gridColumn: 'span 2', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '0.85rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#166534', textTransform: 'uppercase' }}>Estimated Net In-Hand Salary</span>
+                    <div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#15803d' }}>
+                      ₹{Math.max(0, (parseFloat(payrollForm.salary || 0) - parseFloat(payrollForm.deductions || 0))).toLocaleString('en-IN')} / month
+                    </div>
+                  </div>
+                  <span style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: '600' }}>
+                    Gross (₹{Number(payrollForm.salary || 0).toLocaleString('en-IN')}) - Deductions (₹{Number(payrollForm.deductions || 0).toLocaleString('en-IN')})
+                  </span>
+                </div>
+
+                {/* Banking & Statutory Section Header */}
+                <div style={{ gridColumn: 'span 2', borderTop: '1px solid #e2e8f0', paddingTop: '0.85rem', marginTop: '0.25rem' }}>
+                  <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: '800', color: '#334155' }}>Banking & Statutory Information (Optional)</h4>
+                </div>
+
+                <div className="form-field-group">
+                  <label className="form-label">Bank Name</label>
+                  <input
+                    className="form-control"
+                    placeholder="e.g. HDFC Bank"
+                    value={payrollForm.bankName || ''}
+                    onChange={e => setPayrollForm({ ...payrollForm, bankName: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-field-group">
+                  <label className="form-label">Bank Account Number</label>
+                  <input
+                    className="form-control"
+                    placeholder="e.g. 50100234567890"
+                    value={payrollForm.accountNumber || ''}
+                    onChange={e => setPayrollForm({ ...payrollForm, accountNumber: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-field-group">
+                  <label className="form-label">IFSC Code</label>
+                  <input
+                    className="form-control"
+                    placeholder="e.g. HDFC0001234"
+                    value={payrollForm.ifsc || ''}
+                    onChange={e => setPayrollForm({ ...payrollForm, ifsc: e.target.value.toUpperCase() })}
+                  />
+                </div>
+
+                <div className="form-field-group">
+                  <label className="form-label">PAN Number</label>
+                  <input
+                    className="form-control"
+                    placeholder="e.g. ABCDE1234F"
+                    value={payrollForm.panNumber || ''}
+                    onChange={e => setPayrollForm({ ...payrollForm, panNumber: e.target.value.toUpperCase() })}
+                  />
+                </div>
+
+                <div className="form-field-group">
+                  <label className="form-label">UAN / PF Number</label>
+                  <input
+                    className="form-control"
+                    placeholder="e.g. 101234567890"
+                    value={payrollForm.uanNumber || ''}
+                    onChange={e => setPayrollForm({ ...payrollForm, uanNumber: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-field-group">
+                  <label className="form-label">Tax Regime</label>
+                  <select
+                    className="form-control"
+                    value={payrollForm.taxInfo || 'New Tax Regime'}
+                    onChange={e => setPayrollForm({ ...payrollForm, taxInfo: e.target.value })}
+                  >
+                    <option value="New Tax Regime">New Tax Regime</option>
+                    <option value="Old Tax Regime">Old Tax Regime</option>
+                  </select>
+                </div>
+
+              </div>
+              <div className="admin-modal-footer">
+                <button type="button" className="btn-secondary" onClick={() => setShowEditPayrollModal(false)}>Cancel</button>
+                <button type="submit" className="btn-orange">Save Salary Structure</button>
               </div>
             </form>
           </div>

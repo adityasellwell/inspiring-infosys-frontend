@@ -376,6 +376,8 @@ export default function ClientServicesTab() {
     });
   };
 
+
+
   // Manual Trigger for Automated Email Expiry Alerts
   const handleRunAutoAlerts = async () => {
     setRunningAutoAlerts(true);
@@ -826,6 +828,8 @@ export default function ClientServicesTab() {
                         onChange={e => handleServiceRowChange(idx, 'renewalAmount', e.target.value)}
                       />
                     </div>
+
+
                   </div>
                 </div>
               ))}
@@ -1078,10 +1082,9 @@ export default function ClientServicesTab() {
                       </td>
 
                       <td style={{ verticalAlign: 'middle', padding: '0.55rem 0.5rem', whiteSpace: 'nowrap' }}>
-                        <span style={{ fontWeight: '600', color: '#334155', fontSize: '0.78rem' }}>{s.provider || 'GoDaddy'}</span>
-                        {s.autoRenew && (
-                          <span style={{ display: 'block', fontSize: '0.7rem', color: '#16a34a', fontWeight: '700' }}>⚡ Auto-Renew ON</span>
-                        )}
+                        <span style={{ fontWeight: '600', color: '#334155', fontSize: '0.78rem' }}>
+                          {s.provider || 'GoDaddy'}
+                        </span>
                       </td>
 
                       <td style={{ verticalAlign: 'middle', padding: '0.55rem 0.5rem', whiteSpace: 'nowrap' }}>

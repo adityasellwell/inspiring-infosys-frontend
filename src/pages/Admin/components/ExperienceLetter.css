@@ -77,6 +77,45 @@
 
 .modal-header-title .modal-icon {
   color: #10b981;
+  flex-shrink: 0;
+}
+
+.title-text-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.main-doc-title {
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.doc-emp-subtitle {
+  font-weight: 500;
+  color: #38bdf8;
+  font-size: 0.85rem;
+}
+
+.btn-modal-view-mode {
+  background: #1e293b;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.15s ease;
+}
+
+.btn-modal-view-mode:hover {
+  background: #334155;
+  color: #ffffff;
+  border-color: #64748b;
 }
 
 .modal-header-controls {
@@ -265,6 +304,11 @@
   font-size: 10.2pt;
   line-height: 1.55;
   transition: all 0.2s ease;
+  /* Mobile scale: shrinks page to fit narrow screens */
+  transform: scale(var(--doc-scale, 1));
+  transform-origin: top center;
+  /* Collapse empty space created by scaling down */
+  margin-bottom: calc(297mm * (var(--doc-scale, 1) - 1));
 }
 
 .experience-letter-page.editable-page-active {
@@ -487,7 +531,110 @@
   print-color-adjust: exact !important;
 }
 
-/* ════════════════════════ PRINT STYLES ════════════════════════ */
+/* ════════════════════════ MOBILE RESPONSIVE (SCREEN ONLY) ════════════════════════ */
+@media screen and (max-width: 860px) {
+  .experience-letter-modal-overlay {
+    padding: 0;
+  }
+
+  .experience-letter-modal-card {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+  }
+
+  .experience-letter-modal-header {
+    padding: 0.6rem 0.75rem !important;
+    gap: 0.4rem !important;
+  }
+
+  .header-top-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
+  }
+
+  .modal-header-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+    font-size: 0.88rem !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+    color: #f8fafc !important;
+  }
+
+  .modal-header-title span {
+    white-space: normal !important;
+    word-break: break-word !important;
+    line-height: 1.25 !important;
+  }
+
+  .modal-header-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .btn-modal-print {
+    background-color: #16a34a !important;
+    color: #ffffff !important;
+    padding: 0.35rem 0.65rem !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    height: 34px !important;
+    white-space: nowrap !important;
+    gap: 4px !important;
+    border-radius: 6px !important;
+  }
+
+  .btn-modal-print:hover {
+    background-color: #15803d !important;
+  }
+
+  .btn-modal-close {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 6px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .modal-header-controls {
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
+    padding: 0.35rem 0.5rem !important;
+  }
+
+  .control-group {
+    font-size: 0.72rem !important;
+  }
+
+  /* Modal body container: fits scaled A4 without horizontal clipping */
+  .experience-letter-modal-body {
+    padding: 0.75rem 0.25rem !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    background: #0f172a !important;
+  }
+
+  .experience-letter-document-wrapper {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+}
+
+/* ════════════════════════ PRINT STYLES (HIGHEST PRIORITY) ════════════════════════ */
 @media print {
   @page {
     size: A4 portrait;
@@ -500,99 +647,146 @@
     box-sizing: border-box !important;
   }
 
-  ::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-  }
-
-  html,
-  body {
+  html, body {
+    background: #ffffff !important;
     margin: 0 !important;
     padding: 0 !important;
-    background: #ffffff !important;
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
     overflow: visible !important;
   }
 
+  /* Hide background navigation & dashboard chrome only when printing official letters */
+  body.letter-printing .emp-navbar,
+  body.letter-printing .emp-sidebar,
+  body.letter-printing .emp-sidebar-backdrop,
+  body.letter-printing .admin-top-navbar,
+  body.letter-printing .admin-sidebar,
+  body.letter-printing .admin-mobile-toggle,
+  body.letter-printing .detail-header-card-row,
+  body.letter-printing .detail-tabs-nav,
+  body.letter-printing .detail-two-col-grid,
+  body.letter-printing .detail-stats-grid,
+  body.letter-printing .detail-profile-card,
+  body.letter-printing .detail-top-nav,
+  body.letter-printing .admin-content-header,
+  body.letter-printing .admin-card,
+  body.letter-printing .toast-container,
+  body.letter-printing header,
+  body.letter-printing aside,
+  body.letter-printing nav,
+  body.letter-printing footer,
   .no-print,
-  .admin-top-navbar,
-  .admin-sidebar,
-  .admin-content-pane,
-  .admin-main-content,
-  .admin-mobile-toggle,
-  .emp-navbar,
-  .emp-sidebar,
-  .emp-main-container,
-  .emp-content-area,
-  .emp-sidebar-backdrop,
-  header,
-  aside,
-  nav,
-  #printable-id-card,
-  .id-card-printable-container,
-  .official-id-card {
-    display: none !important;
-  }
-
-  .editable-field {
-    border: none !important;
-    background: transparent !important;
-    padding: 0 !important;
-  }
-
-  .admin-dashboard-container,
-  .emp-portal-wrapper {
-    display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    height: auto !important;
-    background: transparent !important;
-  }
-
-  .experience-letter-modal-overlay,
-  .experience-letter-modal-card,
-  .experience-letter-modal-body,
-  .experience-letter-document-wrapper {
-    position: static !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
-    background: #ffffff !important;
-    backdrop-filter: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
-    outline: none !important;
-    overflow: visible !important;
-  }
-
   .experience-letter-modal-header {
     display: none !important;
   }
 
+  /* Keep portal & dashboard parent wrappers visible in layout flow */
+  .emp-portal-wrapper,
+  .emp-main-container,
+  .emp-content-area,
+  .admin-dashboard-container,
+  .admin-app-layout,
+  .admin-main-wrapper,
+  .admin-content-pane,
+  .admin-main-content,
+  .employee-detail-wrapper {
+    display: block !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    overflow: visible !important;
+  }
+
+  /* Reset modal overlay to static document flow */
+  .experience-letter-modal-overlay {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    inset: auto !important;
+    transform: none !important;
+  }
+
+  .experience-letter-modal-card {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .experience-letter-modal-body {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Document wrapper: unscaled static flow */
+  .experience-letter-document-wrapper {
+    position: static !important;
+    display: block !important;
+    width: 210mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    background: transparent !important;
+    transform: none !important;
+    gap: 0 !important;
+  }
+
+  /* Exactly 1 A4 page: 210mm x 297mm */
   .experience-letter-page {
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
     width: 210mm !important;
-    height: 275mm !important;
-    min-height: 275mm !important;
-    max-height: 275mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
+    min-height: 297mm !important;
     padding: 0 12mm 12mm 12mm !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    margin: 0 auto !important;
     box-sizing: border-box !important;
     background: #ffffff !important;
     color: #000000 !important;
     overflow: hidden !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 auto !important;
+    margin-bottom: 0 !important;
+    transform: none !important;
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
@@ -601,48 +795,5 @@
   .official-page-footer {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-  }
-}
-
-/* ════════════════════════ MOBILE RESPONSIVE ════════════════════════ */
-@media (max-width: 860px) {
-  .experience-letter-modal-overlay {
-    padding: 0;
-  }
-
-  .experience-letter-modal-card {
-    width: 100vw;
-    max-width: 100vw;
-    height: 100vh;
-    max-height: 100vh;
-    border-radius: 0;
-  }
-
-  .experience-letter-modal-body {
-    padding: 0.75rem 0.25rem;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .experience-letter-modal-header {
-    padding: 0.5rem 0.75rem;
-  }
-
-  .modal-header-controls {
-    flex-wrap: wrap;
-    gap: 0.25rem;
-  }
-
-  .modal-header-actions {
-    flex-wrap: wrap;
-    gap: 0.3rem;
-  }
-
-  .btn-toggle-edit,
-  .btn-modal-reset,
-  .btn-modal-print {
-    font-size: 0.75rem;
-    padding: 0 0.6rem;
-    height: 32px;
   }
 }
