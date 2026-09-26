@@ -176,10 +176,80 @@ function ExperienceLetter({ employee, onClose, isReadOnly = false }) {
     return () => window.removeEventListener('resize', computeScale);
   }, []);
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
     setIsEditMode(false);
-    const originalTitle = document.title;
+
     const cleanName = (employeeName || employee?.name || 'Employee').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+
+    // Mobile: generate actual PDF file download
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+
+    if (isMobile) {
+      try {
+        const html2pdf = (await import('html2pdf.js')).default;
+        const pages = document.querySelectorAll('.experience-letter-page');
+        if (!pages.length) return;
+
+        pages.forEach(page => {
+          page.style.transform = 'none';
+          page.style.marginBottom = '0';
+          page.style.width = '210mm';
+          page.style.minHeight = '297mm';
+          page.style.height = '297mm';
+          page.style.boxShadow = 'none';
+        });
+
+        await new Promise(r => setTimeout(r, 150));
+
+        const tempContainer = document.createElement('div');
+        tempContainer.style.width = '210mm';
+        tempContainer.style.background = '#ffffff';
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.left = '-9999px';
+        tempContainer.style.top = '0';
+
+        pages.forEach((page, i) => {
+          const clone = page.cloneNode(true);
+          clone.style.width = '210mm';
+          clone.style.minHeight = '297mm';
+          clone.style.height = '297mm';
+          clone.style.transform = 'none';
+          clone.style.marginBottom = '0';
+          clone.style.boxShadow = 'none';
+          clone.style.pageBreakAfter = i < pages.length - 1 ? 'always' : 'auto';
+          tempContainer.appendChild(clone);
+        });
+
+        document.body.appendChild(tempContainer);
+
+        await html2pdf().set({
+          margin: 0,
+          filename: `Experience_Letter_${cleanName}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false, width: 794, windowWidth: 794 },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak: { mode: ['css', 'legacy'] }
+        }).from(tempContainer).save();
+
+        document.body.removeChild(tempContainer);
+
+        pages.forEach(page => {
+          page.style.transform = '';
+          page.style.marginBottom = '';
+          page.style.width = '';
+          page.style.minHeight = '';
+          page.style.height = '';
+          page.style.boxShadow = '';
+        });
+      } catch (err) {
+        console.error('PDF generation failed, falling back to print:', err);
+        window.print();
+      }
+      return;
+    }
+
+    // Desktop: use window.print()
+    const originalTitle = document.title;
     document.title = `Experience_Letter_${cleanName}`;
     document.body.classList.add('letter-printing', 'experience-letter-printing');
 

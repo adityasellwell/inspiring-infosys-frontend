@@ -761,13 +761,14 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                     </span>
                   </div>
                 </div>
-                <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
-                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Official / Login Email</span>
-                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0284c7', wordBreak: 'break-all' }}>{employee.email || employee.personalEmail || 'Not Set'}</div>
-                </div>
+
                 <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Personal Email</span>
                   <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', wordBreak: 'break-all' }}>{employee.personalEmail || employee.email || 'Not Set'}</div>
+                </div>
+                <div className="full-width-item" style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Company Email</span>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0f172a', wordBreak: 'break-all' }}>{employee.companyEmail || 'Not Set'}</div>
                 </div>
                 <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Primary Phone</span>
@@ -1433,31 +1434,28 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 </div>
 
                 <div className="form-field-group">
-                  <label className="form-label">Official / Login Email <span className="required-star">*</span> (For Portal Credentials)</label>
-                  <input
-                    className="form-control"
-                    type="email"
-                    placeholder="Official / Login Email"
-                    value={personalForm.email || ''}
-                    onChange={e => {
-                      const val = e.target.value;
-                      setPersonalForm(prev => ({
-                        ...prev,
-                        email: val,
-                        personalEmail: (!prev.personalEmail || prev.personalEmail === prev.email) ? val : prev.personalEmail
-                      }));
-                    }}
-                    required
-                  />
-                </div>
-                <div className="form-field-group">
-                  <label className="form-label">Personal Email</label>
+                  <label className="form-label">Personal Email <span className="required-star">*</span></label>
                   <input
                     className="form-control"
                     type="email"
                     placeholder="Personal Email Address"
                     value={personalForm.personalEmail || ''}
-                    onChange={e => setPersonalForm(prev => ({ ...prev, personalEmail: e.target.value }))}
+                    onChange={e => setPersonalForm(prev => ({ 
+                      ...prev, 
+                      personalEmail: e.target.value,
+                      email: e.target.value // Keep core email synced
+                    }))}
+                    required
+                  />
+                </div>
+                <div className="form-field-group">
+                  <label className="form-label">Company Email</label>
+                  <input
+                    className="form-control"
+                    type="email"
+                    placeholder="Company Email (Optional)"
+                    value={personalForm.companyEmail || ''}
+                    onChange={e => setPersonalForm(prev => ({ ...prev, companyEmail: e.target.value }))}
                   />
                 </div>
                 <div className="form-field-group">

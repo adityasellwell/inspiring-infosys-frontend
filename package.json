@@ -12,6 +12,7 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "framer-motion": "^11.18.2",
+    "html2pdf.js": "^0.14.0",
     "jimp": "^1.6.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

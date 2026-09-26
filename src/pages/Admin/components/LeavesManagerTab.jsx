@@ -172,7 +172,42 @@ export default function LeavesManagerTab({ empLeavesList, setEmpLeavesList, empl
                           </button>
                         </div>
                       ) : (
-                        <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '500' }}>✓ Handled</span>
+                        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '500' }}>✓ Handled</span>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              if (window.confirm('Are you sure you want to delete this leave application?')) {
+                                try {
+                                  const res = await employeesApi.deleteLeave(leave.id);
+                                  if (res && res.success) {
+                                    setEmpLeavesList(prev => prev.filter(l => l.id !== leave.id));
+                                    toast.success('Leave deleted successfully!');
+                                  } else {
+                                    toast.error(res?.message || 'Failed to delete leave');
+                                  }
+                                } catch (err) {
+                                  toast.error('Error deleting leave');
+                                }
+                              }
+                            }}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '0.35rem',
+                              background: 'transparent',
+                              color: '#ef4444',
+                              border: 'none',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              transition: 'all 0.15s ease'
+                            }}
+                            title="Delete Leave"
+                          >
+                            <FiXCircle size={16} />
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>

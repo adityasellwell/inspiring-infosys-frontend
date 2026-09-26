@@ -484,6 +484,14 @@ export const employeesApi = {
     return res.json();
   },
 
+  deleteLeave: async (id) => {
+    const res = await fetch(`${API_BASE}/employees/leaves/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+    return res.json();
+  },
+
   generateLetter: async (employeeId, letterData) => {
     const res = await fetch(`${API_BASE}/employees/${employeeId}/letters`, {
       method: 'POST',

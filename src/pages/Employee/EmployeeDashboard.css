@@ -1583,3 +1583,26 @@
     border-radius: 12px;
   }
 }
+
+/* ── Inline Form Layouts (for Leave Tracker) ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-grid > * {
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .form-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

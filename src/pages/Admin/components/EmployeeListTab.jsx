@@ -181,7 +181,7 @@ export default function EmployeeListTab({
   // Structured Add Employee Form State
   const [addEmpForm, setAddEmpForm] = useState({
     firstName: '', middleName: '', lastName: '', name: '',
-    personalEmail: '', email: '', phone: '', altPhone: '',
+    personalEmail: '', companyEmail: '', email: '', phone: '', altPhone: '',
     dob: '', gender: 'Male', photoUrl: '',
     currentAddress: '', permanentAddress: '', sameAsCurrent: true,
     city: 'Mumbai', state: 'Maharashtra', country: 'India', pincode: '',
@@ -670,6 +670,10 @@ export default function EmployeeListTab({
                       {formErrors.personalEmail && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.personalEmail}</span>}
                     </div>
                     <div className="form-field-group">
+                      <label className="form-label">Company Email</label>
+                      <input id="input-companyEmail" className="form-control" placeholder="Company Email (Optional)" type="email" value={addEmpForm.companyEmail || ''} onChange={e => setAddEmpForm({ ...addEmpForm, companyEmail: e.target.value })} />
+                    </div>
+                    <div className="form-field-group">
                       <label className="form-label">Mobile Phone <span className="required-star">*</span></label>
                       <input id="input-phone" className="form-control" style={formErrors.phone ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="10-Digit Mobile Phone" type="tel" maxLength={10} required value={addEmpForm.phone} onChange={e => { setFormErrors(prev => ({ ...prev, phone: null })); setAddEmpForm({ ...addEmpForm, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }); }} />
                       {formErrors.phone && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.phone}</span>}
@@ -707,8 +711,8 @@ export default function EmployeeListTab({
                   <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#f97316', margin: '0 0 1rem' }}>2. Address & Location</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div className="form-field-group">
-                      <label className="form-label">Current Address <span className="required-star">*</span></label>
-                      <textarea id="input-currentAddress" className="form-control" style={formErrors.currentAddress ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="Current Address" required minLength={5} value={addEmpForm.currentAddress} onChange={e => { setFormErrors(prev => ({ ...prev, currentAddress: null })); setAddEmpForm({ ...addEmpForm, currentAddress: e.target.value }); }} rows={2} />
+                      <label className="form-label">Current Address</label>
+                      <textarea id="input-currentAddress" className="form-control" style={formErrors.currentAddress ? { borderColor: '#ef4444', backgroundColor: '#fef2f2' } : {}} placeholder="Current Address" value={addEmpForm.currentAddress} onChange={e => { setFormErrors(prev => ({ ...prev, currentAddress: null })); setAddEmpForm({ ...addEmpForm, currentAddress: e.target.value }); }} rows={2} />
                       {formErrors.currentAddress && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px', display: 'block', fontWeight: '600' }}>⚠️ {formErrors.currentAddress}</span>}
                     </div>
                     <div className="form-field-group">
