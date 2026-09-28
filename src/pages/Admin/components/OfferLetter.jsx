@@ -461,7 +461,7 @@ function OfferLetter({ employee, onClose, isReadOnly = false }) {
                   onBlur={(e) => setPara1(e.target.innerText)}
                   className={isEditMode ? 'editable-field' : ''}
                 >
-                  {para1}
+                  I am writing to you on behalf of INSPIRING INFOSYS, innovative IT & E-Commerce Company specializing in IT & E-Commerce Service Provider. We have thoroughly reviewed your qualifications and are delighted to extend a formal offer of employment to you for the <strong>position of {designationText} at INSPIRING INFOSYS.</strong>
                 </p>
 
                 <p
@@ -479,7 +479,7 @@ function OfferLetter({ employee, onClose, isReadOnly = false }) {
                   onBlur={(e) => setPara3(e.target.innerText)}
                   className={isEditMode ? 'editable-field' : ''}
                 >
-                  {para3}
+                  <strong>As a {designationText}, you will be responsible for [{departmentText ? `${departmentText} Department Tasks & Core Project Execution` : 'Software Development & Technical Duties'}].</strong> Additionally, you will have the opportunity to collaborate with a talented and motivated team, work on cutting-edge projects, and contribute to our company's growth and innovation.
                 </p>
 
                 <p
@@ -506,7 +506,7 @@ function OfferLetter({ employee, onClose, isReadOnly = false }) {
                   onBlur={(e) => setPara4(e.target.innerText)}
                   className={isEditMode ? 'editable-field' : ''}
                 >
-                  {para4}
+                  Please note that this offer is contingent upon successful completion of background checks and any other pre-employment requirements. You will receive further instructions regarding these processes separately. You are requested to <strong>join us by {formattedJoinDate}.</strong> In the event of you are not joining us within the aforementioned date or not requesting for an extension to that effect, this offer shall stand withdrawn automatically. The remuneration offered is as mentioned under Annexure A.
                 </p>
               </div>
 

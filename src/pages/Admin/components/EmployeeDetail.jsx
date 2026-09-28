@@ -141,6 +141,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
       phone: data.phone || '',
       email: data.email || data.personalEmail || '',
       personalEmail: data.personalEmail || data.email || '',
+      companyEmail: data.companyEmail || data.email || '',
       altPhone: data.altPhone || '',
       dob: data.dob ? String(data.dob).split('T')[0] : '',
       gender: data.gender || 'Male',
@@ -253,17 +254,19 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
   // Handlers
   const handleSavePersonal = async (e) => {
     e.preventDefault();
-    const primaryEmail = (personalForm.email || personalForm.personalEmail || '').trim().toLowerCase();
+    const compEmail = (personalForm.companyEmail || '').trim().toLowerCase();
     const persEmail = (personalForm.personalEmail || personalForm.email || '').trim().toLowerCase();
+    const primaryEmail = compEmail || persEmail || (personalForm.email || '').trim().toLowerCase();
     const payload = {
       ...personalForm,
       email: primaryEmail,
       personalEmail: persEmail,
+      companyEmail: compEmail,
       name: `${personalForm.firstName || ''} ${personalForm.lastName || ''}`.trim()
     };
     const res = await employeesApi.update(employee.id, payload);
     if (res.success) {
-      toast.success('Personal and login credentials email updated!');
+      toast.success('Personal and company email details updated!');
       setShowEditPersonalModal(false);
       fetchEmployeeData();
       if (onUpdate) onUpdate();
@@ -478,36 +481,17 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
             type="button"
             className="btn-secondary"
             style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
-            onClick={async () => {
+            onClick={() => {
               if (setCredentialsModal) {
-                try {
-                  const res = await employeesApi.resetPassword(employee.id || employee.empId, 'Inspire#2026');
-                  if (res && res.success && res.data) {
-                    setCredentialsModal({
-                      empId: formatEmpId(res.data.empId || employee.empId, employee.id),
-                      name: res.data.name || employee.name,
-                      email: res.data.email || res.data.personalEmail || employee.email || employee.personalEmail,
-                      password: res.data.password || 'Inspire#2026',
-                      designation: res.data.designation || employee.designation
-                    });
-                  } else {
-                    setCredentialsModal({
-                      empId: formatEmpId(employee.empId, employee.id),
-                      name: employee.name,
-                      email: employee.email || employee.personalEmail,
-                      password: 'Inspire#2026',
-                      designation: employee.designation
-                    });
-                  }
-                } catch (e) {
-                  setCredentialsModal({
-                    empId: formatEmpId(employee.empId, employee.id),
-                    name: employee.name,
-                    email: employee.email || employee.personalEmail,
-                    password: 'Inspire#2026',
-                    designation: employee.designation
-                  });
-                }
+                const resolvedPassword = employee.password || 'Inspire#2026';
+                setCredentialsModal({
+                  empId: formatEmpId(employee.empId, employee.id),
+                  rawId: employee.id || employee.empId,
+                  name: employee.name,
+                  email: employee.email || employee.personalEmail,
+                  password: resolvedPassword,
+                  designation: employee.designation
+                });
               }
             }}
           >
@@ -1417,20 +1401,20 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <div className="admin-modal-body detail-form-grid" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
                 <div className="form-field-group">
                   <label className="form-label">First Name <span className="required-star">*</span></label>
-                  <input className="form-control" placeholder="First Name" value={personalForm.firstName} onChange={e => setPersonalForm({...personalForm, firstName: e.target.value})} required />
+                  <input className="form-control" placeholder="First Name" value={personalForm.firstName} onChange={e => setPersonalForm({ ...personalForm, firstName: e.target.value })} required />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Last Name <span className="required-star">*</span></label>
-                  <input className="form-control" placeholder="Last Name" value={personalForm.lastName} onChange={e => setPersonalForm({...personalForm, lastName: e.target.value})} required />
+                  <input className="form-control" placeholder="Last Name" value={personalForm.lastName} onChange={e => setPersonalForm({ ...personalForm, lastName: e.target.value })} required />
                 </div>
 
                 <div className="form-field-group">
                   <label className="form-label">Official / Primary Phone</label>
-                  <input className="form-control" placeholder="Official Phone Number" value={personalForm.phone} onChange={e => setPersonalForm({...personalForm, phone: e.target.value})} />
+                  <input className="form-control" placeholder="Official Phone Number" value={personalForm.phone} onChange={e => setPersonalForm({ ...personalForm, phone: e.target.value })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Alternate Phone</label>
-                  <input className="form-control" placeholder="Alt Phone Number" value={personalForm.altPhone} onChange={e => setPersonalForm({...personalForm, altPhone: e.target.value})} />
+                  <input className="form-control" placeholder="Alt Phone Number" value={personalForm.altPhone} onChange={e => setPersonalForm({ ...personalForm, altPhone: e.target.value })} />
                 </div>
 
                 <div className="form-field-group">
@@ -1440,8 +1424,8 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                     type="email"
                     placeholder="Personal Email Address"
                     value={personalForm.personalEmail || ''}
-                    onChange={e => setPersonalForm(prev => ({ 
-                      ...prev, 
+                    onChange={e => setPersonalForm(prev => ({
+                      ...prev,
                       personalEmail: e.target.value,
                       email: e.target.value // Keep core email synced
                     }))}
@@ -1467,14 +1451,14 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                     max="2035-12-31"
                     style={{ cursor: 'pointer' }}
                     value={personalForm.dob}
-                    onChange={e => setPersonalForm({...personalForm, dob: e.target.value})}
+                    onChange={e => setPersonalForm({ ...personalForm, dob: e.target.value })}
                     onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
                   />
                 </div>
 
                 <div className="form-field-group">
                   <label className="form-label">Gender</label>
-                  <select className="form-control" value={personalForm.gender} onChange={e => setPersonalForm({...personalForm, gender: e.target.value})}>
+                  <select className="form-control" value={personalForm.gender} onChange={e => setPersonalForm({ ...personalForm, gender: e.target.value })}>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
@@ -1483,26 +1467,26 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
 
                 <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
                   <label className="form-label">Current Address</label>
-                  <textarea className="form-control" rows={2} placeholder="Current Residential Address" value={personalForm.currentAddress} onChange={e => setPersonalForm({...personalForm, currentAddress: e.target.value})} />
+                  <textarea className="form-control" rows={2} placeholder="Current Residential Address" value={personalForm.currentAddress} onChange={e => setPersonalForm({ ...personalForm, currentAddress: e.target.value })} />
                 </div>
 
                 <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
                   <label className="form-label">Permanent Address</label>
-                  <textarea className="form-control" rows={2} placeholder="Permanent Address" value={personalForm.permanentAddress} onChange={e => setPersonalForm({...personalForm, permanentAddress: e.target.value})} />
+                  <textarea className="form-control" rows={2} placeholder="Permanent Address" value={personalForm.permanentAddress} onChange={e => setPersonalForm({ ...personalForm, permanentAddress: e.target.value })} />
                 </div>
 
                 <div className="form-field-group">
                   <label className="form-label">City</label>
-                  <input className="form-control" placeholder="City" value={personalForm.city} onChange={e => setPersonalForm({...personalForm, city: e.target.value})} />
+                  <input className="form-control" placeholder="City" value={personalForm.city} onChange={e => setPersonalForm({ ...personalForm, city: e.target.value })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">State</label>
-                  <input className="form-control" placeholder="State" value={personalForm.state} onChange={e => setPersonalForm({...personalForm, state: e.target.value})} />
+                  <input className="form-control" placeholder="State" value={personalForm.state} onChange={e => setPersonalForm({ ...personalForm, state: e.target.value })} />
                 </div>
 
                 <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
                   <label className="form-label">Pincode</label>
-                  <input className="form-control" placeholder="Pincode" value={personalForm.pincode} onChange={e => setPersonalForm({...personalForm, pincode: e.target.value})} />
+                  <input className="form-control" placeholder="Pincode" value={personalForm.pincode} onChange={e => setPersonalForm({ ...personalForm, pincode: e.target.value })} />
                 </div>
 
                 <div style={{ gridColumn: 'span 2', height: '1px', background: '#e2e8f0', margin: '0.5rem 0' }} />
@@ -1510,15 +1494,15 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
 
                 <div className="form-field-group">
                   <label className="form-label">Emergency Contact Name</label>
-                  <input className="form-control" placeholder="Contact Person Name" value={personalForm.emergencyContactName} onChange={e => setPersonalForm({...personalForm, emergencyContactName: e.target.value})} />
+                  <input className="form-control" placeholder="Contact Person Name" value={personalForm.emergencyContactName} onChange={e => setPersonalForm({ ...personalForm, emergencyContactName: e.target.value })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Relationship</label>
-                  <input className="form-control" placeholder="e.g. Father, Spouse, Guardian" value={personalForm.emergencyRelationship} onChange={e => setPersonalForm({...personalForm, emergencyRelationship: e.target.value})} />
+                  <input className="form-control" placeholder="e.g. Father, Spouse, Guardian" value={personalForm.emergencyRelationship} onChange={e => setPersonalForm({ ...personalForm, emergencyRelationship: e.target.value })} />
                 </div>
                 <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
                   <label className="form-label">Emergency Phone</label>
-                  <input className="form-control" placeholder="Emergency Phone Number" value={personalForm.emergencyPhone} onChange={e => setPersonalForm({...personalForm, emergencyPhone: e.target.value})} />
+                  <input className="form-control" placeholder="Emergency Phone Number" value={personalForm.emergencyPhone} onChange={e => setPersonalForm({ ...personalForm, emergencyPhone: e.target.value })} />
                 </div>
 
                 <div style={{ gridColumn: 'span 2', height: '1px', background: '#e2e8f0', margin: '0.5rem 0' }} />
@@ -1526,22 +1510,22 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
 
                 <div className="form-field-group">
                   <label className="form-label">Bank Name</label>
-                  <input className="form-control" placeholder="e.g. HDFC Bank, ICICI" value={personalForm.bankName} onChange={e => setPersonalForm({...personalForm, bankName: e.target.value})} />
+                  <input className="form-control" placeholder="e.g. HDFC Bank, ICICI" value={personalForm.bankName} onChange={e => setPersonalForm({ ...personalForm, bankName: e.target.value })} />
                 </div>
 
                 <div className="form-field-group">
                   <label className="form-label">Account Number</label>
-                  <input className="form-control" placeholder="Account Number" value={personalForm.accountNumber} onChange={e => setPersonalForm({...personalForm, accountNumber: e.target.value})} />
+                  <input className="form-control" placeholder="Account Number" value={personalForm.accountNumber} onChange={e => setPersonalForm({ ...personalForm, accountNumber: e.target.value })} />
                 </div>
 
                 <div className="form-field-group">
                   <label className="form-label">IFSC Code</label>
-                  <input className="form-control" placeholder="IFSC Code" style={{ textTransform: 'uppercase' }} value={personalForm.ifsc} onChange={e => setPersonalForm({...personalForm, ifsc: e.target.value.toUpperCase()})} />
+                  <input className="form-control" placeholder="IFSC Code" style={{ textTransform: 'uppercase' }} value={personalForm.ifsc} onChange={e => setPersonalForm({ ...personalForm, ifsc: e.target.value.toUpperCase() })} />
                 </div>
 
                 <div className="form-field-group">
                   <label className="form-label">PAN Card Number</label>
-                  <input className="form-control" placeholder="PAN Number" style={{ textTransform: 'uppercase' }} value={personalForm.panNumber} onChange={e => setPersonalForm({...personalForm, panNumber: e.target.value.toUpperCase()})} />
+                  <input className="form-control" placeholder="PAN Number" style={{ textTransform: 'uppercase' }} value={personalForm.panNumber} onChange={e => setPersonalForm({ ...personalForm, panNumber: e.target.value.toUpperCase() })} />
                 </div>
 
 
@@ -1569,7 +1553,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <div className="admin-modal-body detail-form-grid">
                 <div className="form-field-group">
                   <label className="form-label">Employee Code (Emp ID)</label>
-                  <input className="form-control" placeholder="e.g. INS001" value={empForm.empId} onChange={e => setEmpForm({...empForm, empId: e.target.value})} />
+                  <input className="form-control" placeholder="e.g. INS001" value={empForm.empId} onChange={e => setEmpForm({ ...empForm, empId: e.target.value })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Joining Date</label>
@@ -1578,25 +1562,25 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                     type="date"
                     style={{ cursor: 'pointer' }}
                     value={empForm.joiningDate}
-                    onChange={e => setEmpForm({...empForm, joiningDate: e.target.value})}
+                    onChange={e => setEmpForm({ ...empForm, joiningDate: e.target.value })}
                     onClick={e => { try { e.currentTarget.showPicker?.(); } catch (err) { } }}
                   />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Department</label>
-                  <input className="form-control" placeholder="Department" value={empForm.department} onChange={e => setEmpForm({...empForm, department: e.target.value})} />
+                  <input className="form-control" placeholder="Department" value={empForm.department} onChange={e => setEmpForm({ ...empForm, department: e.target.value })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Designation</label>
-                  <input className="form-control" placeholder="Designation" value={empForm.designation} onChange={e => setEmpForm({...empForm, designation: e.target.value})} />
+                  <input className="form-control" placeholder="Designation" value={empForm.designation} onChange={e => setEmpForm({ ...empForm, designation: e.target.value })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Reporting Manager</label>
-                  <input className="form-control" placeholder="Reporting Manager" value={empForm.reportingManager} onChange={e => setEmpForm({...empForm, reportingManager: e.target.value})} />
+                  <input className="form-control" placeholder="Reporting Manager" value={empForm.reportingManager} onChange={e => setEmpForm({ ...empForm, reportingManager: e.target.value })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Employment Type</label>
-                  <select className="form-control" value={empForm.employmentType} onChange={e => setEmpForm({...empForm, employmentType: e.target.value})}>
+                  <select className="form-control" value={empForm.employmentType} onChange={e => setEmpForm({ ...empForm, employmentType: e.target.value })}>
                     <option value="Full-Time">Full-Time</option>
                     <option value="Part-Time">Part-Time</option>
                     <option value="Contract">Contract</option>
@@ -1605,11 +1589,11 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Work Location</label>
-                  <input className="form-control" placeholder="Work Location" value={empForm.workLocation} onChange={e => setEmpForm({...empForm, workLocation: e.target.value})} />
+                  <input className="form-control" placeholder="Work Location" value={empForm.workLocation} onChange={e => setEmpForm({ ...empForm, workLocation: e.target.value })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Work Mode</label>
-                  <select className="form-control" value={empForm.workMode} onChange={e => setEmpForm({...empForm, workMode: e.target.value})}>
+                  <select className="form-control" value={empForm.workMode} onChange={e => setEmpForm({ ...empForm, workMode: e.target.value })}>
                     <option value="On-site">On-site</option>
                     <option value="Remote">Remote</option>
                     <option value="Hybrid">Hybrid</option>
@@ -1625,7 +1609,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                     placeholder="e.g. 50000"
                     style={{ fontWeight: '700' }}
                     value={empForm.salary ?? ''}
-                    onChange={e => setEmpForm({...empForm, salary: e.target.value})}
+                    onChange={e => setEmpForm({ ...empForm, salary: e.target.value })}
                   />
                   <small style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '2px' }}>
                     Gross monthly compensation. You can also configure detailed breakdowns under the Payroll tab.
@@ -1633,11 +1617,11 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
                 </div>
                 <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
                   <label className="form-label">Shift Timings</label>
-                  <input className="form-control" placeholder="e.g. Standard Shift (10:00 AM - 7:00 PM)" value={empForm.shift} onChange={e => setEmpForm({...empForm, shift: e.target.value})} />
+                  <input className="form-control" placeholder="e.g. Standard Shift (10:00 AM - 7:00 PM)" value={empForm.shift} onChange={e => setEmpForm({ ...empForm, shift: e.target.value })} />
                 </div>
                 <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
                   <label className="form-label">Status</label>
-                  <select className="form-control" value={empForm.status} onChange={e => setEmpForm({...empForm, status: e.target.value})}>
+                  <select className="form-control" value={empForm.status} onChange={e => setEmpForm({ ...empForm, status: e.target.value })}>
                     <option value="Active">Active</option>
                     <option value="On Leave">On Leave</option>
                     <option value="Probation">Probation</option>
@@ -1668,7 +1652,7 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
             </div>
             <form onSubmit={handleSavePayroll}>
               <div className="admin-modal-body detail-form-grid">
-                
+
                 {/* Gross Salary */}
                 <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
                   <label className="form-label" style={{ fontWeight: '800', color: '#0f172a' }}>
@@ -1853,23 +1837,23 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
               <div className="admin-modal-body detail-form-grid">
                 <div className="form-field-group">
                   <label className="form-label">Month</label>
-                  <input className="form-control" placeholder="Month" value={payslipForm.month} onChange={e => setPayslipForm({...payslipForm, month: e.target.value})} />
+                  <input className="form-control" placeholder="Month" value={payslipForm.month} onChange={e => setPayslipForm({ ...payslipForm, month: e.target.value })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Year</label>
-                  <input className="form-control" placeholder="Year" type="number" value={payslipForm.year} onChange={e => setPayslipForm({...payslipForm, year: parseInt(e.target.value, 10)})} />
+                  <input className="form-control" placeholder="Year" type="number" value={payslipForm.year} onChange={e => setPayslipForm({ ...payslipForm, year: parseInt(e.target.value, 10) })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Basic Pay (₹)</label>
-                  <input className="form-control" placeholder="Basic Pay" value={payslipForm.basicPay} onChange={e => setPayslipForm({...payslipForm, basicPay: e.target.value})} />
+                  <input className="form-control" placeholder="Basic Pay" value={payslipForm.basicPay} onChange={e => setPayslipForm({ ...payslipForm, basicPay: e.target.value })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Allowances (₹)</label>
-                  <input className="form-control" placeholder="Allowances" value={payslipForm.allowances} onChange={e => setPayslipForm({...payslipForm, allowances: e.target.value})} />
+                  <input className="form-control" placeholder="Allowances" value={payslipForm.allowances} onChange={e => setPayslipForm({ ...payslipForm, allowances: e.target.value })} />
                 </div>
                 <div className="form-field-group">
                   <label className="form-label">Deductions (₹)</label>
-                  <input className="form-control" placeholder="Deductions" value={payslipForm.deductions} onChange={e => setPayslipForm({...payslipForm, deductions: e.target.value})} />
+                  <input className="form-control" placeholder="Deductions" value={payslipForm.deductions} onChange={e => setPayslipForm({ ...payslipForm, deductions: e.target.value })} />
                 </div>
               </div>
               <div className="admin-modal-footer">
@@ -1976,8 +1960,9 @@ export default function EmployeeDetail({ employeeId, initialEmployee, onBack, on
         onClose={() => setConfirmModal({ isOpen: false })}
         title={confirmModal.title}
         message={confirmModal.message}
-        type="confirm"
-        confirmText="Confirm"
+        type={confirmModal.type || 'confirm'}
+        confirmText={confirmModal.confirmText || 'Confirm'}
+        cancelText={confirmModal.cancelText || 'Cancel'}
         onConfirm={confirmModal.onConfirm}
       />
     </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { FiEye, FiEyeOff, FiCheckCircle, FiCopy, FiShare2, FiX } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiCheckCircle, FiCopy, FiShare2, FiX, FiKey, FiAlertTriangle } from 'react-icons/fi';
 import {
   authApi, statsApi, testimonialsApi, projectsApi, quotesApi, consultationsApi, categoriesApi, turnoverApi, employeesApi
 } from '../../api/api';
@@ -104,6 +104,46 @@ function Admin() {
 
   const [credentialsModal, setCredentialsModal] = useState(null);
   const [copyFeedback, setCopyFeedback] = useState('');
+  const [resettingInModal, setResettingInModal] = useState(false);
+  const [showModalPassword, setShowModalPassword] = useState(true);
+  const [showResetConfirmModal, setShowResetConfirmModal] = useState(false);
+
+  const handleModalResetPassword = () => {
+    if (!credentialsModal) return;
+    setShowResetConfirmModal(true);
+  };
+
+  const executePasswordReset = async () => {
+    if (!credentialsModal) return;
+    setResettingInModal(true);
+    try {
+      const targetId = credentialsModal.rawId || credentialsModal.empId;
+      const res = await employeesApi.resetPassword(targetId);
+      if (res && res.success && res.data) {
+        const updatedPass = res.data.password || res.data.generatedPassword;
+        setCredentialsModal(prev => ({
+          ...prev,
+          password: updatedPass,
+          isEncrypted: false
+        }));
+        setShowModalPassword(true);
+        setCopyFeedback('New Password Generated Successfully!');
+        setTimeout(() => setCopyFeedback(''), 3000);
+        setEmployeesList(prev => prev.map(emp => {
+          if (String(emp.id) === String(targetId) || String(emp.empId) === String(targetId)) {
+            return { ...emp, password: updatedPass };
+          }
+          return emp;
+        }));
+        fetchAllData();
+      }
+    } catch (err) {
+      console.error('Failed to reset password', err);
+    } finally {
+      setResettingInModal(false);
+      setShowResetConfirmModal(false);
+    }
+  };
 
   // ── Fetch Actions ────────────────────────────────────────────────
   const fetchAllData = () => {
@@ -419,22 +459,41 @@ function Admin() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>LOGIN PASSWORD</span>
-                    <strong style={{ fontSize: '1.05rem', color: '#dc2626', fontFamily: 'monospace', letterSpacing: '0.05em' }}>{credentialsModal.password}</strong>
+                    <strong style={{ fontSize: '1.05rem', color: '#dc2626', fontFamily: 'monospace', letterSpacing: '0.05em' }}>
+                      {showModalPassword ? credentialsModal.password : '••••••••••••'}
+                    </strong>
                   </div>
-                  <button
-                    onClick={() => {
-                      if (credentialsModal.password && !credentialsModal.password.includes('••••')) {
-                        navigator.clipboard.writeText(credentialsModal.password);
-                        setCopyFeedback('Password copied!');
-                      } else {
-                        setCopyFeedback('Password preset by Admin.');
-                      }
-                      setTimeout(() => setCopyFeedback(''), 2000);
-                    }}
-                    style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.35rem 0.65rem', fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-                  >
-                    <FiCopy size={13} /> Copy
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowModalPassword(!showModalPassword)}
+                      title={showModalPassword ? "Hide Password" : "Show Password"}
+                      style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.35rem 0.55rem', fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#475569' }}
+                    >
+                      {showModalPassword ? <FiEyeOff size={15} /> : <FiEye size={15} />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (credentialsModal.password) {
+                          navigator.clipboard.writeText(credentialsModal.password);
+                          setCopyFeedback('Password copied!');
+                          setTimeout(() => setCopyFeedback(''), 2000);
+                        }
+                      }}
+                      style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.35rem 0.65rem', fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <FiCopy size={13} /> Copy
+                    </button>
+                    <button
+                      type="button"
+                      onClick={executePasswordReset}
+                      disabled={resettingInModal}
+                      style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '0.35rem 0.65rem', fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '600' }}
+                    >
+                      <FiKey size={13} /> {resettingInModal ? 'Resetting...' : 'Reset Password'}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -465,6 +524,44 @@ function Admin() {
                 onClick={() => setCredentialsModal(null)}
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showResetConfirmModal && credentialsModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, padding: '1rem' }}>
+          <div style={{ background: '#ffffff', borderRadius: '16px', maxWidth: '440px', width: '100%', padding: '1.5rem', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', border: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+              <div style={{ background: '#fef2f2', color: '#dc2626', borderRadius: '50%', width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', shrink: 0 }}>
+                <FiAlertTriangle size={22} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.1rem', margin: 0, color: '#0f172a', fontWeight: '700' }}>Reset Employee Password?</h3>
+                <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>This will generate a new random password.</p>
+              </div>
+            </div>
+
+            <div style={{ fontSize: '0.875rem', color: '#334155', background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '1.25rem', lineHeight: '1.5' }}>
+              Are you sure you want to reset the password for <strong>{credentialsModal.name}</strong> ({credentialsModal.empId})?
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setShowResetConfirmModal(false)}
+                style={{ padding: '0.55rem 1.1rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#475569', fontWeight: '600', cursor: 'pointer', fontSize: '0.85rem' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={executePasswordReset}
+                disabled={resettingInModal}
+                style={{ padding: '0.55rem 1.2rem', borderRadius: '8px', border: 'none', background: '#dc2626', color: '#ffffff', fontWeight: '600', cursor: 'pointer', fontSize: '0.85rem', opacity: resettingInModal ? 0.7 : 1 }}
+              >
+                {resettingInModal ? 'Resetting...' : 'Yes, Reset Password'}
               </button>
             </div>
           </div>

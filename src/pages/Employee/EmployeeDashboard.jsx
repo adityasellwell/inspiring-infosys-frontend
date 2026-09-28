@@ -3,7 +3,7 @@ import {
   FiUser, FiClock, FiDollarSign, FiCalendar, FiHelpCircle, FiFileText,
   FiBell, FiLogOut, FiUpload, FiCheckCircle, FiAlertCircle, FiPrinter,
   FiPlus, FiBriefcase, FiMapPin, FiMail, FiPhone, FiCheck, FiSend, FiFile,
-  FiGrid, FiTrendingUp, FiCreditCard, FiMenu, FiX
+  FiGrid, FiTrendingUp, FiCreditCard, FiMenu, FiX, FiEdit3, FiPhoneCall
 } from 'react-icons/fi';
 import { employeePortalApi } from '../../api/api';
 import OfferLetter from '../Admin/components/OfferLetter';
@@ -61,17 +61,25 @@ function EmployeeDashboard() {
   });
 
   const [personalForm, setPersonalForm] = useState({
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    dob: '',
+    gender: 'Male',
     phone: '',
     altPhone: '',
-    personalEmail: '',
+    companyEmail: '',
+    address: '',
     currentAddress: '',
     permanentAddress: '',
-    city: '',
-    state: '',
+    city: 'Mumbai',
+    state: 'Maharashtra',
+    country: 'India',
     pincode: '',
     emergencyContactName: '',
     emergencyRelationship: '',
-    emergencyPhone: ''
+    emergencyPhone: '',
+    emergencyAltPhone: ''
   });
 
   // Document Letter Modal Viewers & ID Card Controls
@@ -131,17 +139,25 @@ function EmployeeDashboard() {
           taxInfo: emp.taxInfo || 'New Tax Regime'
         });
         setPersonalForm({
+          firstName: emp.firstName || '',
+          middleName: emp.middleName || '',
+          lastName: emp.lastName || '',
+          dob: emp.dob ? new Date(emp.dob).toISOString().split('T')[0] : '',
+          gender: emp.gender || 'Male',
           phone: emp.phone || '',
           altPhone: emp.altPhone || '',
-          personalEmail: emp.personalEmail || '',
+          companyEmail: emp.companyEmail || emp.email || '',
+          address: emp.address || emp.currentAddress || '',
           currentAddress: emp.currentAddress || emp.address || '',
           permanentAddress: emp.permanentAddress || emp.address || '',
           city: emp.city || 'Mumbai',
           state: emp.state || 'Maharashtra',
+          country: emp.country || 'India',
           pincode: emp.pincode || '',
           emergencyContactName: emp.emergencyContactName || '',
           emergencyRelationship: emp.emergencyRelationship || '',
-          emergencyPhone: emp.emergencyPhone || ''
+          emergencyPhone: emp.emergencyPhone || '',
+          emergencyAltPhone: emp.emergencyAltPhone || ''
         });
       } else {
         console.warn("getMe response failed:", res);
@@ -346,6 +362,15 @@ function EmployeeDashboard() {
 
   const saveDocuments = async (e) => {
     if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+    if (personalForm.companyEmail && personalForm.companyEmail.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(personalForm.companyEmail.trim())) {
+        toast.error('Please enter a valid Company Email address (e.g. employee@company.com)');
+        return;
+      }
+    }
+
     setUploadingDoc(true);
     try {
       const res = await employeePortalApi.updateProfile({
@@ -358,16 +383,16 @@ function EmployeeDashboard() {
       if (res && res.success) {
         setPortalModal({
           isOpen: true,
-          title: 'Profile & Bank Details Saved',
-          message: 'Your Bank Account information, Statutory Payroll details, and Verification Documents have been saved successfully! They are now live on the Admin Panel.',
+          title: 'Profile & Details Saved',
+          message: 'Your Personal Information, Address Details, Bank Account information, and Verification Documents have been saved successfully! They are now live on the Admin Panel.',
           type: 'success'
         });
         fetchDashboardData();
       } else {
-        toast.error(res?.message || 'Failed to save bank details & profile info');
+        toast.error(res?.message || 'Failed to save profile details');
       }
     } catch (err) {
-      toast.error('Failed to save bank details & profile info');
+      toast.error('Failed to save profile details');
     } finally {
       setUploadingDoc(false);
     }
@@ -1071,6 +1096,27 @@ function EmployeeDashboard() {
                 </button>
                 <button
                   type="button"
+                  className={`profile-subtab-btn ${profileSubTab === 'personal' ? 'active' : ''}`}
+                  onClick={() => setProfileSubTab('personal')}
+                >
+                  <FiEdit3 /> Personal Information
+                </button>
+                <button
+                  type="button"
+                  className={`profile-subtab-btn ${profileSubTab === 'address' ? 'active' : ''}`}
+                  onClick={() => setProfileSubTab('address')}
+                >
+                  <FiMapPin /> Address & Location
+                </button>
+                <button
+                  type="button"
+                  className={`profile-subtab-btn ${profileSubTab === 'emergency' ? 'active' : ''}`}
+                  onClick={() => setProfileSubTab('emergency')}
+                >
+                  <FiPhoneCall /> Emergency Contact
+                </button>
+                <button
+                  type="button"
                   className={`profile-subtab-btn ${profileSubTab === 'bank' ? 'active' : ''}`}
                   onClick={() => setProfileSubTab('bank')}
                 >
@@ -1247,66 +1293,119 @@ function EmployeeDashboard() {
                           onChange={(e) => setBankForm({ ...bankForm, panNumber: e.target.value.toUpperCase() })}
                         />
                       </div>
-
                     </div>
 
-                    <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #e2e8f0' }}>
-                      <h3 style={{ fontSize: '0.98rem', fontWeight: '800', marginBottom: '1rem', color: '#0f172a' }}>Personal & Emergency Contact Details</h3>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-                        <div className="form-field-group">
-                          <label className="form-label">Personal Email</label>
-                          <input
-                            type="email"
-                            className="form-control"
-                            placeholder="Personal Email"
-                            value={personalForm.personalEmail}
-                            onChange={(e) => setPersonalForm({ ...personalForm, personalEmail: e.target.value })}
-                          />
-                        </div>
+                    <button
+                      type="submit"
+                      className="btn-orange"
+                      style={{ marginTop: '1.5rem', width: '100%', justifyContent: 'center' }}
+                      disabled={uploadingDoc}
+                    >
+                      <FiCheckCircle /> {uploadingDoc ? 'Saving Bank Details...' : 'Save Bank Account Details'}
+                    </button>
+                  </form>
+                </div>
+              )}
 
-                        <div className="form-field-group">
-                          <label className="form-label">Alternate Phone Number</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Alternate Phone"
-                            value={personalForm.altPhone}
-                            onChange={(e) => setPersonalForm({ ...personalForm, altPhone: e.target.value })}
-                          />
-                        </div>
+              {/* Sub-Tab 2: Personal Information */}
+              {profileSubTab === 'personal' && (
+                <div className="admin-card">
+                  <div className="admin-card-header">
+                    <h2>Personal Information</h2>
+                    <span style={{ fontSize: '0.8rem', color: '#0284c7', fontWeight: '700', background: '#e0f2fe', padding: '0.25rem 0.65rem', borderRadius: '6px' }}>
+                      Updates Live on Admin Panel
+                    </span>
+                  </div>
 
-                        <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
-                          <label className="form-label">Current Residential Address</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Current Address"
-                            value={personalForm.currentAddress}
-                            onChange={(e) => setPersonalForm({ ...personalForm, currentAddress: e.target.value })}
-                          />
-                        </div>
+                  <form onSubmit={saveDocuments}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem', alignItems: 'end' }}>
+                      <div className="form-field-group">
+                        <label className="form-label">First Name</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="First Name"
+                          value={personalForm.firstName}
+                          onChange={(e) => setPersonalForm({ ...personalForm, firstName: e.target.value })}
+                        />
+                      </div>
 
-                        <div className="form-field-group">
-                          <label className="form-label">Emergency Contact Name</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Contact Name"
-                            value={personalForm.emergencyContactName}
-                            onChange={(e) => setPersonalForm({ ...personalForm, emergencyContactName: e.target.value })}
-                          />
-                        </div>
+                      <div className="form-field-group">
+                        <label className="form-label">Middle Name</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Middle Name"
+                          value={personalForm.middleName}
+                          onChange={(e) => setPersonalForm({ ...personalForm, middleName: e.target.value })}
+                        />
+                      </div>
 
-                        <div className="form-field-group">
-                          <label className="form-label">Emergency Contact Phone</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Emergency Phone Number"
-                            value={personalForm.emergencyPhone}
-                            onChange={(e) => setPersonalForm({ ...personalForm, emergencyPhone: e.target.value })}
-                          />
-                        </div>
+                      <div className="form-field-group">
+                        <label className="form-label">Last Name</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Last Name"
+                          value={personalForm.lastName}
+                          onChange={(e) => setPersonalForm({ ...personalForm, lastName: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label">Date of Birth</label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          value={personalForm.dob}
+                          onChange={(e) => setPersonalForm({ ...personalForm, dob: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label">Gender</label>
+                        <select
+                          className="form-control"
+                          value={personalForm.gender}
+                          onChange={(e) => setPersonalForm({ ...personalForm, gender: e.target.value })}
+                        >
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label">Company Email</label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          placeholder="Company Email Address"
+                          value={personalForm.companyEmail}
+                          onChange={(e) => setPersonalForm({ ...personalForm, companyEmail: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label">Primary Mobile Phone</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Primary Mobile Number"
+                          value={personalForm.phone}
+                          onChange={(e) => setPersonalForm({ ...personalForm, phone: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label">Alternate Phone Number</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Alternate Phone Number"
+                          value={personalForm.altPhone}
+                          onChange={(e) => setPersonalForm({ ...personalForm, altPhone: e.target.value })}
+                        />
                       </div>
                     </div>
 
@@ -1316,7 +1415,173 @@ function EmployeeDashboard() {
                       style={{ marginTop: '1.5rem', width: '100%', justifyContent: 'center' }}
                       disabled={uploadingDoc}
                     >
-                      <FiCheckCircle /> {uploadingDoc ? 'Saving Bank & Profile Details...' : 'Save Bank Account & Personal Details'}
+                      <FiCheckCircle /> {uploadingDoc ? 'Saving Personal Information...' : 'Save Personal Information'}
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* Sub-Tab 3: Address & Location */}
+              {profileSubTab === 'address' && (
+                <div className="admin-card">
+                  <div className="admin-card-header">
+                    <h2>Address & Location Details</h2>
+                    <span style={{ fontSize: '0.8rem', color: '#0284c7', fontWeight: '700', background: '#e0f2fe', padding: '0.25rem 0.65rem', borderRadius: '6px' }}>
+                      Updates Live on Admin Panel
+                    </span>
+                  </div>
+
+                  <form onSubmit={saveDocuments}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem', alignItems: 'end' }}>
+                      <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
+                        <label className="form-label">Current Residential Address</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Current Street Address / Flat / Building"
+                          value={personalForm.currentAddress}
+                          onChange={(e) => setPersonalForm({ ...personalForm, currentAddress: e.target.value, address: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="form-field-group" style={{ gridColumn: 'span 2' }}>
+                        <label className="form-label">Permanent Address</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Permanent Address"
+                          value={personalForm.permanentAddress}
+                          onChange={(e) => setPersonalForm({ ...personalForm, permanentAddress: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label">City</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="City (e.g. Mumbai)"
+                          value={personalForm.city}
+                          onChange={(e) => setPersonalForm({ ...personalForm, city: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label">State</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="State (e.g. Maharashtra)"
+                          value={personalForm.state}
+                          onChange={(e) => setPersonalForm({ ...personalForm, state: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label">Country</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Country (e.g. India)"
+                          value={personalForm.country}
+                          onChange={(e) => setPersonalForm({ ...personalForm, country: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label">Pincode</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Pincode (e.g. 400001)"
+                          value={personalForm.pincode}
+                          onChange={(e) => setPersonalForm({ ...personalForm, pincode: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="btn-orange"
+                      style={{ marginTop: '1.5rem', width: '100%', justifyContent: 'center' }}
+                      disabled={uploadingDoc}
+                    >
+                      <FiCheckCircle /> {uploadingDoc ? 'Saving Address & Location...' : 'Save Address & Location'}
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* Sub-Tab 4: Emergency Contact */}
+              {profileSubTab === 'emergency' && (
+                <div className="admin-card">
+                  <div className="admin-card-header">
+                    <h2>Emergency Contact Details</h2>
+                    <span style={{ fontSize: '0.8rem', color: '#0284c7', fontWeight: '700', background: '#e0f2fe', padding: '0.25rem 0.65rem', borderRadius: '6px' }}>
+                      Updates Live on Admin Panel
+                    </span>
+                  </div>
+
+                  <form onSubmit={saveDocuments}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem', alignItems: 'end' }}>
+                      <div className="form-field-group">
+                        <label className="form-label" style={{ minHeight: '2.2rem', display: 'flex', alignItems: 'flex-end', marginBottom: '0.4rem' }}>Contact Name</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Contact Name (e.g. Father/Spouse Name)"
+                          value={personalForm.emergencyContactName}
+                          onChange={(e) => setPersonalForm({ ...personalForm, emergencyContactName: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label" style={{ minHeight: '2.2rem', display: 'flex', alignItems: 'flex-end', marginBottom: '0.4rem' }}>Relationship</label>
+                        <select
+                          className="form-control"
+                          value={personalForm.emergencyRelationship}
+                          onChange={(e) => setPersonalForm({ ...personalForm, emergencyRelationship: e.target.value })}
+                        >
+                          <option value="">Select Relationship</option>
+                          <option value="Father">Father</option>
+                          <option value="Mother">Mother</option>
+                          <option value="Spouse">Spouse</option>
+                          <option value="Sibling">Sibling</option>
+                          <option value="Friend">Friend</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label" style={{ minHeight: '2.2rem', display: 'flex', alignItems: 'flex-end', marginBottom: '0.4rem' }}>Primary Emergency Phone</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Primary Phone Number"
+                          value={personalForm.emergencyPhone}
+                          onChange={(e) => setPersonalForm({ ...personalForm, emergencyPhone: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="form-field-group">
+                        <label className="form-label" style={{ minHeight: '2.2rem', display: 'flex', alignItems: 'flex-end', marginBottom: '0.4rem' }}>Alternate Emergency Phone</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Alternate Phone Number"
+                          value={personalForm.emergencyAltPhone}
+                          onChange={(e) => setPersonalForm({ ...personalForm, emergencyAltPhone: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="btn-orange"
+                      style={{ marginTop: '1.5rem', width: '100%', justifyContent: 'center' }}
+                      disabled={uploadingDoc}
+                    >
+                      <FiCheckCircle /> {uploadingDoc ? 'Saving Emergency Contact...' : 'Save Emergency Contact'}
                     </button>
                   </form>
                 </div>

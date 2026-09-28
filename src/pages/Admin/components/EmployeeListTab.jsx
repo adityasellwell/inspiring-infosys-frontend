@@ -247,27 +247,19 @@ export default function EmployeeListTab({
     document.body.removeChild(link);
   };
 
-  const handleViewCredentials = async (employee) => {
+  const handleViewCredentials = (employee) => {
     const targetEmpId = formatEmpId(employee.empId, employee.id);
     const resolvedEmail = employee.email || employee.personalEmail || '';
-    try {
-      const res = await employeesApi.resetPassword(employee.id || employee.empId, 'Inspire#2026');
-      setCredentialsModal({
-        empId: targetEmpId,
-        name: employee.name,
-        email: resolvedEmail,
-        password: (res && res.data && res.data.password) || 'Inspire#2026',
-        designation: employee.designation
-      });
-    } catch (err) {
-      setCredentialsModal({
-        empId: targetEmpId,
-        name: employee.name,
-        email: resolvedEmail,
-        password: 'Inspire#2026',
-        designation: employee.designation
-      });
-    }
+    const resolvedPassword = employee.password || 'Inspire#2026';
+
+    setCredentialsModal({
+      empId: targetEmpId,
+      rawId: employee.id || employee.empId,
+      name: employee.name,
+      email: resolvedEmail,
+      password: resolvedPassword,
+      designation: employee.designation
+    });
   };
 
   // Calculate On Leave count dynamically from approved leave applications & employee status
@@ -631,7 +623,7 @@ export default function EmployeeListTab({
                       empId: res.data.empId,
                       name: res.data.name,
                       email: res.data.email,
-                      password: addEmpForm.password || 'Inspire#2026',
+                      password: res.data?.generatedPassword || res.data?.password || addEmpForm.password,
                       designation: res.data.designation
                     });
                     setEmpSubTab('all');
@@ -1244,9 +1236,9 @@ export default function EmployeeListTab({
         onClose={() => setConfirmModal({ isOpen: false })}
         title={confirmModal.title}
         message={confirmModal.message}
-        type="confirm"
-        confirmText="Yes, Delete Permanently"
-        cancelText="Cancel"
+        type={confirmModal.type || 'confirm'}
+        confirmText={confirmModal.confirmText || 'Confirm'}
+        cancelText={confirmModal.cancelText || 'Cancel'}
         onConfirm={confirmModal.onConfirm}
       />
     </div>
