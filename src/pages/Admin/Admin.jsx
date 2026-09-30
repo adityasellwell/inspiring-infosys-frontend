@@ -40,7 +40,7 @@ const DEFAULT_PROJECTS = [
   { id: 4, title: 'Lactra B2B', category: 'E-Commerce', imgUrl: '/img/web-lactra.webp', link: 'https://www.lactra.in/', description: 'Wholesale B2B ordering portal and e-commerce listing management solution.', sortOrder: 4, isActive: true },
   { id: 5, title: 'Ayaan Toys', category: 'E-Commerce', imgUrl: '/img/Web-ayantoys.webp', link: 'https://ayaantoys.in', description: 'Product catalog setup, inventory tracking and seller account automation.', sortOrder: 5, isActive: true },
   { id: 6, title: 'Clasi Air', category: 'Websites', imgUrl: '/img/Web-clasair.webp', link: 'https://clasiair.com', description: 'Brand website optimized for page speed, search visibility, and conversion.', sortOrder: 6, isActive: true },
-  { id: 7, title: 'Lycot Swimwear', category: 'E-Commerce', imgUrl: '/img/Web-lycot.png', link: 'https://www.lycot.com/password', description: 'Marketplace account setup, listings optimization, and active ad campaign management.', sortOrder: 7, isActive: true },
+  { id: 7, title: 'Lycot Swimwear', category: 'E-Commerce', imgUrl: '/img/Web-lycot.webp', link: 'https://www.lycot.com/password', description: 'Marketplace account setup, listings optimization, and active ad campaign management.', sortOrder: 7, isActive: true },
   { id: 8, title: 'Business Card Scanner', category: 'Business Tools', imgUrl: '/img/bcs.webp', link: '/business-tools/business-card-scanner-in-mumbai', description: 'AI OCR scanner for instant contact saving and lead management.', sortOrder: 8, isActive: true }
 ];
 

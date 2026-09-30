@@ -73,6 +73,14 @@ function Portfolio() {
     return selectedFilter === 'All' || category === selectedFilter;
   });
 
+  const getProjectImg = (project) => {
+    let url = project.imgUrl || project.img || '';
+    if (url && url.startsWith('/img/') && url.toLowerCase().endsWith('.png')) {
+      url = url.replace(/\.png$/i, '.webp');
+    }
+    return url;
+  };
+
   return (
     <div className="portfolio-page">
       {/* ── Page Hero ────────────────────────────────────────────── */}
@@ -138,7 +146,21 @@ function Portfolio() {
                   className="portfolio-item-card"
                 >
                   <div className="portfolio-card-img-wrap">
-                    <img src={project.imgUrl || project.img} alt={project.title} className="portfolio-card-img" loading="lazy" decoding="async" />
+                    <img
+                      src={getProjectImg(project)}
+                      alt={project.title}
+                      className="portfolio-card-img"
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        const currentSrc = e.currentTarget.src;
+                        if (currentSrc.endsWith('.png')) {
+                          e.currentTarget.src = currentSrc.replace(/\.png$/, '.webp');
+                        } else if (project.img && currentSrc !== window.location.origin + project.img) {
+                          e.currentTarget.src = project.img;
+                        }
+                      }}
+                    />
                     {project.link && (
                       <div className="portfolio-card-overlay">
                         <a
